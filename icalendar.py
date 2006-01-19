@@ -354,17 +354,27 @@ class RecurringComponent(Component):
     result set, but by default, the rruleset property doesn't do this work
     around, to access it getrruleset must be called with addRDate set True.
     
-    When creating rrule's programmatically it should be kept in
-    mind that count doesn't necessarily mean what rfc2445 says.
-    
     >>> import dateutil.rrule, datetime
     >>> vevent = RecurringComponent(name='VEVENT')
     >>> vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
     >>> vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
+    
+    When creating rrule's programmatically it should be kept in
+    mind that count doesn't necessarily mean what rfc2445 says.
+    
     >>> list(vevent.rruleset)
     [datetime.datetime(2005, 1, 20, 9, 0), datetime.datetime(2005, 2, 1, 9, 0)]
-    >>> list(vevent.getrruleset(True))
+    >>> list(vevent.getrruleset(addRDate=True))
     [datetime.datetime(2005, 1, 19, 9, 0), datetime.datetime(2005, 1, 20, 9, 0)]
+    
+    Also note that dateutil will expand all-day events (datetime.date values) to
+    datetime.datetime value with time 0 and no timezone.
+    
+    >>> vevent.dtstart[0].value = datetime.date(2005,3,18)
+    >>> list(vevent.rruleset)
+    [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
+    >>> list(vevent.getrruleset(True))
+    [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
     
     @ivar rruleset:
         A U{rruleset<https://moin.conectiva.com.br/DateUtil>}.
@@ -417,9 +427,18 @@ class RecurringComponent(Component):
                                                     dtstart=dtstart))
                     if name == 'rrule' and addRDate:
                         try:
-                            if rruleset._rrule[-1][0] != dtstart:
-                                rruleset.rdate(dtstart)
+                            # dateutils does not work with all-day (datetime.date) items
+                            # so we need to convert to a datetime.datetime
+                            # (which is what dateutils does internally)
+                            if not isinstance(dtstart, datetime.datetime):
+                                adddtstart = datetime.datetime.fromordinal(dtstart.toordinal())
+                            else:
+                                adddtstart = dtstart
+                            if rruleset._rrule[-1][0] != adddtstart:
+                                rruleset.rdate(adddtstart)
                                 added = True
+                            else:
+                                added = False
                         except IndexError:
                             # it's conceivable that an rrule might have 0 datetimes
                             added = False
