@@ -44,10 +44,13 @@ class VBase(object):
         The object's parent's behavior, or None if no behaviored parent exists.
     @ivar isNative:
         Boolean describing whether this component is a Native instance.
-    
+    @ivar group:
+        An optional group prefix, should be used only to indicate sort order in 
+        vCards, according to RFC2426
     """
-    def __init__(self, *args, **kwds):
+    def __init__(self, group=None, *args, **kwds):
         super(VBase, self).__init__(*args, **kwds)
+        self.group      = group
         self.behavior   = None
         self.parentBehavior = None
         self.isNative = False
@@ -182,10 +185,6 @@ class ContentLine(VBase):
         parameter name or the parameter value. In vCard 2.1, "The value string
         can be specified alone in those cases where the value is unambiguous".
         This is crazy, but we have to deal with it.
-    @ivar corruption:
-        If this data resulted in an error during parsing, this will contain
-        info, such as a raw unparsed line.
-    @note: corruption is currently unused.
     @ivar encoded:
         A boolean describing whether the data in the content line is encoded.
         Generally, text read from a serialized vCard or vCalendar should be
@@ -193,13 +192,14 @@ class ContentLine(VBase):
     @ivar lineNumber:
         An optional line number associated with the contentline.
     """
-    def __init__(self, name, params, value, encoded=False, corruption=None,
-                            isNative=False, lineNumber = None, *args, **kwds):
+    def __init__(self, name, params, value, group=None, 
+                 encoded=False, isNative=False,
+                 lineNumber = None, *args, **kwds):
         """Take output from parseLine, convert params list to dictionary."""
-        super(ContentLine, self).__init__(*args, **kwds)
+        # group is used as a positional argument to match parseLine's return
+        super(ContentLine, self).__init__(group, *args, **kwds)
         self.name        = name.upper()
         self.value       = value
-        self.corruption  = corruption
         self.encoded     = encoded
         self.params      = {}
         self.singletonparams = []
@@ -298,7 +298,7 @@ class Component(VBase):
         self.contents must contain lists, raise an error if value isn't a list.
         
         """
-        vars = ['contents', 'name', 'behavior', 'parentBehavior']
+        vars = ['contents', 'name', 'behavior', 'parentBehavior', 'group']
         if name not in vars and name.lower()==name:
             if type(value) == list:
                 self.contents[name]=value
@@ -307,12 +307,14 @@ class Component(VBase):
         else:
             object.__setattr__(self, name, value)
 
-    def add(self, objOrName):
+    def add(self, objOrName, group = None):
         """Add objOrName to contents, set behavior if it can be inferred.
         
         If objOrName is a string, create an empty component or line based on
         behavior. If no behavior is found for the object, add a ContentLine.
-        
+
+        group is an optional prefix to the name of the object (see
+        RFC 2425).
         """
         if isinstance(objOrName, VBase):
             obj = objOrName
@@ -327,12 +329,12 @@ class Component(VBase):
                 if behavior.isComponent:
                     obj = Component(name)
                 else:
-                    obj = ContentLine(name, [], '')
+                    obj = ContentLine(name, [], '', group)
                 obj.parentBehavior = self.behavior
                 obj.behavior = behavior
                 obj = obj.transformToNative()     
             except (KeyError, AttributeError):
-                obj = ContentLine(objOrName, [], '') 
+                obj = ContentLine(objOrName, [], '', group)
         self.contents.setdefault(obj.name.lower(), []).append(obj)
         return obj
 
@@ -464,11 +466,11 @@ patterns['params_grouped'] = r"""
 )?
 """ % patterns
 
-# get a full content line, break it up into name, parameters, and value
+# get a full content line, break it up into group, name, parameters, and value
 patterns['line'] = r"""
-^ (?P<name> %(name)s )               # name group
-  (?P<params> (?: %(param)s )* )     # params group (may be empty)
-: (?P<value> .* )$                   # value group
+^ ((?P<group> %(name)s)\.)?(?P<name> %(name)s) # name group
+  (?P<params> (?: %(param)s )* )               # params group (may be empty)
+: (?P<value> .* )$                             # value group
 """ % patterns
 
 ' "%(qsafe_char)s*" | %(safe_char)s* '
@@ -503,15 +505,17 @@ def parseParams(string):
 def parseLine(line):
     """
     >>> parseLine("BLAH:")
-    ('BLAH', [], '')
+    ('BLAH', [], '', None)
     >>> parseLine("RDATE:VALUE=DATE:19970304,19970504,19970704,19970904")
-    ('RDATE', [], 'VALUE=DATE:19970304,19970504,19970704,19970904')
+    ('RDATE', [], 'VALUE=DATE:19970304,19970504,19970704,19970904', None)
     >>> parseLine('DESCRIPTION;ALTREP="http://www.wiz.org":The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA')
-    ('DESCRIPTION', [['ALTREP', 'http://www.wiz.org']], 'The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA')
+    ('DESCRIPTION', [['ALTREP', 'http://www.wiz.org']], 'The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA', None)
     >>> parseLine("EMAIL;PREF;INTERNET:john@nowhere.com")
-    ('EMAIL', [['PREF'], ['INTERNET']], 'john@nowhere.com')
+    ('EMAIL', [['PREF'], ['INTERNET']], 'john@nowhere.com', None)
     >>> parseLine('EMAIL;TYPE="blah",hah;INTERNET="DIGI",DERIDOO:john@nowhere.com')
-    ('EMAIL', [['TYPE', 'blah', 'hah'], ['INTERNET', 'DIGI', 'DERIDOO']], 'john@nowhere.com')
+    ('EMAIL', [['TYPE', 'blah', 'hah'], ['INTERNET', 'DIGI', 'DERIDOO']], 'john@nowhere.com', None)
+    >>> parseLine('item1.ADR;type=HOME;type=pref:;;Reeperbahn 116;Hamburg;;20359;')
+    ('ADR', [['type', 'HOME'], ['type', 'pref']], ';;Reeperbahn 116;Hamburg;;20359;', 'item1')
     >>> parseLine(":")
     Traceback (most recent call last):
     ...
@@ -523,7 +527,7 @@ def parseLine(line):
         raise ParseError("Failed to parse line: %s" % line)
     return (match.group('name'), 
             parseParams(match.group('params')),
-            match.group('value'))
+            match.group('value'), match.group('group'))
 
 # logical line regular expressions
 
@@ -660,11 +664,15 @@ def defaultSerialize(obj, buf, lineLength):
     else: outbuf=StringIO.StringIO()
 
     if isinstance(obj, Component):
-        if obj.useBegin: foldOneLine(u"BEGIN:" + obj.name)
+        if obj.group is None:
+            groupString = ''
+        else:
+            groupString = obj.group + '.'
+        if obj.useBegin: foldOneLine(groupString + u"BEGIN:" + obj.name)
         for child in obj.getSortedChildren():
             #validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
-        if obj.useBegin: foldOneLine(u"END:" + obj.name)
+        if obj.useBegin: foldOneLine(groupString + u"END:" + obj.name)
         if DEBUG: logger.debug("Finished %s" % obj.name.upper())
         
     elif isinstance(obj, ContentLine):
@@ -672,6 +680,8 @@ def defaultSerialize(obj, buf, lineLength):
         #TODO: X- lines should be considered TEXT, and should be encoded as such
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
         s=StringIO.StringIO() #unfolded buffer
+        if obj.group is not None:
+            s.write(obj.group + '.')
         if DEBUG: logger.debug("Serializing line" + str(obj))
         s.write(obj.name.upper())
         for key, paramvals in obj.params.iteritems():
@@ -731,12 +741,13 @@ def readComponents(streamOrString, validate=False, transform=True):
         stream = streamOrString
     stack = Stack()
     versionLine = None
-    for line, n in getLogicalLines(stream, False): # not allowing vCard
+    for line, n in getLogicalLines(stream, False): # not allowing vCard 2.1
         vline = textLineToContentLine(line, n)
         if   vline.name == "VERSION":
             versionLine = vline
             stack.modifyTop(vline)
-        elif vline.name == "BEGIN":   stack.push(Component(vline.value))
+        elif vline.name == "BEGIN":
+            stack.push(Component(vline.value, group=vline.group))
         elif vline.name == "PROFILE":
             if not stack.top(): stack.push(Component())
             stack.top().setProfile(vline.value)
@@ -829,4 +840,4 @@ def backslashEscape(s):
 #------------------- Testing and running functions -----------------------------
 if __name__ == '__main__':
     import tests
-    tests._test()
+    tests._test()   

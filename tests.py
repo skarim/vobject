@@ -83,6 +83,25 @@ ORG:University of Novosibirsk, Department of Octopus
   Parthenogenesis
 END:VCARD"""
 
+vcardWithGroups = r"""home.begin:vcard
+version:3.0
+source:ldap://cn=Meister%20Berger,o=Universitaet%20Goerlitz,c=DE
+name:Meister Berger
+fn:Meister Berger
+n:Berger;Meister
+bday;value=date:1963-09-21
+o:Universit=E6t G=F6rlitz
+title:Mayor
+title;language=de;value=text:Burgermeister
+note:The Mayor of the great city of
+  Goerlitz in the great country of Germany.
+email;internet:mb@goerlitz.de
+home.tel;type=fax,voice,msg:+49 3581 123456
+home.label:Hufenshlagel 1234\n
+ 02828 Goerlitz\n
+ Deutschland
+END:VCARD"""
+
 badstream = r"""BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
 X-WR-TIMEZONE;VALUE=TEXT:US/Pacific
@@ -548,7 +567,28 @@ __test__ = { "Test readOne" :
     >>> category.value.append('Other category')
     >>> print category.serialize().strip()
     CATEGORIES:Random category,Other category
+    """,
+             
+    "vCard groups test:" :
+             
+    """
+    >>> import vobject, vcard, icalendar
+    >>> card = vobject.readOne(vcardWithGroups)
+    >>> card.group
+    u'home'
+    >>> card.tel[0].group
+    u'home'
+    >>> card.group = card.tel[0].group = 'new'
+    >>> card.tel[0].serialize().strip()
+    u'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
+    >>> card.serialize().splitlines()[0]
+    u'new.BEGIN:VCARD'
+    >>> dtstart = vobject.newFromBehavior('dtstart')
+    >>> dtstart.group = "badgroup"
+    >>> dtstart.serialize()
+    Traceback (most recent call last):
+    ...
+    VObjectError: "<DTSTART{}> has a group, but this object doesn't support groups"
     """
     }
-
     

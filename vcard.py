@@ -69,7 +69,10 @@ class Address(object):
         return "<Address: %s>" % self.__str__().replace('\n', '\\n')
 
 #------------------------ Registered Behavior subclasses -----------------------
-class VCard3_0(behavior.Behavior):
+class VCardBehavior(behavior.Behavior):
+    allowGroup = True
+
+class VCard3_0(VCardBehavior):
     """vCard 3.0 behavior."""
     name = 'VCARD'
     description = 'vCard 3.0, defined in rfc2426'
@@ -96,8 +99,9 @@ class VCard3_0(behavior.Behavior):
         if len(getattr(obj, 'version', [])) == 0:
             obj.add(ContentLine('VERSION', [], cls.versionString))
 registerBehavior(VCard3_0, default=True)
-
+    
 class VCardTextBehavior(TextBehavior):
+    allowGroup = True
     base64string = 'B'
     
 class FN(VCardTextBehavior):
@@ -130,7 +134,7 @@ def serializeFields(obj, order):
 
 NAME_ORDER = ('family', 'given', 'additional', 'prefix', 'suffix')
 
-class NameBehavior(behavior.Behavior):
+class NameBehavior(VCardBehavior):
     """A structured name."""
     hasNative = True
 
@@ -153,7 +157,7 @@ registerBehavior(NameBehavior, 'N')
 ADDRESS_ORDER = ('box', 'extended', 'street', 'city', 'region', 'code', 
                  'country')
 
-class AddressBehavior(behavior.Behavior):
+class AddressBehavior(VCardBehavior):
     """A structured address."""
     hasNative = True
 

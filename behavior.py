@@ -36,7 +36,8 @@ class Behavior(object):
         A boolean, True if the object should be a Component.
     @cvar sortFirst:
         The lower-case list of children which should come first when sorting.
-
+    @cvar allowGroup:
+        Whether or not vCard style group prefixes are allowed.
     """
     name=''
     description=''
@@ -45,6 +46,7 @@ class Behavior(object):
     quotedPrintable = False
     hasNative= False
     isComponent = False
+    allowGroup = False
     sortFirst = []
 
     def __init__(self):
@@ -65,6 +67,9 @@ class Behavior(object):
             found.  Otherwise log the lack of recognition.
 
         """
+        if not cls.allowGroup and obj.group is not None:
+            err = str(obj) + " has a group, but this object doesn't support groups"
+            raise vobject.VObjectError(err)
         if isinstance(obj, vobject.ContentLine):
             return cls.lineValidate(obj, raiseException, complainUnrecognized)
         elif isinstance(obj, vobject.Component):
