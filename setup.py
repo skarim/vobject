@@ -11,18 +11,29 @@ use_setuptools()
 
 from setuptools import setup, find_packages
 
+# Metadata
+PACKAGE_NAME = "vobject"
+PACKAGE_VERSION = "0.2.3"
+
+ALL_EXTS = ['*.py', '*.ics', '*.txt']
+
+packages = find_packages('src')
+
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.2.3",
+      version = PACKAGE_VERSION,
       author = "Jeffrey Harris",
-      author_email = "jeffrey-osaf@skyhouseconsulting.com",
+      author_email = "jeffrey@osafoundation.org",
       license = "BSD",
-      zip_safe = True
+      zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
 
-      package_data = {'': ['*.py', '*.ics', '*.txt']},
-      
+      package_dir = {'':'src'},
+      package_data = {'': ALL_EXTS},
+
+      install_requires = ['python-dateutil >= 1.1'],
+
       platforms = ["any"],
       packages = ["vobject"],
       description = doclines[0],
