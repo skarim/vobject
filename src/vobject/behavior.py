@@ -1,6 +1,6 @@
 """Behavior (validation, encoding, and transformations) for vobjects."""
 
-import vobject
+import base
 
 #------------------------ Abstract class for behavior --------------------------
 class Behavior(object):
@@ -51,16 +51,16 @@ class Behavior(object):
 
     def __init__(self):
         err="Behavior subclasses are not meant to be instantiated"
-        raise vobject.VObjectError(err)
+        raise base.VObjectError(err)
        
     def validate(cls, obj, raiseException=False, complainUnrecognized=False):
         """Check if the object satisfies this behavior's requirements.
         
         @param obj:
-            The L{ContentLine<vobject.ContentLine>} or
-            L{Component<vobject.Component>} to be validated.
+            The L{ContentLine<base.ContentLine>} or
+            L{Component<base.Component>} to be validated.
         @param raiseException:
-            If True, raise a L{vobject.ValidateError} on validation failure.
+            If True, raise a L{base.ValidateError} on validation failure.
             Otherwise return a boolean.
         @param complainUnrecognized:
             If True, fail to validate if an uncrecognized parameter or child is
@@ -69,10 +69,10 @@ class Behavior(object):
         """
         if not cls.allowGroup and obj.group is not None:
             err = str(obj) + " has a group, but this object doesn't support groups"
-            raise vobject.VObjectError(err)
-        if isinstance(obj, vobject.ContentLine):
+            raise base.VObjectError(err)
+        if isinstance(obj, base.ContentLine):
             return cls.lineValidate(obj, raiseException, complainUnrecognized)
-        elif isinstance(obj, vobject.Component):
+        elif isinstance(obj, base.Component):
             count = {}
             for child in obj.getChildren():
                 if not child.validate(raiseException, complainUnrecognized):
@@ -83,17 +83,17 @@ class Behavior(object):
                 if count.get(key,0) < val[0]: 
                     if raiseException:
                         m = "%s components must contain at least %i %s"
-                        raise vobject.ValidateError(m % (cls.name, val[0], key))
+                        raise base.ValidateError(m % (cls.name, val[0], key))
                     return False
                 if val[1] and count.get(key,0) > val[1]:
                     if raiseException:
                         m = "%s components cannot contain more than %i %s"
-                        raise vobject.ValidateError(m % (cls.name, val[1], key))
+                        raise base.ValidateError(m % (cls.name, val[1], key))
                     return False
             return True
         else:
             err = str(obj) + " is not a Component or Contentline"
-            raise vobject.VObjectError(err)
+            raise base.VObjectError(err)
 
     def lineValidate(cls, line, raiseException, complainUnrecognized):
         """Examine a line's parameters and values, return True if valid."""
@@ -116,7 +116,7 @@ class Behavior(object):
 
     def transformFromNative(cls, obj):
         """Inverse of transformToNative."""
-        raise vobject.NativeError("No transformFromNative defined")
+        raise base.NativeError("No transformFromNative defined")
 
     def generateImplicitParameters(cls, obj):
         """Generate any required information that don't yet exist."""
@@ -128,10 +128,10 @@ class Behavior(object):
         If validate is True, raise VObjectError if the line doesn't validate
         after implicit parameters are generated.
         
-        Default is to call vobject.defaultSerialize.
+        Default is to call base.defaultSerialize.
         
         """
-        return vobject.defaultSerialize(obj, buf, lineLength)
+        return base.defaultSerialize(obj, buf, lineLength)
     
     lineValidate = classmethod(lineValidate)
     validate     = classmethod(validate)

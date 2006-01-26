@@ -3,7 +3,7 @@
 import behavior
 import itertools
 
-from vobject import VObjectError, NativeError, ValidateError, ParseError, \
+from base import VObjectError, NativeError, ValidateError, ParseError, \
                     VBase, Component, ContentLine, logger, defaultSerialize, \
                     registerBehavior, backslashEscape
 

@@ -283,7 +283,7 @@ class Component(VBase):
         if self.name or self.useBegin:
             if self.name == name: return
             raise VObjectError("This component already has a PROFILE or uses BEGIN.")
-        self.name = name
+        self.name = name.upper()
 
     def __getattr__(self, name):
         """For convenience, make self.contents directly accessible."""
@@ -756,7 +756,7 @@ def readComponents(streamOrString, validate=False, transform=True):
                 err = "At line %i, attempted to end the %s component, \
                        but it was never opened" % (n, vline.value)
                 raise VObjectError(err)
-            if vline.value == stack.topName():#START matches END
+            if vline.value.upper() == stack.topName(): #START matches END
                 if len(stack) == 1:
                     component=stack.pop()
                     if versionLine is not None:
@@ -770,7 +770,7 @@ def readComponents(streamOrString, validate=False, transform=True):
                 raise VObjectError(err % stack.topName(), n)
         else: stack.modifyTop(vline) #not a START or END line
     if stack.top():
-        if stack.top().name is None:
+        if stack.topName() is None:
             logger.warning("Top level component was never named")
         elif stack.top().useBegin:
             raise VObjectError("Component %s was never closed" % (stack.topName()))

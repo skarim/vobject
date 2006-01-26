@@ -1,21 +1,17 @@
 """Long or boring tests for vobjects."""
 
-import vobject, behavior
+import base, behavior
 
 #------------------- Testing and running functions -----------------------------
 def _test():
-    import doctest, vobject, tests, icalendar, __init__, re
-    doctest.testmod(vobject, verbose=0)
+    import doctest, base, tests, icalendar, __init__, re
+    doctest.testmod(base, verbose=0)
     doctest.testmod(tests, verbose=0)
     doctest.testmod(icalendar, verbose=0)
     doctest.testmod(__init__, verbose=0)
     
 if __name__ == '__main__':
     _test()
-    
-#------------------------------ Tests ------------------------------------------
-# See http://cvs.sourceforge.net/viewcvs.py/freeassociation/libical/test-data/
-# for good sampledata.
 
 
 testSilly="""
@@ -101,6 +97,20 @@ home.label:Hufenshlagel 1234\n
  02828 Goerlitz\n
  Deutschland
 END:VCARD"""
+
+lowercaseComponentNames = r"""begin:vcard
+fn:Anders Bobo
+n:Bobo;Anders
+org:Bobo A/S;Vice President, Technical Support
+adr:Rockfeller Center;;Mekastreet;Bobocity;;2100;Myworld
+email;internet:bobo@example.com
+tel;work:+123455
+tel;fax:+123456
+tel;cell:+123457
+x-mozilla-html:FALSE
+url:http://www.example.com
+version:2.1
+end:vcard"""
 
 badstream = r"""BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
@@ -234,11 +244,11 @@ END:VTIMEZONE
 __test__ = { "Test readOne" :
     """
     >>> import StringIO
-    >>> from vobject import readOne
+    >>> from base import readOne
     >>> f2 = StringIO.StringIO(testSilly) 
     >>> silly = readOne(f2)
     >>> silly
-    <sillyprofile| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
+    <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
     >>> silly.stuff[0]
     <STUFF{}foldedline>
     >>> original = silly.serialize()
@@ -254,22 +264,11 @@ __test__ = { "Test readOne" :
     u'CN:Babs Jensen\\r\\nCN:Barbara J Jensen\\r\\nEMAIL:babs@umich.edu\\r\\nPHONE:+1 313 747-4454\\r\\nSN:Jensen\\r\\nX-ID:1234567890\\r\\n'
     """,
     
-    "Validate sampledata.txt" :
-    """
-    >>> import vobject, icalendar
-    >>> f=open("sampledata.txt")
-    >>> c=list(vobject.readComponents(f, validate=True))
-    >>> c[1].vevent[0].dtend[0].value
-    datetime.datetime(1998, 3, 12, 9, 30, tzinfo=<tzicalvtz 'US-Eastern'>)
-    >>> c[1].vevent[0].dtend[0].value.astimezone(icalendar.getTzid("UTC"))
-    datetime.datetime(1998, 3, 12, 14, 30, tzinfo=tzutc())
-    """,
-    
     "Import icaltest" :
     """
-    >>> import vobject, StringIO
+    >>> import base, StringIO
     >>> f = StringIO.StringIO(icaltest)
-    >>> c = vobject.readOne(f, validate=True)
+    >>> c = base.readOne(f, validate=True)
     >>> c.vevent[0].valarm[0].trigger[0]
     <TRIGGER{}-1 day, 0:00:00>
     >>> c.vevent[0].dtstart[0].value
@@ -297,17 +296,17 @@ __test__ = { "Test readOne" :
     ['abcd', 'efgh']
     >>> icalendar.stringToPeriod("19970101T180000Z/19970102T070000Z")
     (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 46800))
-    >>> parseRDate(vobject.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))
+    >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))
     <RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>
-    >>> parseRDate(vobject.textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))
+    >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))
     <RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.timedelta(0, 7200)), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>
     """,
     
     "read failure" :
     """
-    >>> import StringIO, vobject
+    >>> import StringIO, base
     >>> f = StringIO.StringIO(badstream)
-    >>> vevent = vobject.readOne(f)
+    >>> vevent = base.readOne(f)
     Traceback (most recent call last):
     ...
     ParseError: In component starting at line 11: got unexpected character reading in duration: 20021028T120000Z
@@ -315,9 +314,9 @@ __test__ = { "Test readOne" :
     
     "unicode test" :
     """
-    >>> import StringIO, vobject
+    >>> import StringIO, base
     >>> f = file('utf8_test.ics', 'rb')
-    >>> vevent = vobject.readOne(f).vevent[0]
+    >>> vevent = base.readOne(f).vevent[0]
     >>> vevent.summary[0].value
     u'The title \\u3053\\u3093\\u306b\\u3061\\u306f\\u30ad\\u30c6\\u30a3'
     >>> summary = vevent.summary[0].value
@@ -325,16 +324,16 @@ __test__ = { "Test readOne" :
     
     "regular expression test" :
     """
-    >>> import re, vobject
-    >>> re.findall(vobject.patterns['name'], '12foo-bar:yay')
+    >>> import re, base
+    >>> re.findall(base.patterns['name'], '12foo-bar:yay')
     ['12foo-bar', 'yay']
-    >>> re.findall(vobject.patterns['safe_char'], 'a;b"*,cd')
+    >>> re.findall(base.patterns['safe_char'], 'a;b"*,cd')
     ['a', 'b', '*', 'c', 'd']
-    >>> re.findall(vobject.patterns['qsafe_char'], 'a;b"*,cd')
+    >>> re.findall(base.patterns['qsafe_char'], 'a;b"*,cd')
     ['a', ';', 'b', '*', ',', 'c', 'd']
-    >>> re.findall(vobject.patterns['param_value'], '"quoted";not-quoted;start"after-illegal-quote', re.VERBOSE)
+    >>> re.findall(base.patterns['param_value'], '"quoted";not-quoted;start"after-illegal-quote', re.VERBOSE)
     ['"quoted"', '', 'not-quoted', '', 'start', '', 'after-illegal-quote', '']
-    >>> match = vobject.line_re.match('TEST;ALTREP="http://www.wiz.org":value:;"')
+    >>> match = base.line_re.match('TEST;ALTREP="http://www.wiz.org":value:;"')
     >>> match.group('value')
     'value:;"'
     >>> match.group('name')
@@ -346,10 +345,7 @@ __test__ = { "Test readOne" :
     "VTIMEZONE creation test:" :
         
     """
-    >>> import vobject, icalendar, dateutil.tz, StringIO, dateutil.zoneinfo
-    >>> brazil = dateutil.zoneinfo.gettz("Brazil/East")
-    >>> icalendar.TimezoneComponent.pickTzid(brazil)
-    'BRT'
+    >>> import base, icalendar, dateutil.tz, StringIO
     >>> f = StringIO.StringIO(timezones)
     >>> tzs = dateutil.tz.tzical(f)
     >>> tzs.get("US/Pacific")
@@ -357,7 +353,7 @@ __test__ = { "Test readOne" :
     >>> icalendar.TimezoneComponent(_)
     <VTIMEZONE | <TZID{}US/Pacific>>
     >>> pacific = _
-    >>> print pacific.serialize().replace(vobject.CRLF, vobject.LF).strip()
+    >>> print pacific.serialize().replace(base.CRLF, base.LF).strip()
     BEGIN:VTIMEZONE
     TZID:US/Pacific
     BEGIN:STANDARD
@@ -379,7 +375,7 @@ __test__ = { "Test readOne" :
     <VTIMEZONE | <TZID{}US/Pacific>>
     >>> santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
     >>> ser = santiago.serialize()
-    >>> print ser.replace(vobject.CRLF, vobject.LF).strip()
+    >>> print ser.replace(base.CRLF, base.LF).strip()
     BEGIN:VTIMEZONE
     TZID:Santiago
     BEGIN:STANDARD
@@ -405,7 +401,7 @@ __test__ = { "Test readOne" :
     ...         if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
     ...             print "Failed for:", dt
     >>> fict = icalendar.TimezoneComponent(tzs.get('US/Fictitious-Eastern'))
-    >>> print fict.serialize().replace(vobject.CRLF, vobject.LF).strip()
+    >>> print fict.serialize().replace(base.CRLF, base.LF).strip()
     BEGIN:VTIMEZONE
     TZID:US/Fictitious-Eastern
     BEGIN:STANDARD
@@ -428,10 +424,10 @@ __test__ = { "Test readOne" :
     "Serializing with timezones test" :
     
     """
-    >>> import vobject, icalendar, StringIO, dateutil.tz, datetime
+    >>> import base, icalendar, StringIO, dateutil.tz, datetime
     >>> from dateutil.rrule import rrule, rruleset, WEEKLY
     >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
-    >>> cal = vobject.Component('VCALENDAR')
+    >>> cal = base.Component('VCALENDAR')
     >>> cal.setBehavior(icalendar.VCalendar2_0)
     >>> ev = cal.add('vevent')
     >>> ev.add('dtstart').value = datetime.datetime(2005, 10, 12, 9, tzinfo = pacific)
@@ -441,7 +437,7 @@ __test__ = { "Test readOne" :
     >>> ev.rruleset = set
     >>> ev.add('uid').value = "uid could be generated but doctest complains"
     >>> ev.add('duration').value = datetime.timedelta(hours=1)
-    >>> print cal.serialize().replace(vobject.CRLF, vobject.LF).strip()
+    >>> print cal.serialize().replace(base.CRLF, base.LF).strip()
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -472,7 +468,7 @@ __test__ = { "Test readOne" :
     END:VCALENDAR
     >>> apple = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('America/Montreal')
     >>> ev.dtstart[0].value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
-    >>> print cal.serialize().replace(vobject.CRLF, vobject.LF).strip()
+    >>> print cal.serialize().replace(base.CRLF, base.LF).strip()
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -530,8 +526,8 @@ __test__ = { "Test readOne" :
     "VCARD 3.0 parse test:" :
         
     """
-    >>> import vobject, vcard
-    >>> card = vobject.readOne(vcardtest)
+    >>> import base, vcard
+    >>> card = base.readOne(vcardtest)
     >>> card.adr[0].value
     <Address: Haight Street 512\\nNovosibirsk,  80214\\nGnuland>
     >>> print card.adr[0].value
@@ -559,8 +555,8 @@ __test__ = { "Test readOne" :
     "Multi-text serialization test:" :
              
     """
-    >>> import vobject, icalendar
-    >>> category = vobject.newFromBehavior('categories')
+    >>> import base, icalendar
+    >>> category = base.newFromBehavior('categories')
     >>> category.value = ['Random category']
     >>> print category.serialize().strip()
     CATEGORIES:Random category
@@ -572,8 +568,8 @@ __test__ = { "Test readOne" :
     "vCard groups test:" :
              
     """
-    >>> import vobject, vcard, icalendar
-    >>> card = vobject.readOne(vcardWithGroups)
+    >>> import base, vcard, icalendar
+    >>> card = base.readOne(vcardWithGroups)
     >>> card.group
     u'home'
     >>> card.tel[0].group
@@ -583,12 +579,20 @@ __test__ = { "Test readOne" :
     u'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
     >>> card.serialize().splitlines()[0]
     u'new.BEGIN:VCARD'
-    >>> dtstart = vobject.newFromBehavior('dtstart')
+    >>> dtstart = base.newFromBehavior('dtstart')
     >>> dtstart.group = "badgroup"
     >>> dtstart.serialize()
     Traceback (most recent call last):
     ...
     VObjectError: "<DTSTART{}> has a group, but this object doesn't support groups"
+    """,
+             
+    "Lowercase components test:" :
+             
+    """
+    >>> import base, vcard, icalendar
+    >>> card = base.readOne(lowercaseComponentNames)
+    >>> card.version[0]
+    <VERSION{}2.1>
     """
     }
-    

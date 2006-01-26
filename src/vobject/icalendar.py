@@ -9,7 +9,7 @@ import datetime
 import socket, random #for generating a UID
 import itertools
 
-from vobject import VObjectError, NativeError, ValidateError, ParseError, \
+from base import VObjectError, NativeError, ValidateError, ParseError, \
                     VBase, Component, ContentLine, logger, defaultSerialize, \
                     registerBehavior, backslashEscape
 
@@ -98,7 +98,7 @@ class TimezoneComponent(Component):
         - never in the month of December
         - DST always moves offset exactly one hour later
         - tzinfo classes dst method always treats times that could be in either
-          offset to be in the later regime
+          offset as being in the later regime
         
         """
         # tests of whether the given key is in effect
@@ -161,7 +161,7 @@ class TimezoneComponent(Component):
         # lists of dictionaries defining rules which are no longer in effect
         completed = {'daylight' : [], 'standard' : []}
     
-        # dictionaries defining rules which are currently in effect
+        # dictionary defining rules which are currently in effect
         working   = {'daylight' : None, 'standard' : None}
             
         # rule may be based on the nth day of the month or the nth from the last
@@ -904,7 +904,7 @@ class VEvent(RecurringBehavior):
                      'STATUS':       (0, 1, None),  
                      'SUMMARY':      (0, 1, None),                     
                      'TRANSP':       (0, 1, None),  
-                     'UID':          (0, 1, None),  
+                     'UID':          (1, 1, None),  
                      'URL':          (0, 1, None),  
                      'RECURRENCE-ID':(0, 1, None),  
                      'DTEND':        (0, 1, None), #NOTE: Only one of DtEnd or

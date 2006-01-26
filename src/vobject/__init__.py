@@ -2,13 +2,13 @@
 VObject Overview
 ================
     vobject parses vCard or vCalendar files, returning a tree of Python objects.
-    It also provids an API to create vCards or vCalendars data structures which
+    It also provids an API to create vCard or vCalendar data structures which
     can then be serialized.
 
     Parsing existing streams
     ------------------------
-    Streams containing one or many L{Component<vobject.Component>}s can be
-    parsed using L{readComponents<vobject.readComponents>}.  As each Component
+    Streams containing one or many L{Component<base.Component>}s can be
+    parsed using L{readComponents<base.readComponents>}.  As each Component
     is parsed, vobject will attempt to give it a L{Behavior<behavior.Behavior>}.
     If an appropriate Behavior is found, any base64, quoted-printable, or
     backslash escaped data will automatically be decoded.  Dates and datetimes
@@ -19,13 +19,13 @@ VObject Overview
     Validation
     ----------
     L{Behavior<behavior.Behavior>} classes implement validation for
-    L{Component<vobject.Component>}s.  To validate, an object must have all
+    L{Component<base.Component>}s.  To validate, an object must have all
     required children.  There (TODO: will be) a toggle to raise an exception or
     just log unrecognized, non-experimental children and parameters.
     
     Creating objects programatically
     --------------------------------
-    A L{Component<vobject.Component>} can be created from scratch.  No encoding
+    A L{Component<base.Component>} can be created from scratch.  No encoding
     is necessary, serialization will encode data automatically.  Factory
     functions (TODO: will be) available to create standard objects.
 
@@ -63,7 +63,7 @@ VObject Overview
     >>> list(v.rruleset)
     [datetime.datetime(2004, 12, 15, 14, 0, tzinfo=tzutc()), datetime.datetime(2004, 12, 22, 14, 0, tzinfo=tzutc())]
     >>> v.add('uid').value = "randomuid@MYHOSTNAME"
-    >>> print x.serialize().replace(vobject.CRLF, vobject.LF).strip()
+    >>> print x.serialize().replace(base.CRLF, base.LF).strip()
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -76,15 +76,15 @@ VObject Overview
     
 """
 
-import vobject, icalendar, vcard
-from vobject import readComponents, readOne
+import base, icalendar, vcard
+from base import readComponents, readOne
 
 def iCalendar():
-    obj = vobject.Component('VCALENDAR')
+    obj = base.Component('VCALENDAR')
     obj.setBehavior(icalendar.VCalendar2_0)
     return obj
 
 def vCard():
-    obj = vobject.Component('VCARD')
+    obj = base.Component('VCARD')
     obj.setBehavior(vcard.VCard3_0)
     return obj
