@@ -6,10 +6,13 @@ Parses iCalendar and vCard files into Python data structures, decoding the relev
 Requires dateutil (https://moin.conectiva.com.br/DateUtil) 0.9 or later.
 """
 
-from ez_setup import use_setuptools
-use_setuptools()
+# not using setuptools until Chandler's ready for eggs
+# from ez_setup import use_setuptools
+# use_setuptools()
 
-from setuptools import setup, find_packages
+# from setuptools import setup, find_packages
+
+from distutils.core import setup
 
 # Metadata
 PACKAGE_NAME = "vobject"
@@ -17,7 +20,7 @@ PACKAGE_VERSION = "0.2.3"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
-packages = find_packages('src')
+packages = ['vobject']
 
 doclines = __doc__.splitlines()
 
@@ -32,7 +35,7 @@ setup(name = "vobject",
       package_dir = {'':'src'},
       package_data = {'': ALL_EXTS},
 
-      install_requires = ['python-dateutil >= 1.1'],
+      install_requires = ['python-dateutil >= 1.1'], 
 
       platforms = ["any"],
       packages = ["vobject"],
