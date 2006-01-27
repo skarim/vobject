@@ -23,6 +23,9 @@ WEEKDAYS = "MO", "TU", "WE", "TH", "FR", "SA", "SU"
 FREQUENCIES = ('YEARLY', 'MONTHLY', 'WEEKLY', 'DAILY', 'HOURLY', 'MINUTELY',
                'SECONDLY')
 
+zeroDelta = datetime.timedelta(0)
+twoHours  = datetime.timedelta(hours=2)
+
 #---------------------------- TZID registry ------------------------------------
 __tzidMap={}
 
@@ -89,9 +92,11 @@ class TimezoneComponent(Component):
                 foldOneLine(buffer, u"END:" + obj.name)
         customSerialize(self)
         return dateutil.tz.tzical(StringIO.StringIO(str(buffer.getvalue()))).get()
-    
+
     def settzinfo(self, tzinfo, start=2000, end=2030):
         """Create appropriate objects in self to represent tzinfo.
+        
+        Collapse DST transitions to rrules as much as possible.
         
         Assumptions:
         - DST <-> Standard transitions occur on the hour
@@ -102,43 +107,7 @@ class TimezoneComponent(Component):
         - tzinfo classes dst method always treats times that could be in either
           offset as being in the later regime
         
-        """
-        # tests of whether the given key is in effect
-        zeroDelta = datetime.timedelta(0)
-        tests = {'daylight' : lambda dt: tzinfo.dst(dt) != zeroDelta,
-                 'standard' : lambda dt: tzinfo.dst(dt) == zeroDelta}
-                    
-        def firstTransition(iterDates, test):
-            """
-            Return the last date not matching test, or None if all tests matched.
-            """
-            success = None
-            for dt in iterDates:
-                if not test(dt):
-                    success = dt
-                else:
-                    if success is not None:
-                        return success
-            return success # may be None
-    
-        def generateDates(year, month=None, day=None):
-            """Iterate over possible dates with unspecified values."""
-            months = range(1, 13)
-            days   = range(1, 32)
-            hours  = range(0, 24)
-            if month is None:
-                for month in months:
-                    yield datetime.datetime(year, month, 1)
-            elif day is None:
-                for day in days:
-                    try:
-                        yield datetime.datetime(year, month, day)
-                    except ValueError:
-                        pass
-            else:
-                for hour in hours:
-                    yield datetime.datetime(year, month, day, hour)
-            
+        """  
         def fromLastWeek(dt):
             """How many weeks from the end of the month dt is, starting from 1."""
             weekDelta = datetime.timedelta(weeks=1)
@@ -149,112 +118,82 @@ class TimezoneComponent(Component):
                 current += weekDelta
             return n
         
-        def getTransitionOccurrence(year, month, dayofweek, n, hour):
-            weekday = dateutil.rrule.weekday(dayofweek, n)
-            if hour is None:
-                # all year offset, with no rule
-                return datetime.datetime(year, 1, 1)
-            rule = dateutil.rrule.rrule(dateutil.rrule.YEARLY,
-                                        bymonth = month,
-                                        byweekday = weekday,
-                                        dtstart = datetime.datetime(year, 1, 1, hour))
-            return rule[0]
-        
         # lists of dictionaries defining rules which are no longer in effect
         completed = {'daylight' : [], 'standard' : []}
     
         # dictionary defining rules which are currently in effect
         working   = {'daylight' : None, 'standard' : None}
-            
-        # rule may be based on the nth day of the month or the nth from the last
+        
+        # rule may be based on the nth week of the month or the nth from the last
         for year in xrange(start, end + 1):
             newyear = datetime.datetime(year, 1, 1)
             for transitionTo in 'daylight', 'standard':
+                transition = getTransition(transitionTo, year, tzinfo)
                 oldrule = working[transitionTo]
     
-                test = tests[transitionTo]
-                monthDt = firstTransition(generateDates(year), test)
-                if monthDt is None:
+                if transition == newyear:
                     # transitionTo is in effect for the whole year
-                    yearStart = datetime.datetime(year, 1, 1)
                     rule = {'end'        : None,
-                            'start'      : yearStart,
+                            'start'      : newyear,
                             'month'      : 1,
                             'weekday'    : None,
                             'hour'       : None,
                             'plus'       : None,
                             'minus'      : None,
-                            'name'       : tzinfo.tzname(yearStart),
-                            'offset'     : tzinfo.utcoffset(yearStart),
-                            'offsetfrom' : tzinfo.utcoffset(yearStart)}
+                            'name'       : tzinfo.tzname(newyear),
+                            'offset'     : tzinfo.utcoffset(newyear),
+                            'offsetfrom' : tzinfo.utcoffset(newyear)}
                     if oldrule is None:
                         # transitionTo was not yet in effect
                         working[transitionTo] = rule
                     else:
                         # transitionTo was already in effect
                         if (oldrule['offset'] != 
-                            tzinfo.utcoffset(yearStart)):
+                            tzinfo.utcoffset(newyear)):
                             # old rule was different, it shouldn't continue
                             oldrule['end'] = year - 1
                             completed[transitionTo].append(oldrule)
                             working[transitionTo] = rule
-                    continue
-    
-                elif monthDt.month == 12:
+                elif transition is None:
                     # transitionTo is not in effect
                     if oldrule is not None:
                         # transitionTo used to be in effect
                         oldrule['end'] = year - 1
                         completed[transitionTo].append(oldrule)
                         working[transitionTo] = None
-                    continue
                 else:
                     # an offset transition was found
-                    month = monthDt.month
-                
-                # there was a good transition somewhere in a non-December month
-                day         = firstTransition(generateDates(year, month), test).day
-                uncorrected = firstTransition(generateDates(year, month, day), test)
-                
-                if transitionTo == 'standard':
-                    # assuming tzinfo.dst returns a new offset for the first
-                    # possible hour, we need to add one hour for the offset change
-                    # and another hour because firstTransition returns the hour
-                    # before the transition
-                    corrected = uncorrected + datetime.timedelta(hours=2)
-                else:
-                    corrected = uncorrected + datetime.timedelta(hours=1)
-
-                rule = {'end'     : None, # None, or an integer year
-                        'start'   : corrected, # the datetime of transition
-                        'month'   : corrected.month,
-                        'weekday' : corrected.weekday(),
-                        'hour'    : corrected.hour,
-                        'name'    : tzinfo.tzname(corrected),
-                        'plus'    : (corrected.day - 1)/ 7 + 1,#nth week of the month
-                        'minus'   : fromLastWeek(corrected), #nth from last week
-                        'offset'  : tzinfo.utcoffset(corrected), 
-                        'offsetfrom' : tzinfo.utcoffset(uncorrected)}
-    
-                if oldrule is None: 
-                    working[transitionTo] = rule
-                else:
-                    plusMatch  = rule['plus']  == oldrule['plus'] 
-                    minusMatch = rule['minus'] == oldrule['minus'] 
-                    truth = plusMatch or minusMatch
-                    for key in 'month', 'weekday', 'hour', 'offset':
-                        truth = truth and rule[key] == oldrule[key]
-                    if truth:
-                        # the old rule is still true, limit to plus or minus
-                        if not plusMatch:
-                            oldrule['plus'] = None
-                        if not minusMatch:
-                            oldrule['minus'] = None
-                    else:
-                        # the new rule did not match the old
-                        oldrule['end'] = year - 1
-                        completed[transitionTo].append(oldrule)
+                    old_offset = tzinfo.utcoffset(transition - twoHours)
+                    rule = {'end'     : None, # None, or an integer year
+                            'start'   : transition, # the datetime of transition
+                            'month'   : transition.month,
+                            'weekday' : transition.weekday(),
+                            'hour'    : transition.hour,
+                            'name'    : tzinfo.tzname(transition),
+                            'plus'    : (transition.day - 1)/ 7 + 1,#nth week of the month
+                            'minus'   : fromLastWeek(transition), #nth from last week
+                            'offset'  : tzinfo.utcoffset(transition), 
+                            'offsetfrom' : old_offset}
+        
+                    if oldrule is None: 
                         working[transitionTo] = rule
+                    else:
+                        plusMatch  = rule['plus']  == oldrule['plus'] 
+                        minusMatch = rule['minus'] == oldrule['minus'] 
+                        truth = plusMatch or minusMatch
+                        for key in 'month', 'weekday', 'hour', 'offset':
+                            truth = truth and rule[key] == oldrule[key]
+                        if truth:
+                            # the old rule is still true, limit to plus or minus
+                            if not plusMatch:
+                                oldrule['plus'] = None
+                            if not minusMatch:
+                                oldrule['minus'] = None
+                        else:
+                            # the new rule did not match the old
+                            oldrule['end'] = year - 1
+                            completed[transitionTo].append(oldrule)
+                            working[transitionTo] = rule
     
         for transitionTo in 'daylight', 'standard':
             if working[transitionTo] is not None:
@@ -289,11 +228,17 @@ class TimezoneComponent(Component):
                 else:
                     dayString = ""
                 if rule['end'] is not None:
-                    endDate = getTransitionOccurrence(rule['end'],
-                                                      rule['month'],
-                                                      rule['weekday'],
-                                                      num,
-                                                      rule['hour'])
+                    if rule['hour'] is None:
+                        # all year offset, with no rule
+                        endDate = datetime.datetime(rule['end'], 1, 1)
+                    else:
+                        weekday = dateutil.rrule.weekday(rule['weekday'], num)
+                        du_rule = dateutil.rrule.rrule(dateutil.rrule.YEARLY,
+                                   bymonth = rule['month'],byweekday = weekday,
+                                   dtstart = datetime.datetime(
+                                       rule['end'], 1, 1, rule['hour'])
+                                  )
+                        endDate = du_rule[0]
                     endDate = endDate.replace(tzinfo = utc) - rule['offsetfrom']
                     endString = ";UNTIL="+ dateTimeToString(endDate)
                 else:
@@ -301,19 +246,18 @@ class TimezoneComponent(Component):
                 rulestring = "FREQ=YEARLY%s;BYMONTH=%s%s" % \
                               (dayString, str(rule['month']), endString)
                 
-                comp.add('rrule').value = rulestring                
+                comp.add('rrule').value = rulestring
 
     tzinfo = property(gettzinfo, settzinfo)
     # prevent Component's __setattr__ from overriding the tzinfo property
     normal_attributes = Component.normal_attributes + ['tzinfo']
-
 
     @staticmethod
     def pickTzid(tzinfo):
         """
         Given a tzinfo class, use known APIs to determine TZID, or use tzname.
         """
-        if tzinfo is None or tzinfo == utc:
+        if tzinfo is None or tzinfo_eq(tzinfo, utc):
             #If tzinfo is UTC, we don't need a TZID
             return None
         # try PyICU's tzid key
@@ -1302,7 +1246,7 @@ def dateTimeToString(dateTime, preserveTZ=True):
     """Convert to UTC if tzinfo is set, unless preserveTZ.  Output string."""
     if dateTime.tzinfo and not preserveTZ:
         dateTime = dateTime.astimezone(utc)
-    if dateTime.tzinfo == utc: utcString = "Z"
+    if tzinfo_eq(dateTime.tzinfo, utc): utcString = "Z"
     else: utcString = ""
 
     year  = numToDigits( dateTime.year,  4 )
@@ -1553,6 +1497,89 @@ def stringToPeriod(s, tzinfo=None):
         return (start, delta)
     else:
         return (start, stringToDateTime(valEnd, tzinfo) - start)
+
+
+def getTransition(transitionTo, year, tzinfo):
+    """Return the datetime of the transition to/from DST, or None."""
+
+    def firstTransition(iterDates, test):
+        """
+        Return the last date not matching test, or None if all tests matched.
+        """
+        success = None
+        for dt in iterDates:
+            if not test(dt):
+                success = dt
+            else:
+                if success is not None:
+                    return success
+        return success # may be None
+
+    def generateDates(year, month=None, day=None):
+        """Iterate over possible dates with unspecified values."""
+        months = range(1, 13)
+        days   = range(1, 32)
+        hours  = range(0, 24)
+        if month is None:
+            for month in months:
+                yield datetime.datetime(year, month, 1)
+        elif day is None:
+            for day in days:
+                try:
+                    yield datetime.datetime(year, month, day)
+                except ValueError:
+                    pass
+        else:
+            for hour in hours:
+                yield datetime.datetime(year, month, day, hour)
+
+    assert transitionTo in ('daylight', 'standard')
+    if transitionTo == 'daylight':
+        def test(dt): return tzinfo.dst(dt) != zeroDelta
+    elif transitionTo == 'standard':
+        def test(dt): return tzinfo.dst(dt) == zeroDelta
+    newyear = datetime.datetime(year, 1, 1)
+    monthDt = firstTransition(generateDates(year), test)
+    if monthDt is None:
+        return newyear
+    elif monthDt.month == 12:
+        return None
+    else:
+        # there was a good transition somewhere in a non-December month
+        month = monthDt.month
+        day         = firstTransition(generateDates(year, month), test).day
+        uncorrected = firstTransition(generateDates(year, month, day), test)
+        if transitionTo == 'standard':
+            # assuming tzinfo.dst returns a new offset for the first
+            # possible hour, we need to add one hour for the offset change
+            # and another hour because firstTransition returns the hour
+            # before the transition
+            return uncorrected + datetime.timedelta(hours=2)
+        else:
+            return uncorrected + datetime.timedelta(hours=1)
+
+def tzinfo_eq(tzinfo1, tzinfo2, startYear = 2000, endYear=2020):
+    """Compare offsets and DST transitions from startYear to endYear."""
+    if tzinfo1 == tzinfo2:
+        return True
+    elif tzinfo1 is None or tzinfo2 is None:
+        return False
+    
+    def dt_test(dt):
+        if dt is None:
+            return True
+        return tzinfo1.utcoffset(dt) == tzinfo2.utcoffset(dt)
+
+    if not dt_test(datetime.datetime(startYear, 1, 1)):
+        return False
+    for year in xrange(startYear, endYear):
+        for transitionTo in 'daylight', 'standard':
+            t1=getTransition(transitionTo, year, tzinfo1)
+            t2=getTransition(transitionTo, year, tzinfo2)
+            if t1 != t2 or not dt_test(t1):
+                return False
+    return True
+
 
 #------------------- Testing and running functions -----------------------------
 if __name__ == '__main__':
