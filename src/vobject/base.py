@@ -292,20 +292,24 @@ class Component(VBase):
         except KeyError:
             raise exceptions.AttributeError, name
 
+    normal_attributes = ['contents','name','behavior','parentBehavior','group']
     def __setattr__(self, name, value):
         """For convenience, make self.contents directly accessible.
         
         self.contents must contain lists, raise an error if value isn't a list.
         
         """
-        vars = ['contents', 'name', 'behavior', 'parentBehavior', 'group']
-        if name not in vars and name.lower()==name:
+        if name not in self.normal_attributes and name.lower()==name:
             if type(value) == list:
                 self.contents[name]=value
             else:
                 raise VObjectError("Component children must be lists")
         else:
-            object.__setattr__(self, name, value)
+            prop = getattr(self.__class__, name, None)
+            if isinstance(prop, property):
+                prop.fset(self, value)
+            else:
+                object.__setattr__(self, name, value)
 
     def add(self, objOrName, group = None):
         """Add objOrName to contents, set behavior if it can be inferred.
@@ -648,17 +652,17 @@ def dquoteEscape(param):
             return '"'+ param + '"'
     return param
 
+def foldOneLine(outbuf, input, lineLength = 75):
+    if type(input) in (str, unicode): input = StringIO.StringIO(input)
+    input.seek(0)
+    outbuf.write(input.read(lineLength) + CRLF)
+    brokenline = input.read(lineLength - 1)
+    while brokenline:
+        outbuf.write(' ' + brokenline + CRLF)
+        brokenline = input.read(lineLength - 1)
+
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
-
-    def foldOneLine(input):
-        if type(input) in (str, unicode): input = StringIO.StringIO(input)
-        input.seek(0)
-        outbuf.write(input.read(lineLength) + CRLF)
-        brokenline = input.read(lineLength - 1)
-        while brokenline:
-            outbuf.write(' ' + brokenline + CRLF)
-            brokenline = input.read(lineLength - 1)
 
     if buf: outbuf = buf
     else: outbuf=StringIO.StringIO()
@@ -668,11 +672,13 @@ def defaultSerialize(obj, buf, lineLength):
             groupString = ''
         else:
             groupString = obj.group + '.'
-        if obj.useBegin: foldOneLine(groupString + u"BEGIN:" + obj.name)
+        if obj.useBegin:
+            foldOneLine(outbuf, groupString + u"BEGIN:" + obj.name, lineLength)
         for child in obj.getSortedChildren():
             #validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
-        if obj.useBegin: foldOneLine(groupString + u"END:" + obj.name)
+        if obj.useBegin:
+            foldOneLine(outbuf, groupString + u"END:" + obj.name, lineLength)
         if DEBUG: logger.debug("Finished %s" % obj.name.upper())
         
     elif isinstance(obj, ContentLine):
@@ -688,7 +694,7 @@ def defaultSerialize(obj, buf, lineLength):
             s.write(';' + key + '=' + ','.join(map(dquoteEscape, paramvals)))
         s.write(':' + obj.value)
         if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
-        foldOneLine(s)
+        foldOneLine(outbuf, s, lineLength)
         if DEBUG: logger.debug("Finished %s line" % obj.name.upper())
     if not buf:
         return outbuf.getvalue()

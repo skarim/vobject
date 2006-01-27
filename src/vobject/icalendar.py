@@ -11,7 +11,7 @@ import itertools
 
 from base import VObjectError, NativeError, ValidateError, ParseError, \
                     VBase, Component, ContentLine, logger, defaultSerialize, \
-                    registerBehavior, backslashEscape
+                    registerBehavior, backslashEscape, foldOneLine
 
 #------------------------------- Constants -------------------------------------
 DATENAMES = ("rdate", "exdate")
@@ -53,8 +53,7 @@ class TimezoneComponent(Component):
     @ivar tzid:
         The string used to refer to this timezone.
     
-    """
-
+    """    
     def __init__(self, tzinfo=None, *args, **kwds):
         """Accept an existing Component or a tzinfo class."""
         super(TimezoneComponent, self).__init__(*args, **kwds)
@@ -68,12 +67,6 @@ class TimezoneComponent(Component):
             self.name = 'VTIMEZONE'
             self.useBegin = True
 
-    def __setattr__(self, name, value):
-        if name == 'tzinfo':
-            self.settzinfo(value)
-        else:
-            super(TimezoneComponent, self).__setattr__(name, value)
-
     @classmethod
     def registerTzinfo(obj, tzinfo):
         tzid = obj.pickTzid(tzinfo)
@@ -81,12 +74,21 @@ class TimezoneComponent(Component):
             registerTzid(tzid, tzinfo)
 
     def gettzinfo(self):
-        # use defaultSerialize rather than self.serialize to avoid infinite
-        # loop of TransformFromNative -> transformToNative -> gettzinfo
-        buffer = StringIO.StringIO(str(defaultSerialize(self, None, 75)))
-        return dateutil.tz.tzical(buffer).get()
-        
-    tzinfo = property(gettzinfo)
+        # workaround for dateutil failing to parse some experimental properties
+        good_lines = ('rdate', 'rrule', 'dtstart', 'tzname', 'tzoffsetfrom',
+                      'tzoffsetto', 'tzid')
+        buffer = StringIO.StringIO()
+        def customSerialize(obj):
+            if isinstance(obj, Component):
+                foldOneLine(buffer, u"BEGIN:" + obj.name)
+                for child in obj.lines():
+                    if child.name.lower() in good_lines:
+                        child.serialize(buffer, 75, validate=False)
+                for comp in obj.components():
+                    customSerialize(comp)
+                foldOneLine(buffer, u"END:" + obj.name)
+        customSerialize(self)
+        return dateutil.tz.tzical(StringIO.StringIO(str(buffer.getvalue()))).get()
     
     def settzinfo(self, tzinfo, start=2000, end=2030):
         """Create appropriate objects in self to represent tzinfo.
@@ -301,7 +303,11 @@ class TimezoneComponent(Component):
                 
                 comp.add('rrule').value = rulestring                
 
-    
+    tzinfo = property(gettzinfo, settzinfo)
+    # prevent Component's __setattr__ from overriding the tzinfo property
+    normal_attributes = Component.normal_attributes + ['tzinfo']
+
+
     @staticmethod
     def pickTzid(tzinfo):
         """
@@ -1537,7 +1543,6 @@ def parseDtstart(contentline):
         return stringToDate(contentline.value)
     elif valueParam.upper() == "DATE-TIME":
         return stringToDateTime(contentline.value, tzinfo)
-
 
 def stringToPeriod(s, tzinfo=None):
     values   = string.split(s, "/")
