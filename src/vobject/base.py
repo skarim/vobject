@@ -166,6 +166,8 @@ class VBase(object):
             if DEBUG: logger.debug("serializing %s without behavior" % self.name)
             return defaultSerialize(self, buf, lineLength)
 
+def ascii(s):
+    return unicode(s).encode('ascii', 'replace')
 
 class ContentLine(VBase):
     """Holds one content line for formats like vCard and vCalendar.
@@ -229,20 +231,19 @@ class ContentLine(VBase):
             return False
 
     def __str__(self):
-        def out(s): return unicode(s).encode('ascii', 'replace')
-        return "<" + out(self.name) + out(self.params) + out(self.value) + ">"
+        return "<"+ascii(self.name)+ascii(self.params)+ascii(self.value)+">"
 
     def __repr__(self):
         return self.__str__().replace('\n', '\\n')
 
     def prettyPrint(self, level = 0, tabwidth=3):
         pre = ' ' * level * tabwidth
-        print pre, self.name + ":", self.value 
+        print pre, self.name + ":", ascii(self.value)
         if self.params:
             lineKeys= self.params.keys()
             print pre, "params for ", self.name +':'
             for aKey in lineKeys:
-                print pre + ' ' * tabwidth, aKey, self.params[aKey]
+                print pre + ' ' * tabwidth, aKey, ascii(self.params[aKey])
 
 class Component(VBase):
     """A complex property that can contain multiple ContentLines.
