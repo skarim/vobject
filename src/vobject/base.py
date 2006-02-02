@@ -208,8 +208,11 @@ class ContentLine(VBase):
         self.isNative = isNative
         self.lineNumber = lineNumber
         def updateTable(x):
-            if len(x) == 1: self.singletonparams += x
-            else: self.params[x[0].upper()] = x[1:] #assumes no repeated params
+            if len(x) == 1:
+                self.singletonparams += x
+            else:
+                paramlist = self.params.setdefault(x[0].upper(), [])
+                paramlist.extend(x[1:])
         map(updateTable, params)
         qp = False
         if 'ENCODING' in self.params:

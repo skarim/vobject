@@ -743,6 +743,9 @@ class VCalendar2_0(behavior.Behavior):
         datetimes with tzinfo exist.
         
         """
+        for comp in obj.components():
+            if comp.behavior is not None:
+                comp.behavior.generateImplicitParameters(comp)
         if len(getattr(obj, 'prodid', [])) == 0:
             obj.add(ContentLine('PRODID', [], PRODID))
         if len(getattr(obj, 'version', [])) == 0:
@@ -1296,7 +1299,7 @@ def stringToDateTime(s, tzinfo=None):
             if s[15] == 'Z':
                 tzinfo = utc
     except:
-        raise ParseError("%s is not a valid DATE-TIME" % s)
+        raise ParseError("'%s' is not a valid DATE-TIME" % s)
     return datetime.datetime(year, month, day, hour, minute, second, 0, tzinfo)
 
 

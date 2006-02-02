@@ -93,7 +93,7 @@ title;language=de;value=text:Burgermeister
 note:The Mayor of the great city of
   Goerlitz in the great country of Germany.
 email;internet:mb@goerlitz.de
-home.tel;type=fax,voice,msg:+49 3581 123456
+home.tel;type=fax,voice;type=msg:+49 3581 123456
 home.label:Hufenshlagel 1234\n
  02828 Goerlitz\n
  Deutschland
@@ -523,6 +523,17 @@ __test__ = { "Test readOne" :
     END:VEVENT
     END:VCALENDAR
     """,
+             
+    "Generate UIDs automatically test:" :
+             
+    """
+    >>> import base, datetime
+    >>> cal = base.newFromBehavior('vcalendar')
+    >>> cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
+    >>> ser = cal.serialize()
+    >>> len(cal.vevent[0].uid)
+    1
+    """,
 
     "VCARD 3.0 parse test:" :
         
@@ -587,7 +598,7 @@ __test__ = { "Test readOne" :
     ...
     VObjectError: "<DTSTART{}> has a group, but this object doesn't support groups"
     """,
-             
+
     "Lowercase components test:" :
              
     """
