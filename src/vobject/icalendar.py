@@ -278,7 +278,7 @@ class TimezoneComponent(Component):
         raise VObjectError("Unable to guess TZID for tzinfo %s" % str(tzinfo))
 
     def __str__(self):
-        return "<VTIMEZONE | " + str(getattr(self, 'tzid', ['No TZID'])[0]) +">"
+        return "<VTIMEZONE | " + str(getattr(self, 'tzid', 'No TZID')) +">"
     
     def __repr__(self):
         return self.__str__()
@@ -286,7 +286,7 @@ class TimezoneComponent(Component):
     def prettyPrint(self, level, tabwidth):
         pre = ' ' * level * tabwidth
         print pre, self.name
-        print pre, "TZID:", self.tzid[0]
+        print pre, "TZID:", self.tzid
         print
 
 class RecurringComponent(Component):
@@ -320,7 +320,7 @@ class RecurringComponent(Component):
     Also note that dateutil will expand all-day events (datetime.date values) to
     datetime.datetime value with time 0 and no timezone.
     
-    >>> vevent.dtstart[0].value = datetime.date(2005,3,18)
+    >>> vevent.dtstart.value = datetime.date(2005,3,18)
     >>> list(vevent.rruleset)
     [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
     >>> list(vevent.getrruleset(True))
@@ -368,7 +368,7 @@ class RecurringComponent(Component):
                         pass
                 elif name in RULENAMES:
                     try:
-                        dtstart = self.dtstart[0].value
+                        dtstart = self.dtstart.value
                     except AttributeError, KeyError:
                         # if there's no dtstart, just return None
                         return None
@@ -397,7 +397,7 @@ class RecurringComponent(Component):
         return rruleset
 
     def setrruleset(self, rruleset):
-        dtstart = self.dtstart[0].value
+        dtstart = self.dtstart.value
         isDate = datetime.date == type(dtstart)
         if isDate:
             dtstart = datetime.datetime(dtstart.year,dtstart.month, dtstart.day)
@@ -522,7 +522,7 @@ class RecurringBehavior(behavior.Behavior):
         This is just a dummy implementation, for now.
         
         """
-        if len(getattr(obj, 'uid', [])) == 0:
+        if not hasattr(obj, 'uid'):
             rand = str(int(random.random() * 100000))
             now = datetime.datetime.now(utc)
             now = dateTimeToString(now)
@@ -567,7 +567,7 @@ class DateTimeBehavior(behavior.Behavior):
             TimezoneComponent.registerTzinfo(obj.value.tzinfo)
             obj.value = dateTimeToString(obj.value, preserveTZ)
             if preserveTZ and tzid is not None:
-                obj.params['TZID'] = [tzid]
+                obj.tzid_param = tzid
 
         return obj
 
@@ -590,8 +590,8 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         if obj.value == '': return obj
         obj.value=str(obj.value)
         obj.value=parseDtstart(obj)
-        if obj.params.get("VALUE", ["DATE-TIME"])[0] == 'DATE-TIME':
-            if obj.params.has_key('TZID'): del obj.params['TZID']
+        if getattr(obj, 'value_param', 'DATE-TIME').upper() == 'DATE-TIME':
+            if hasattr(obj, 'tzid_param'): del obj.tzid_param
         return obj
 
     @staticmethod
@@ -599,7 +599,7 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         """Replace the date or datetime in obj.value with an ISO 8601 string."""
         if type(obj.value) == datetime.date:
             obj.isNative = False
-            obj.params['VALUE']=['DATE']
+            obj.value_param = 'DATE'
             obj.value = dateToString(obj.value)
             return obj
         else: return DateTimeBehavior.transformFromNative(obj)
@@ -625,14 +625,14 @@ class MultiDateBehavior(behavior.Behavior):
         if obj.value == '':
             obj.value = []
             return obj
-        tzinfo = getTzid(obj.params.get("TZID", ["UTC"])[0])
-        valueParam = obj.params.get("VALUE", ["DATE-TIME"])[0]
+        tzinfo = getTzid(getattr(obj, 'tzid_param', None))
+        valueParam = getattr(obj, 'value_param', "DATE-TIME").upper()
         valTexts = obj.value.split(",")
-        if valueParam.upper() == "DATE":
+        if valueParam == "DATE":
             obj.value = [stringToDate(x) for x in valTexts]
-        elif valueParam.upper() == "DATE-TIME":
+        elif valueParam == "DATE-TIME":
             obj.value = [stringToDateTime(x, tzinfo) for x in valTexts]
-        elif valueParam.upper() == "PERIOD":
+        elif valueParam == "PERIOD":
             obj.value = [stringToPeriod(x, tzinfo) for x in valTexts]
         return obj
 
@@ -645,7 +645,7 @@ class MultiDateBehavior(behavior.Behavior):
         """
         if type(obj.value) == datetime.date:
             obj.isNative = False
-            obj.params['VALUE']=['DATE']
+            obj.value_param = 'DATE'
             obj.value = ','.join([dateToString(val) for val in obj.value])
             return obj
         else:
@@ -657,7 +657,7 @@ class MultiDateBehavior(behavior.Behavior):
                     if tzid is None and type(val) == datetime.datetime:
                         tzid = TimezoneComponent.pickTzid(val.tzinfo)
                         if tzid is not None:
-                            obj.params['TZID'] = [tzid]
+                            obj.tzid_param = tzid
                             TimezoneComponent.registerTzinfo(val.tzinfo)
                     transformed.append(dateTimeToString(val))
                 obj.value = ','.join(transformed)
@@ -676,8 +676,8 @@ class TextBehavior(behavior.Behavior):
     def decode(cls, line):
         """Remove backslash escaping from line.value."""
         if line.encoded:
-            encoding = line.params.get('ENCODING')
-            if encoding and encoding[0].upper() == cls.base64string:
+            encoding = getattr(line, 'encoding_param', None)
+            if encoding and encoding.upper() == cls.base64string:
                 line.value = line.value.decode('base64')
             else:
                 line.value = stringToTextValues(line.value)[0]
@@ -687,8 +687,8 @@ class TextBehavior(behavior.Behavior):
     def encode(cls, line):
         """Backslash escape line.value."""
         if not line.encoded:
-            encoding = line.params.get('ENCODING')
-            if encoding and encoding[0].upper() == cls.base64string:
+            encoding = getattr(line, 'encoding_param', None)
+            if encoding and encoding.upper() == cls.base64string:
                 line.value = line.value.encode('base64').replace('\n', '')
             else:
                 line.value = backslashEscape(line.value)
@@ -746,16 +746,16 @@ class VCalendar2_0(behavior.Behavior):
         for comp in obj.components():
             if comp.behavior is not None:
                 comp.behavior.generateImplicitParameters(comp)
-        if len(getattr(obj, 'prodid', [])) == 0:
+        if not hasattr(obj, 'prodid'):
             obj.add(ContentLine('PRODID', [], PRODID))
-        if len(getattr(obj, 'version', [])) == 0:
+        if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
         tzidsUsed = {}
 
         def findTzids(obj, table):
             if isinstance(obj, ContentLine):
-                if obj.params.get('TZID'):
-                    table[obj.params.get('TZID')[0]] = 1
+                if getattr(obj, 'tzid_param', None):
+                    table[obj.tzid_param] = 1
                 else:
                     if type(obj.value) == list:
                         for item in obj.value:
@@ -775,9 +775,9 @@ class VCalendar2_0(behavior.Behavior):
                     findTzids(child, table)
         
         findTzids(obj, tzidsUsed)
-        oldtzids = [x.tzid[0].value for x in getattr(obj, 'vtimezone', [])]
+        oldtzids = [x.tzid.value for x in getattr(obj, 'vtimezone_list', [])]
         for tzid in tzidsUsed.keys():
-            if tzid in oldtzids or tzid == 'UTC': continue
+            if tzid == 'UTC' or tzid in oldtzids: continue
             obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
 registerBehavior(VCalendar2_0, default=True)
 
@@ -1150,11 +1150,9 @@ class Trigger(behavior.Behavior):
     @staticmethod
     def transformToNative(obj):
         """Turn obj.value into a timedelta or datetime."""
-        value = obj.params.get("VALUE", ["DURATION"])[0]
-        try:
-            del obj.params['VALUE']
-        except KeyError:
-            pass
+        value = getattr(obj, 'value_param', 'DURATION').upper()
+        if hasattr(obj, 'value_param'):
+            del obj.value_param
         if obj.value == '':
             obj.isNative = True
             return obj
@@ -1170,7 +1168,7 @@ class Trigger(behavior.Behavior):
     @staticmethod
     def transformFromNative(obj):
         if type(obj.value) == datetime.datetime:
-            obj.params['VALUE']=['DATE-TIME']
+            obj.value_param = 'DATE-TIME'
             return DateTimeBehavior.transformFromNative(obj)
         elif type(obj.value) == datetime.timedelta:
             return Duration.transformFromNative(obj)
@@ -1484,11 +1482,11 @@ def stringToDurations(s, strict=False):
             error("error: unknown state: '%s' reached in %s" % (state, line))
 
 def parseDtstart(contentline):
-    tzinfo = getTzid(contentline.params.get("TZID", [None])[0])
-    valueParam = contentline.params.get("VALUE", ["DATE-TIME"])[0]
-    if valueParam.upper() == "DATE":
+    tzinfo = getTzid(getattr(contentline, 'tzid_param', None))
+    valueParam = getattr(contentline, 'value_param', 'DATE-TIME').upper()
+    if valueParam == "DATE":
         return stringToDate(contentline.value)
-    elif valueParam.upper() == "DATE-TIME":
+    elif valueParam == "DATE-TIME":
         return stringToDateTime(contentline.value, tzinfo)
 
 def stringToPeriod(s, tzinfo=None):

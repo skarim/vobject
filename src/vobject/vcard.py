@@ -96,7 +96,7 @@ class VCard3_0(VCardBehavior):
         datetimes with tzinfo exist.
         
         """
-        if len(getattr(obj, 'version', [])) == 0:
+        if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
 registerBehavior(VCard3_0, default=True)
     

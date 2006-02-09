@@ -250,7 +250,7 @@ __test__ = { "Test readOne" :
     >>> silly = readOne(f2)
     >>> silly
     <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
-    >>> silly.stuff[0]
+    >>> silly.stuff
     <STUFF{}foldedline>
     >>> original = silly.serialize()
     >>> f3 = StringIO.StringIO(original)
@@ -270,20 +270,20 @@ __test__ = { "Test readOne" :
     >>> import base, StringIO
     >>> f = StringIO.StringIO(icaltest)
     >>> c = base.readOne(f, validate=True)
-    >>> c.vevent[0].valarm[0].trigger[0]
+    >>> c.vevent.valarm.trigger
     <TRIGGER{}-1 day, 0:00:00>
-    >>> c.vevent[0].dtstart[0].value
+    >>> c.vevent.dtstart.value
     datetime.datetime(2002, 10, 28, 14, 0, tzinfo=<tzicalvtz 'US/Pacific'>)
-    >>> c.vevent[0].dtend[0].value
+    >>> c.vevent.dtend.value
     datetime.datetime(2002, 10, 28, 15, 0, tzinfo=<tzicalvtz 'US/Pacific'>)
-    >>> c.vevent[0].dtstamp[0].value
+    >>> c.vevent.dtstamp.value
     datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
-    >>> c.vevent[0].valarm[0].description[0].value
+    >>> c.vevent.valarm.description.value
     u'Event reminder, with comma\\nand line feed'
-    >>> c.vevent[0].valarm[0].description[0].serialize()
+    >>> c.vevent.valarm.description.serialize()
     u'DESCRIPTION:Event reminder\\\\, with comma\\\\nand line feed\\r\\n'
-    >>> vevent = c.vevent[0].transformFromNative()
-    >>> vevent.rrule[0]
+    >>> vevent = c.vevent.transformFromNative()
+    >>> vevent.rrule
     <RRULE{}FREQ=Weekly;COUNT=10>
     """,
     
@@ -317,10 +317,10 @@ __test__ = { "Test readOne" :
     """
     >>> import StringIO, base
     >>> f = file('utf8_test.ics', 'rb')
-    >>> vevent = base.readOne(f).vevent[0]
-    >>> vevent.summary[0].value
+    >>> vevent = base.readOne(f).vevent
+    >>> vevent.summary.value
     u'The title \\u3053\\u3093\\u306b\\u3061\\u306f\\u30ad\\u30c6\\u30a3'
-    >>> summary = vevent.summary[0].value
+    >>> summary = vevent.summary.value
     """,
     
     "regular expression test" :
@@ -468,7 +468,7 @@ __test__ = { "Test readOne" :
     END:VEVENT
     END:VCALENDAR
     >>> apple = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('America/Montreal')
-    >>> ev.dtstart[0].value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
+    >>> ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
     >>> print cal.serialize().replace(base.CRLF, base.LF).strip()
     BEGIN:VCALENDAR
     VERSION:2.0
@@ -531,7 +531,7 @@ __test__ = { "Test readOne" :
     >>> cal = base.newFromBehavior('vcalendar')
     >>> cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
     >>> ser = cal.serialize()
-    >>> len(cal.vevent[0].uid)
+    >>> len(cal.vevent.uid_list)
     1
     """,
 
@@ -540,13 +540,13 @@ __test__ = { "Test readOne" :
     """
     >>> import base, vcard
     >>> card = base.readOne(vcardtest)
-    >>> card.adr[0].value
+    >>> card.adr.value
     <Address: Haight Street 512\\nNovosibirsk,  80214\\nGnuland>
-    >>> print card.adr[0].value
+    >>> print card.adr.value
     Haight Street 512
     Novosibirsk,  80214
     Gnuland
-    >>> card.org[0].value
+    >>> card.org.value
     u'University of Novosibirsk, Department of Octopus Parthenogenesis'
     >>> print card.serialize().replace('\\r\\n', '\\n').strip()
     BEGIN:VCARD
@@ -584,10 +584,10 @@ __test__ = { "Test readOne" :
     >>> card = base.readOne(vcardWithGroups)
     >>> card.group
     u'home'
-    >>> card.tel[0].group
+    >>> card.tel.group
     u'home'
-    >>> card.group = card.tel[0].group = 'new'
-    >>> card.tel[0].serialize().strip()
+    >>> card.group = card.tel.group = 'new'
+    >>> card.tel.serialize().strip()
     u'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
     >>> card.serialize().splitlines()[0]
     u'new.BEGIN:VCARD'
@@ -604,7 +604,7 @@ __test__ = { "Test readOne" :
     """
     >>> import base, vcard, icalendar
     >>> card = base.readOne(lowercaseComponentNames)
-    >>> card.version[0]
+    >>> card.version
     <VERSION{}2.1>
     """
     }

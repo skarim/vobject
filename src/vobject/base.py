@@ -233,6 +233,56 @@ class ContentLine(VBase):
         except:
             return False
 
+    def __getattr__(self, name):
+        """Make params accessible via self.foo_param or self.foo_paramlist.
+
+        Underscores, legal in python variable names, are converted to dashes,
+        which are legal in IANA tokens.
+
+        """
+        try:
+            if name.endswith('_param'):
+                return self.params[name[:-6].upper()][0]
+            elif name.endswith('_paramlist'):
+                return self.params[name[:-10].upper()]
+        except KeyError:
+            raise exceptions.AttributeError, name
+
+    def __setattr__(self, name, value):
+        """Make params accessible via self.foo_param or self.foo_paramlist.
+
+        Underscores, legal in python variable names, are converted to dashes,
+        which are legal in IANA tokens.
+        
+        """
+        if name.endswith('_param'):
+            if type(value) == list:
+                self.params[name[:-6].upper().replace('_', '-')] = value
+            else:
+                self.params[name[:-6].upper().replace('_', '-')] = [value]
+        elif name.endswith('_paramlist'):
+            if type(value) == list:
+                self.params[name[:-10].upper().replace('_', '-')] = value
+            else:
+                raise VObjectError("Parameter list set to a non-list")
+        else:
+            prop = getattr(self.__class__, name, None)
+            if isinstance(prop, property):
+                prop.fset(self, value)
+            else:
+                object.__setattr__(self, name, value)
+
+    def __delattr__(self, name):
+        try:
+            if name.endswith('_param'):
+                del self.params[name[:-6].upper().replace('_', '-')]
+            elif name.endswith('_paramlist'):
+                del self.params[name[:-10].upper().replace('_', '-')]
+            else:
+                object.__delattr__(self, name)
+        except KeyError:
+            raise exceptions.AttributeError, name
+
     def __str__(self):
         return "<"+ascii(self.name)+ascii(self.params)+ascii(self.value)+">"
 
@@ -290,30 +340,53 @@ class Component(VBase):
         self.name = name.upper()
 
     def __getattr__(self, name):
-        """For convenience, make self.contents directly accessible."""
+        """For convenience, make self.contents directly accessible.
+        
+        Underscores, legal in python variable names, are converted to dashes,
+        which are legal in IANA tokens.
+        
+        """
         try:
-            return self.contents[name]
+            if name.endswith('_list'):
+                return self.contents[name[:-5].replace('_', '-')]
+            else:
+                return self.contents[name.replace('_', '-')][0]
         except KeyError:
             raise exceptions.AttributeError, name
 
     normal_attributes = ['contents','name','behavior','parentBehavior','group']
     def __setattr__(self, name, value):
         """For convenience, make self.contents directly accessible.
-        
-        self.contents must contain lists, raise an error if value isn't a list.
+
+        Underscores, legal in python variable names, are converted to dashes,
+        which are legal in IANA tokens.
         
         """
         if name not in self.normal_attributes and name.lower()==name:
             if type(value) == list:
-                self.contents[name]=value
+                self.contents[name.replace('_', '-')] = value
+            elif name.endswith('_list'):
+                raise VObjectError("Component list set to a non-list")
             else:
-                raise VObjectError("Component children must be lists")
+                self.contents[name.replace('_', '-')] = [value]
         else:
             prop = getattr(self.__class__, name, None)
             if isinstance(prop, property):
                 prop.fset(self, value)
             else:
                 object.__setattr__(self, name, value)
+
+    def __delattr__(self, name):
+        try:
+            if name not in self.normal_attributes and name.lower()==name:
+                if name.endswith('_list'):
+                    del self.contents[name[:-5].replace('_', '-')]
+                else:
+                    del self.contents[name.replace('_', '-')]
+            else:
+                object.__delattr__(self, name)
+        except KeyError:
+            raise exceptions.AttributeError, name  
 
     def add(self, objOrName, group = None):
         """Add objOrName to contents, set behavior if it can be inferred.
@@ -741,7 +814,7 @@ def readComponents(streamOrString, validate=False, transform=True):
     >>> cal=readComponents(f).next()
     >>> cal
     <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>
-    >>> cal.vevent[0].summary[0]
+    >>> cal.vevent.summary
     <SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>
     
     """

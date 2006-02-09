@@ -50,7 +50,7 @@ VObject Overview
     <VEVENT| []>
     >>> x
     <VCALENDAR| [<VEVENT| []>]>
-    >>> v = x.vevent[0]
+    >>> v = x.vevent
     >>> utc = icalendar.utc
     >>> v.add('dtstart').value = datetime.datetime(2004, 12, 15, 14, tzinfo = utc)
     >>> v
@@ -58,7 +58,7 @@ VObject Overview
     >>> x
     <VCALENDAR| [<VEVENT| [<DTSTART{}2004-12-15 14:00:00+00:00>]>]>
     >>> newrule = rrule.rruleset()
-    >>> newrule.rrule(rrule.rrule(rrule.WEEKLY, count=2, dtstart=v.dtstart[0].value))
+    >>> newrule.rrule(rrule.rrule(rrule.WEEKLY, count=2, dtstart=v.dtstart.value))
     >>> v.rruleset = newrule
     >>> list(v.rruleset)
     [datetime.datetime(2004, 12, 15, 14, 0, tzinfo=tzutc()), datetime.datetime(2004, 12, 22, 14, 0, tzinfo=tzutc())]

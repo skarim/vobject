@@ -16,7 +16,7 @@ from distutils.core import setup
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.2.3"
+PACKAGE_VERSION = "0.3.0"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
