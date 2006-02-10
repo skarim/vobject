@@ -1128,7 +1128,7 @@ class Duration(behavior.Behavior):
                 obj.value = deltalist[0]
                 return obj
             else:
-                raise VObjectError("DURATION must have a single duration string.")
+                raise ParseError("DURATION must have a single duration string.")
 
     @staticmethod
     def transformFromNative(obj):
@@ -1163,7 +1163,7 @@ class Trigger(behavior.Behavior):
             #that fact, for now we take it on faith.
             return DateTimeBehavior.transformToNative(obj)
         else:
-            raise NativeError("VALUE must be DURATION or DATE-TIME")        
+            raise ParseError("VALUE must be DURATION or DATE-TIME")        
 
     @staticmethod
     def transformFromNative(obj):

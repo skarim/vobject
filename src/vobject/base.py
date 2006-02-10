@@ -1,6 +1,7 @@
 """vobject module for reading vCard and vCalendar files."""
 
 import re
+import sys
 import logging
 import StringIO
 import string
@@ -108,14 +109,18 @@ class VBase(object):
         else:
             try:
                 return self.behavior.transformToNative(self)
-            except Exception, e:
-                if hasattr(self, 'lineNumber'):
-                    if isinstance(e, VObjectError):
-                        e.lineNumber = self.lineNumber
-                    else:
-                        msg = "Unhandled exception when processing line %s"
-                        logger.error(msg % self.lineNumber)
-                raise
+            except Exception, e:      
+                # wrap errors in transformation in a ParseError
+                lineNumber = getattr(self, 'lineNumber', None)
+                if isinstance(e, ParseError):
+                    if lineNumber is not None:
+                        e.lineNumber = lineNumber
+                    raise
+                else:
+                    msg = "In transformToNative, unhandled exception: %s: %s"
+                    msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
+                    new_error = ParseError(msg, lineNumber)
+                    raise ParseError, new_error, sys.exc_info()[2]
                 
 
     def transformFromNative(self):
@@ -132,7 +137,20 @@ class VBase(object):
         
         """
         if self.isNative and self.behavior and self.behavior.hasNative:
-            return self.behavior.transformFromNative(self)
+            try:
+                return self.behavior.transformFromNative(self)
+            except Exception, e:
+                # wrap errors in transformation in a NativeError
+                lineNumber = getattr(self, 'lineNumber', None)
+                if isinstance(e, NativeError):
+                    if lineNumber is not None:
+                        e.lineNumber = lineNumber
+                    raise
+                else:
+                    msg = "In transformFromNative, unhandled exception: %s: %s"
+                    msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
+                    new_error = NativeError(msg, lineNumber)
+                    raise NativeError, new_error, sys.exc_info()[2]
         else: return self
 
     def transformChildrenToNative(self):
@@ -245,6 +263,8 @@ class ContentLine(VBase):
                 return self.params[name[:-6].upper()][0]
             elif name.endswith('_paramlist'):
                 return self.params[name[:-10].upper()]
+            else:
+                raise exceptions.AttributeError, name
         except KeyError:
             raise exceptions.AttributeError, name
 
@@ -489,7 +509,7 @@ class VObjectError(Exception):
             self.lineNumber = lineNumber
     def __str__(self):
         if hasattr(self, 'lineNumber'):
-            return "In component starting at line %s: %s" % \
+            return "At line %s: %s" % \
                    (self.lineNumber, self.message)
         else:
             return repr(self.message)
@@ -583,7 +603,7 @@ def parseParams(string):
     return allParameters
 
 
-def parseLine(line):
+def parseLine(line, lineNumber = None):
     """
     >>> parseLine("BLAH:")
     ('BLAH', [], '', None)
@@ -605,7 +625,7 @@ def parseLine(line):
     
     match = line_re.match(line)
     if match is None:
-        raise ParseError("Failed to parse line: %s" % line)
+        raise ParseError("Failed to parse line: %s" % line, lineNumber)
     return (match.group('name'), 
             parseParams(match.group('params')),
             match.group('value'), match.group('group'))
@@ -718,7 +738,7 @@ def getLogicalLines(fp, allowQP=True):
 
 
 def textLineToContentLine(text, n=None):
-    return ContentLine(*parseLine(text), **{'encoded':True, 'lineNumber' : n})
+    return ContentLine(*parseLine(text, n), **{'encoded':True, 'lineNumber' : n})
 
 def dquoteEscape(param):
     """Return param, or "param" if ',' or ';' or ':' is in param."""
@@ -824,6 +844,7 @@ def readComponents(streamOrString, validate=False, transform=True):
         stream = streamOrString
     stack = Stack()
     versionLine = None
+    n = 0
     for line, n in getLogicalLines(stream, False): # not allowing vCard 2.1
         vline = textLineToContentLine(line, n)
         if   vline.name == "VERSION":
@@ -836,9 +857,9 @@ def readComponents(streamOrString, validate=False, transform=True):
             stack.top().setProfile(vline.value)
         elif vline.name == "END":
             if len(stack) == 0:
-                err = "At line %i, attempted to end the %s component, \
-                       but it was never opened" % (n, vline.value)
-                raise VObjectError(err)
+                err = "Attempted to end the %s component, \
+                       but it was never opened" % vline.value
+                raise ParseError(err, n)
             if vline.value.upper() == stack.topName(): #START matches END
                 if len(stack) == 1:
                     component=stack.pop()
@@ -850,13 +871,13 @@ def readComponents(streamOrString, validate=False, transform=True):
                 else: stack.modifyTop(stack.pop())
             else:
                 err = "%s component wasn't closed" 
-                raise VObjectError(err % stack.topName(), n)
+                raise ParseError(err % stack.topName(), n)
         else: stack.modifyTop(vline) #not a START or END line
     if stack.top():
         if stack.topName() is None:
             logger.warning("Top level component was never named")
         elif stack.top().useBegin:
-            raise VObjectError("Component %s was never closed" % (stack.topName()))
+            raise ParseError("Component %s was never closed" % (stack.topName()), n)
         yield stack.pop()
 
 

@@ -310,7 +310,7 @@ __test__ = { "Test readOne" :
     >>> vevent = base.readOne(f)
     Traceback (most recent call last):
     ...
-    ParseError: In component starting at line 11: got unexpected character reading in duration: 20021028T120000Z
+    ParseError: At line 11: got unexpected character reading in duration: 20021028T120000Z
     """,
     
     "unicode test" :
