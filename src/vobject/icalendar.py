@@ -980,6 +980,7 @@ registerBehavior(VJournal)
 class VFreeBusy(behavior.Behavior):
     """Free/busy state behavior."""
     name='VFREEBUSY'
+    isComponent = True
     description='A grouping of component properties that describe either a \
                  request for free/busy time, describe a response to a request \
                  for free/busy time or describe a published set of busy time.'
@@ -1180,9 +1181,39 @@ registerBehavior(Trigger)
 class FreeBusy(behavior.Behavior):
     """Free or busy period of time."""
     name='FREEBUSY'
-    pass#TODO
+    hasNative = True
 
+    @staticmethod
+    def transformToNative(obj):
+        """
+        Turn obj.value into a list of dates, datetimes, or
+        (datetime, timedelta) tuples.
+        
+        """
+        if obj.isNative:
+            return obj
+        obj.isNative = True
+        if obj.value == '':
+            obj.value = []
+            return obj
+        valTexts = obj.value.split(",")
+        obj.value = [stringToPeriod(x, None) for x in valTexts]
+        return obj
 
+    @staticmethod
+    def transformFromNative(obj):
+        """
+        Replace the period tuples in obj.value with
+        appropriate strings.
+        
+        """
+        if obj.isNative:
+            obj.isNative = False
+            transformed = []
+            for val in obj.value:
+                transformed.append(periodToString(val))
+            obj.value = ','.join(transformed)
+        return obj
 
 #------------------------ Registration of common classes -----------------------
 
@@ -1195,6 +1226,7 @@ map(lambda x: registerBehavior(DateOrDateTimeBehavior, x),
     
 registerBehavior(MultiDateBehavior, 'RDATE')
 registerBehavior(MultiDateBehavior, 'EXDATE')
+registerBehavior(FreeBusy, 'FREEBUSY')
 
 textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
             'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
