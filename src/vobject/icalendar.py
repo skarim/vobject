@@ -576,7 +576,7 @@ class UTCDateTimeBehavior(DateTimeBehavior):
 
     @staticmethod
     def transformFromNative(obj):
-        DateTimeBehavior.transformFromNative(obj, False)
+        return DateTimeBehavior.transformFromNative(obj, False)
 
 class DateOrDateTimeBehavior(behavior.Behavior):
     """Parent Behavior for ContentLines containing one DATE or DATE-TIME."""
@@ -1479,7 +1479,7 @@ def stringToDurations(s, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '%s' reached in %s" % (state, line))
+            error("error: unknown state: '%s' reached in %s" % (state, s))
 
 def parseDtstart(contentline):
     tzinfo = getTzid(getattr(contentline, 'tzid_param', None))
