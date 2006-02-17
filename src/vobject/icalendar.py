@@ -777,7 +777,7 @@ class VCalendar2_0(behavior.Behavior):
         for tzid in tzidsUsed.keys():
             if tzid == 'UTC' or tzid in oldtzids: continue
             obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
-registerBehavior(VCalendar2_0, default=True)
+registerBehavior(VCalendar2_0)
 
 class VTimezone(behavior.Behavior):
     """Timezone behavior."""
@@ -980,7 +980,7 @@ class VFreeBusy(behavior.Behavior):
     >>> vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
     >>> vfb.add('dtend').value   = vfb.dtstart.value + twoHours
     >>> vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
-    >>> print vfb.serialize().replace(CRLF, LF).strip()
+    >>> print vfb.serialize()
     BEGIN:VFREEBUSY
     UID:test
     DTSTART:20060216T010000Z

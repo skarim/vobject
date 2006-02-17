@@ -63,7 +63,7 @@ VObject Overview
     >>> list(v.rruleset)
     [datetime.datetime(2004, 12, 15, 14, 0, tzinfo=tzutc()), datetime.datetime(2004, 12, 22, 14, 0, tzinfo=tzutc())]
     >>> v.add('uid').value = "randomuid@MYHOSTNAME"
-    >>> print x.serialize().replace(base.CRLF, base.LF).strip()
+    >>> print x.serialize()
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -77,14 +77,10 @@ VObject Overview
 """
 
 import base, icalendar, vcard
-from base import readComponents, readOne
+from base import readComponents, readOne, newFromBehavior
 
 def iCalendar():
-    obj = base.Component('VCALENDAR')
-    obj.setBehavior(icalendar.VCalendar2_0)
-    return obj
+    return newFromBehavior('vcalendar', '2.0')
 
 def vCard():
-    obj = base.Component('VCARD')
-    obj.setBehavior(vcard.VCard3_0)
-    return obj
+    return newFromBehavior('vcard', '3.0')

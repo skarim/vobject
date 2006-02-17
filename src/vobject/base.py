@@ -260,9 +260,9 @@ class ContentLine(VBase):
         """
         try:
             if name.endswith('_param'):
-                return self.params[name[:-6].upper()][0]
+                return self.params[name[:-6].upper().replace('_', '-')][0]
             elif name.endswith('_paramlist'):
-                return self.params[name[:-10].upper()]
+                return self.params[name[:-10].upper().replace('_', '-')]
             else:
                 raise exceptions.AttributeError, name
         except KeyError:

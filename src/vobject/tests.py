@@ -1,14 +1,22 @@
 """Long or boring tests for vobjects."""
 
-import base, behavior
+import base, behavior, StringIO, icalendar, vcard, re, dateutil.tz, datetime
+
+# setuptools is required to run the unit tests
+from pkg_resources import resource_stream
 
 #------------------- Testing and running functions -----------------------------
 def _test():
     import doctest, base, tests, icalendar, __init__, re
-    doctest.testmod(base, verbose=0)
-    doctest.testmod(tests, verbose=0)
-    doctest.testmod(icalendar, verbose=0)
-    doctest.testmod(__init__, verbose=0)
+    flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_UDIFF \
+            | doctest.REPORT_ONLY_FIRST_FAILURE
+    for mod in base, tests, icalendar, __init__:
+        doctest.testmod(mod, verbose=0, optionflags=flags)
+    try:
+        doctest.testfile('../../README.txt', optionflags=flags)
+    except IOError: #allow this test to fail if we can't find README.txt
+        pass
+    
     
 if __name__ == '__main__':
     _test()
@@ -243,33 +251,28 @@ END:VTIMEZONE
 """
 
 __test__ = { "Test readOne" :
-    """
-    >>> import StringIO
-    >>> from base import readOne
-    >>> f2 = StringIO.StringIO(testSilly) 
-    >>> silly = readOne(f2)
+    r"""
+    >>> silly = base.readOne(testSilly)
     >>> silly
     <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
     >>> silly.stuff
     <STUFF{}foldedline>
     >>> original = silly.serialize()
     >>> f3 = StringIO.StringIO(original)
-    >>> silly2 = readOne(f3)
+    >>> silly2 = base.readOne(f3)
     >>> silly2.serialize()==original
     True
-    >>> s3 = StringIO.StringIO('cn:Babs Jensen\\r\\ncn:Barbara J Jensen\\r\\nsn:Jensen\\r\\nemail:babs@umich.edu\\r\\nphone:+1 313 747-4454\\r\\nx-id:1234567890\\r\\n')
-    >>> ex1 = readOne(s3)
+    >>> s3 = StringIO.StringIO('cn:Babs Jensen\r\ncn:Barbara J Jensen\r\nsn:Jensen\r\nemail:babs@umich.edu\r\nphone:+1 313 747-4454\r\nx-id:1234567890\r\n')
+    >>> ex1 = base.readOne(s3)
     >>> ex1
     <*unnamed*| [<CN{}Babs Jensen>, <CN{}Barbara J Jensen>, <EMAIL{}babs@umich.edu>, <PHONE{}+1 313 747-4454>, <SN{}Jensen>, <X-ID{}1234567890>]>
     >>> ex1.serialize()
-    u'CN:Babs Jensen\\r\\nCN:Barbara J Jensen\\r\\nEMAIL:babs@umich.edu\\r\\nPHONE:+1 313 747-4454\\r\\nSN:Jensen\\r\\nX-ID:1234567890\\r\\n'
+    u'CN:Babs Jensen\r\nCN:Barbara J Jensen\r\nEMAIL:babs@umich.edu\r\nPHONE:+1 313 747-4454\r\nSN:Jensen\r\nX-ID:1234567890\r\n'
     """,
     
     "Import icaltest" :
-    """
-    >>> import base, StringIO
-    >>> f = StringIO.StringIO(icaltest)
-    >>> c = base.readOne(f, validate=True)
+    r"""
+    >>> c = base.readOne(icaltest, validate=True)
     >>> c.vevent.valarm.trigger
     <TRIGGER{}-1 day, 0:00:00>
     >>> c.vevent.dtstart.value
@@ -279,9 +282,9 @@ __test__ = { "Test readOne" :
     >>> c.vevent.dtstamp.value
     datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
     >>> c.vevent.valarm.description.value
-    u'Event reminder, with comma\\nand line feed'
+    u'Event reminder, with comma\nand line feed'
     >>> c.vevent.valarm.description.serialize()
-    u'DESCRIPTION:Event reminder\\\\, with comma\\\\nand line feed\\r\\n'
+    u'DESCRIPTION:Event reminder\\, with comma\\nand line feed\r\n'
     >>> vevent = c.vevent.transformFromNative()
     >>> vevent.rrule
     <RRULE{}FREQ=Weekly;COUNT=10>
@@ -289,7 +292,6 @@ __test__ = { "Test readOne" :
     
     "Parsing tests" :
     """
-    >>> import icalendar
     >>> parseRDate = icalendar.MultiDateBehavior.transformToNative
     >>> icalendar.stringToTextValues('')
     ['']
@@ -305,7 +307,6 @@ __test__ = { "Test readOne" :
     
     "read failure" :
     """
-    >>> import StringIO, base
     >>> f = StringIO.StringIO(badstream)
     >>> vevent = base.readOne(f)
     Traceback (most recent call last):
@@ -314,18 +315,16 @@ __test__ = { "Test readOne" :
     """,
     
     "unicode test" :
-    """
-    >>> import StringIO, base
-    >>> f = file('utf8_test.ics', 'rb')
+    r"""
+    >>> f = resource_stream(__name__, 'utf8_test.ics')
     >>> vevent = base.readOne(f).vevent
     >>> vevent.summary.value
-    u'The title \\u3053\\u3093\\u306b\\u3061\\u306f\\u30ad\\u30c6\\u30a3'
+    u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
     >>> summary = vevent.summary.value
     """,
     
     "regular expression test" :
     """
-    >>> import re, base
     >>> re.findall(base.patterns['name'], '12foo-bar:yay')
     ['12foo-bar', 'yay']
     >>> re.findall(base.patterns['safe_char'], 'a;b"*,cd')
@@ -346,7 +345,6 @@ __test__ = { "Test readOne" :
     "VTIMEZONE creation test:" :
         
     """
-    >>> import base, icalendar, dateutil.tz, StringIO
     >>> f = StringIO.StringIO(timezones)
     >>> tzs = dateutil.tz.tzical(f)
     >>> tzs.get("US/Pacific")
@@ -354,7 +352,7 @@ __test__ = { "Test readOne" :
     >>> icalendar.TimezoneComponent(_)
     <VTIMEZONE | <TZID{}US/Pacific>>
     >>> pacific = _
-    >>> print pacific.serialize().replace(base.CRLF, base.LF).strip()
+    >>> print pacific.serialize()
     BEGIN:VTIMEZONE
     TZID:US/Pacific
     BEGIN:STANDARD
@@ -376,7 +374,7 @@ __test__ = { "Test readOne" :
     <VTIMEZONE | <TZID{}US/Pacific>>
     >>> santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
     >>> ser = santiago.serialize()
-    >>> print ser.replace(base.CRLF, base.LF).strip()
+    >>> print ser
     BEGIN:VTIMEZONE
     TZID:Santiago
     BEGIN:STANDARD
@@ -395,14 +393,13 @@ __test__ = { "Test readOne" :
     END:DAYLIGHT
     END:VTIMEZONE
     >>> roundtrip = dateutil.tz.tzical(StringIO.StringIO(str(ser))).get()
-    >>> from datetime import datetime
     >>> for year in range(2001, 2010):
     ...     for month in (2, 9):
-    ...         dt = datetime(year, month, 15, tzinfo = roundtrip)
+    ...         dt = datetime.datetime(year, month, 15, tzinfo = roundtrip)
     ...         if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
     ...             print "Failed for:", dt
     >>> fict = icalendar.TimezoneComponent(tzs.get('US/Fictitious-Eastern'))
-    >>> print fict.serialize().replace(base.CRLF, base.LF).strip()
+    >>> print fict.serialize()
     BEGIN:VTIMEZONE
     TZID:US/Fictitious-Eastern
     BEGIN:STANDARD
@@ -425,7 +422,6 @@ __test__ = { "Test readOne" :
     "Serializing with timezones test" :
     
     """
-    >>> import base, icalendar, StringIO, dateutil.tz, datetime
     >>> from dateutil.rrule import rrule, rruleset, WEEKLY
     >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
     >>> cal = base.Component('VCALENDAR')
@@ -438,7 +434,7 @@ __test__ = { "Test readOne" :
     >>> ev.rruleset = set
     >>> ev.add('uid').value = "uid could be generated but doctest complains"
     >>> ev.add('duration').value = datetime.timedelta(hours=1)
-    >>> print cal.serialize().replace(base.CRLF, base.LF).strip()
+    >>> print cal.serialize()
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -469,7 +465,7 @@ __test__ = { "Test readOne" :
     END:VCALENDAR
     >>> apple = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('America/Montreal')
     >>> ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
-    >>> print cal.serialize().replace(base.CRLF, base.LF).strip()
+    >>> print cal.serialize()
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -527,7 +523,6 @@ __test__ = { "Test readOne" :
     "Generate UIDs automatically test:" :
              
     """
-    >>> import base, datetime
     >>> cal = base.newFromBehavior('vcalendar')
     >>> cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
     >>> ser = cal.serialize()
@@ -537,18 +532,17 @@ __test__ = { "Test readOne" :
 
     "VCARD 3.0 parse test:" :
         
-    """
-    >>> import base, vcard
+    r"""
     >>> card = base.readOne(vcardtest)
     >>> card.adr.value
-    <Address: Haight Street 512\\nNovosibirsk,  80214\\nGnuland>
+    <Address: Haight Street 512\nNovosibirsk,  80214\nGnuland>
     >>> print card.adr.value
     Haight Street 512
     Novosibirsk,  80214
     Gnuland
     >>> card.org.value
     u'University of Novosibirsk, Department of Octopus Parthenogenesis'
-    >>> print card.serialize().replace('\\r\\n', '\\n').strip()
+    >>> print card.serialize()
     BEGIN:VCARD
     VERSION:3.0
     ACCOUNT;TYPE=HOME:010-1234567-05
@@ -567,7 +561,6 @@ __test__ = { "Test readOne" :
     "Multi-text serialization test:" :
              
     """
-    >>> import base, icalendar
     >>> category = base.newFromBehavior('categories')
     >>> category.value = ['Random category']
     >>> print category.serialize().strip()
@@ -580,7 +573,6 @@ __test__ = { "Test readOne" :
     "vCard groups test:" :
              
     """
-    >>> import base, vcard, icalendar
     >>> card = base.readOne(vcardWithGroups)
     >>> card.group
     u'home'
@@ -602,7 +594,6 @@ __test__ = { "Test readOne" :
     "Lowercase components test:" :
              
     """
-    >>> import base, vcard, icalendar
     >>> card = base.readOne(lowercaseComponentNames)
     >>> card.version
     <VERSION{}2.1>
