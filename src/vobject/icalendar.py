@@ -407,7 +407,7 @@ class RecurringComponent(Component):
             untilSerialize = dateToString
         else:
             # make sure to convert time zones to UTC
-            untilSerialize = lambda x: dateTimeToString(x, False)
+            untilSerialize = lambda x: dateTimeToString(x, True)
 
         for name in DATESANDRULES:
             if hasattr(self.contents, name):
@@ -559,13 +559,13 @@ class DateTimeBehavior(behavior.Behavior):
         return obj
 
     @staticmethod
-    def transformFromNative(obj, preserveTZ = True):
+    def transformFromNative(obj, convertToUTC = False):
         """Replace the datetime in obj.value with an ISO 8601 string."""
         if obj.isNative:
             obj.isNative = False
             tzid = TimezoneComponent.registerTzinfo(obj.value.tzinfo)
-            obj.value = dateTimeToString(obj.value, preserveTZ)
-            if preserveTZ and tzid is not None:
+            obj.value = dateTimeToString(obj.value, convertToUTC)
+            if not convertToUTC and tzid is not None:
                 obj.tzid_param = tzid
 
         return obj
@@ -1219,16 +1219,16 @@ class PeriodBehavior(behavior.Behavior):
         return obj
         
     @staticmethod
-    def transformFromNative(obj, preserveTZ = True):
+    def transformFromNative(obj, convertToUTC = False):
         """Convert the list of tuples in obj.value to strings."""
         if obj.isNative:
             obj.isNative = False
             transformed = []
             for tup in obj.value:
-                transformed.append(periodToString(tup, preserveTZ))
+                transformed.append(periodToString(tup, convertToUTC))
             if len(transformed) > 0:
                 tzid = TimezoneComponent.registerTzinfo(tup[0].tzinfo)
-                if preserveTZ and tzid is not None:
+                if not convertToUTC and tzid is not None:
                     obj.tzid_param = tzid
                             
             obj.value = ','.join(transformed)
@@ -1241,8 +1241,8 @@ class FreeBusy(PeriodBehavior):
 
     @staticmethod
     def transformFromNative(obj):
-        """Pass preserveTZ = False to parent method, which converts to UTC."""
-        return PeriodBehavior.transformFromNative(obj, False)
+        """Pass convertToUTC = True to parent method."""
+        return PeriodBehavior.transformFromNative(obj, True)
 registerBehavior(FreeBusy)
 
 #------------------------ Registration of common classes -----------------------
@@ -1305,9 +1305,9 @@ def dateToString(date):
     day   = numToDigits( date.day,   2 )
     return year + month + day
 
-def dateTimeToString(dateTime, preserveTZ=True):
-    """Convert to UTC if tzinfo is set, unless preserveTZ.  Output string."""
-    if dateTime.tzinfo and not preserveTZ:
+def dateTimeToString(dateTime, convertToUTC=False):
+    """Ignore tzinfo unless convertToUTC.  Output string."""
+    if dateTime.tzinfo and convertToUTC:
         dateTime = dateTime.astimezone(utc)
     if tzinfo_eq(dateTime.tzinfo, utc): utcString = "Z"
     else: utcString = ""
@@ -1332,12 +1332,12 @@ def deltaToOffset(delta):
         signString = "-"
     return signString + hoursString + minutesString
 
-def periodToString(period, preserveTZ=True):
-    txtstart = dateTimeToString(period[0], preserveTZ)
+def periodToString(period, convertToUTC=False):
+    txtstart = dateTimeToString(period[0], convertToUTC)
     if isinstance(period[1], datetime.timedelta):
         txtend = timedeltaToString(period[1])
     else:
-        txtend = dateTimeToString(period[1], preserveTZ)
+        txtend = dateTimeToString(period[1], convertToUTC)
     return txtstart + "/" + txtend
 
 #----------------------- Parsing functions -------------------------------------

@@ -519,7 +519,7 @@ __test__ = { "Test readOne" :
     END:VEVENT
     END:VCALENDAR
     """,
-             
+
     "Generate UIDs automatically test:" :
              
     """
