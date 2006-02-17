@@ -11,7 +11,8 @@ import itertools
 
 from base import VObjectError, NativeError, ValidateError, ParseError, \
                     VBase, Component, ContentLine, logger, defaultSerialize, \
-                    registerBehavior, backslashEscape, foldOneLine
+                    registerBehavior, backslashEscape, foldOneLine, \
+                    newFromBehavior, CRLF, LF
 
 #------------------------------- Constants -------------------------------------
 DATENAMES = ("rdate", "exdate")
@@ -72,9 +73,11 @@ class TimezoneComponent(Component):
 
     @classmethod
     def registerTzinfo(obj, tzinfo):
+        """Register tzinfo if it's not already registered, return its tzid."""
         tzid = obj.pickTzid(tzinfo)
         if tzid and not getTzid(tzid):
             registerTzid(tzid, tzinfo)
+        return tzid
 
     def gettzinfo(self):
         # workaround for dateutil failing to parse some experimental properties
@@ -542,9 +545,6 @@ class DateTimeBehavior(behavior.Behavior):
         in some properties.  Mostly, this isn't what you want, but when parsing
         a file, real floating times are noted by setting to 'TRUE' the
         X-VOBJ-FLOATINGTIME-ALLOWED parameter.
-        
-        If a TZID exists, the X-VOBJ-PRESERVE-TZID parameter will be set to
-        'TRUE' so the TZID will be recreated when output.
 
         """
         if obj.isNative: return obj
@@ -563,8 +563,7 @@ class DateTimeBehavior(behavior.Behavior):
         """Replace the datetime in obj.value with an ISO 8601 string."""
         if obj.isNative:
             obj.isNative = False
-            tzid = TimezoneComponent.pickTzid(obj.value.tzinfo)
-            TimezoneComponent.registerTzinfo(obj.value.tzinfo)
+            tzid = TimezoneComponent.registerTzinfo(obj.value.tzinfo)
             obj.value = dateTimeToString(obj.value, preserveTZ)
             if preserveTZ and tzid is not None:
                 obj.tzid_param = tzid
@@ -643,11 +642,13 @@ class MultiDateBehavior(behavior.Behavior):
         appropriate strings.
         
         """
+        # Fixme: obj.value should be a list, so this test should never succeed
         if type(obj.value) == datetime.date:
             obj.isNative = False
             obj.value_param = 'DATE'
             obj.value = ','.join([dateToString(val) for val in obj.value])
             return obj
+        # Fixme: handle PERIOD case
         else:
             if obj.isNative:
                 obj.isNative = False
@@ -655,10 +656,9 @@ class MultiDateBehavior(behavior.Behavior):
                 tzid = None
                 for val in obj.value:
                     if tzid is None and type(val) == datetime.datetime:
-                        tzid = TimezoneComponent.pickTzid(val.tzinfo)
+                        tzid = TimezoneComponent.registerTzinfo(val.tzinfo)
                         if tzid is not None:
                             obj.tzid_param = tzid
-                            TimezoneComponent.registerTzinfo(val.tzinfo)
                     transformed.append(dateTimeToString(val))
                 obj.value = ','.join(transformed)
             return obj
@@ -760,14 +760,12 @@ class VCalendar2_0(behavior.Behavior):
                     if type(obj.value) == list:
                         for item in obj.value:
                             tzinfo = getattr(obj.value, 'tzinfo', None)
-                            tzid = TimezoneComponent.pickTzid(tzinfo)
-                            TimezoneComponent.registerTzinfo(tzinfo)
+                            tzid = TimezoneComponent.registerTzinfo(tzinfo)
                             if tzid:
                                 table[tzid] = 1
                     else:
                         tzinfo = getattr(obj.value, 'tzinfo', None)
-                        tzid = TimezoneComponent.pickTzid(tzinfo)
-                        TimezoneComponent.registerTzinfo(tzinfo)
+                        tzid = TimezoneComponent.registerTzinfo(tzinfo)
                         if tzid:
                             table[tzid] = 1
             for child in obj.getChildren():
