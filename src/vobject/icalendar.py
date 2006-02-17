@@ -976,12 +976,28 @@ registerBehavior(VJournal)
 
 
 class VFreeBusy(behavior.Behavior):
-    """Free/busy state behavior."""
+    """Free/busy state behavior.
+
+    >>> vfb = newFromBehavior('VFREEBUSY')
+    >>> vfb.add('uid').value = 'test'
+    >>> vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
+    >>> vfb.add('dtend').value   = vfb.dtstart.value + twoHours
+    >>> vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
+    >>> print vfb.serialize().replace(CRLF, LF).strip()
+    BEGIN:VFREEBUSY
+    UID:test
+    DTSTART:20060216T010000Z
+    DTEND:20060216T030000Z
+    FREEBUSY:20060216T010000Z/PT1H
+    END:VFREEBUSY
+
+    """
     name='VFREEBUSY'
     isComponent = True
     description='A grouping of component properties that describe either a \
                  request for free/busy time, describe a response to a request \
                  for free/busy time or describe a published set of busy time.'
+    sortFirst = ('uid', 'dtstart', 'duration', 'dtend')
     knownChildren = {'DTSTART':      (0, 1, None),#min, max, behaviorRegistry id
                      'CONTACT':      (0, 1, None),
                      'DTEND':        (0, 1, None),
@@ -1176,47 +1192,66 @@ class Trigger(behavior.Behavior):
 
 registerBehavior(Trigger)
 
-class FreeBusy(behavior.Behavior):
-    """Free or busy period of time."""
-    name='FREEBUSY'
-    hasNative = True
+class PeriodBehavior(behavior.Behavior):
+    """A list of (date-time, timedelta) tuples.
 
+    >>> line = ContentLine('test', [], '', isNative=True)
+    >>> line.behavior = PeriodBehavior
+    >>> line.value = [(datetime.datetime(2006, 2, 16, 10), twoHours)]
+    >>> line.transformFromNative().value
+    '20060216T100000/PT2H'
+    >>> line.transformToNative().value
+    [(datetime.datetime(2006, 2, 16, 10, 0), datetime.timedelta(0, 7200))]
+    >>> line.value.append((datetime.datetime(2006, 5, 16, 10), twoHours))
+    >>> print line.serialize().strip()
+    TEST:20060216T100000/PT2H,20060516T100000/PT2H
+    """
+    hasNative = True
+    
     @staticmethod
     def transformToNative(obj):
-        """
-        Turn obj.value into a list of dates, datetimes, or
-        (datetime, timedelta) tuples.
-        
-        """
+        """Convert comma separated periods into tuples."""
         if obj.isNative:
             return obj
         obj.isNative = True
         if obj.value == '':
             obj.value = []
             return obj
-        valTexts = obj.value.split(",")
-        obj.value = [stringToPeriod(x, None) for x in valTexts]
+        tzinfo = getTzid(getattr(obj, 'tzid_param', None))
+        obj.value = [stringToPeriod(x, tzinfo) for x in obj.value.split(",")]
         return obj
-
-    @staticmethod
-    def transformFromNative(obj):
-        """
-        Replace the period tuples in obj.value with
-        appropriate strings.
         
-        """
+    @staticmethod
+    def transformFromNative(obj, preserveTZ = True):
+        """Convert the list of tuples in obj.value to strings."""
         if obj.isNative:
             obj.isNative = False
             transformed = []
-            for val in obj.value:
-                transformed.append(periodToString(val))
+            for tup in obj.value:
+                transformed.append(periodToString(tup, preserveTZ))
+            if len(transformed) > 0:
+                tzid = TimezoneComponent.registerTzinfo(tup[0].tzinfo)
+                if preserveTZ and tzid is not None:
+                    obj.tzid_param = tzid
+                            
             obj.value = ','.join(transformed)
+
         return obj
+
+class FreeBusy(PeriodBehavior):
+    """Free or busy period of time, must be specified in UTC."""
+    name = 'FREEBUSY'
+
+    @staticmethod
+    def transformFromNative(obj):
+        """Pass preserveTZ = False to parent method, which converts to UTC."""
+        return PeriodBehavior.transformFromNative(obj, False)
+registerBehavior(FreeBusy)
 
 #------------------------ Registration of common classes -----------------------
 
 utcDateTimeList = ['LAST-MODIFIED', 'CREATED', 'COMPLETED', 'DTSTAMP']
-map(lambda x: registerBehavior(UTCDateTimeBehavior, x),utcDateTimeList)
+map(lambda x: registerBehavior(UTCDateTimeBehavior, x), utcDateTimeList)
 
 dateTimeOrDateList = ['DTEND', 'DTSTART', 'DUE', 'RECURRENCE-ID']
 map(lambda x: registerBehavior(DateOrDateTimeBehavior, x),
@@ -1224,7 +1259,7 @@ map(lambda x: registerBehavior(DateOrDateTimeBehavior, x),
     
 registerBehavior(MultiDateBehavior, 'RDATE')
 registerBehavior(MultiDateBehavior, 'EXDATE')
-registerBehavior(FreeBusy, 'FREEBUSY')
+
 
 textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
             'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
@@ -1300,12 +1335,12 @@ def deltaToOffset(delta):
         signString = "-"
     return signString + hoursString + minutesString
 
-def periodToString(period):
-    txtstart = dateTimeToString(period[0])
+def periodToString(period, preserveTZ):
+    txtstart = dateTimeToString(period[0], preserveTZ)
     if isinstance(period[1], datetime.timedelta):
         txtend = timedeltaToString(period[1])
     else:
-        txtend = dateTimeToString(period[1])
+        txtend = dateTimeToString(period[1], preserveTZ)
     return txtstart + "/" + txtend
 
 #----------------------- Parsing functions -------------------------------------
