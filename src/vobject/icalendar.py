@@ -816,9 +816,6 @@ class VTimezone(behavior.Behavior):
 
     @staticmethod
     def transformFromNative(obj):
-##        if obj.isNative:
-##            object.__setattr__(obj, '__class__', Component)
-##            obj.isNative = False
         return obj
 
         
