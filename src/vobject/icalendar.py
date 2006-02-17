@@ -1332,7 +1332,7 @@ def deltaToOffset(delta):
         signString = "-"
     return signString + hoursString + minutesString
 
-def periodToString(period, preserveTZ):
+def periodToString(period, preserveTZ=True):
     txtstart = dateTimeToString(period[0], preserveTZ)
     if isinstance(period[1], datetime.timedelta):
         txtend = timedeltaToString(period[1])
