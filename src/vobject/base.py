@@ -439,6 +439,17 @@ class Component(VBase):
         self.contents.setdefault(obj.name.lower(), []).append(obj)
         return obj
 
+    def remove(self, obj):
+        """Remove obj from contents."""
+        named = self.contents.get(obj.name.lower())
+        if named:
+            try:
+                named.remove(obj)
+                if len(named) == 0:
+                    del self.contents[named]
+            except ValueError:
+                pass;
+
     def getChildren(self):
         """Return an iterable of all children."""
         for objList in self.contents.values():
