@@ -446,7 +446,7 @@ class Component(VBase):
             try:
                 named.remove(obj)
                 if len(named) == 0:
-                    del self.contents[named]
+                    del self.contents[obj.name.lower()]
             except ValueError:
                 pass;
 
