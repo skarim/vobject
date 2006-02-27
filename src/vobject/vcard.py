@@ -6,8 +6,7 @@ import itertools
 from base import VObjectError, NativeError, ValidateError, ParseError, \
                     VBase, Component, ContentLine, logger, defaultSerialize, \
                     registerBehavior, backslashEscape
-
-from icalendar import TextBehavior
+from icalendar import stringToTextValues
 
 #------------------------ vCard structs ----------------------------------------
 
@@ -85,7 +84,8 @@ class VCard3_0(VCardBehavior):
                      'PRODID':    (0, 1, None),
                      'LABEL':     (0, None, None),
                      'UID':       (0, None, None),
-                     'ADR':       (0, None, None)
+                     'ADR':       (0, None, None),
+                     'PHOTO':     (0, None, None)
                     }
                     
     @classmethod
@@ -99,11 +99,47 @@ class VCard3_0(VCardBehavior):
         if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
 registerBehavior(VCard3_0, default=True)
+
+class VCardTextBehavior(behavior.Behavior):
+    """Provide backslash escape encoding/decoding for single valued properties.
     
-class VCardTextBehavior(TextBehavior):
+    TextBehavior also deals with base64 encoding if the ENCODING parameter is
+    explicitly set to BASE64.
+    
+    """
     allowGroup = True
     base64string = 'B'
     
+    @classmethod
+    def decode(cls, line):
+        """Remove backslash escaping from line.valueDecode line, either to remove
+        backslash espacing, or to decode base64 encoding. The content line should
+        contain a ENCODING=b for base64 encoding, but Apple Addressbook seems to
+        export a singleton parameter of 'BASE64', which does not match the 3.0
+        vCard spec. If we encouter that, then we transform the parameter to
+        ENCODING=b"""
+        if line.encoded:
+            if 'BASE64' in line.singletonparams:
+                line.singletonparams.remove('BASE64')
+                line.encoding_param = cls.base64string
+            encoding = getattr(line, 'encoding_param', None)
+            if encoding:
+                line.value = line.value.decode('base64')
+            else:
+                line.value = stringToTextValues(line.value)[0]
+            line.encoded=False
+    
+    @classmethod
+    def encode(cls, line):
+        """Backslash escape line.value."""
+        if not line.encoded:
+            encoding = getattr(line, 'encoding_param', None)
+            if encoding and encoding.upper() == cls.base64string:
+                line.value = line.value.encode('base64').replace('\n', '')
+            else:
+                line.value = backslashEscape(line.value)
+            line.encoded=True
+
 class FN(VCardTextBehavior):
     name = "FN"
     description = 'Formatted name'
@@ -113,6 +149,15 @@ class Label(VCardTextBehavior):
     name = "Label"
     description = 'Formatted address'
 registerBehavior(FN)
+
+class Photo(VCardTextBehavior):
+    name = "Photo"
+    description = 'Photograph'
+    @classmethod
+    def valueRepr( cls, line ):
+        return " (BINARY PHOTO DATA at 0x%s) " % id( line.value )
+    
+registerBehavior(Photo)
 
 def toListOrString(string):
     if string.find(',') >= 0:

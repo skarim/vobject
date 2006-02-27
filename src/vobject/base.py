@@ -303,15 +303,23 @@ class ContentLine(VBase):
         except KeyError:
             raise exceptions.AttributeError, name
 
+    def valueRepr( self ):
+        """transform the representation of the value according to the behavior,
+        if any"""
+        v = self.value
+        if self.behavior:
+            v = self.behavior.valueRepr( self )
+        return ascii( v )
+        
     def __str__(self):
-        return "<"+ascii(self.name)+ascii(self.params)+ascii(self.value)+">"
+        return "<"+ascii(self.name)+ascii(self.params)+self.valueRepr()+">"
 
     def __repr__(self):
         return self.__str__().replace('\n', '\\n')
 
     def prettyPrint(self, level = 0, tabwidth=3):
         pre = ' ' * level * tabwidth
-        print pre, self.name + ":", ascii(self.value)
+        print pre, self.name + ":", self.valueRepr()
         if self.params:
             lineKeys= self.params.keys()
             print pre, "params for ", self.name +':'

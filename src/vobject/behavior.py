@@ -133,11 +133,16 @@ class Behavior(object):
         """
         return base.defaultSerialize(obj, buf, lineLength)
     
+    def valueRepr( cls, line ):
+        """return the representation of the given content line value"""
+        return line.value
+    
     lineValidate = classmethod(lineValidate)
     validate     = classmethod(validate)
     decode       = classmethod(decode)
     encode       = classmethod(encode)
     serialize    = classmethod(serialize)
+    valueRepr    = classmethod(valueRepr)
     transformToNative = classmethod(transformToNative)
     transformFromNative = classmethod(transformFromNative)  
     generateImplicitParameters = classmethod(generateImplicitParameters)
