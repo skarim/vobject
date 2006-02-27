@@ -1,19 +1,25 @@
 """Long or boring tests for vobjects."""
 
-import base, behavior, StringIO, icalendar, vcard, re, dateutil.tz, datetime
+# add source directory to front of sys path
+import sys, os
+basepath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert( 0, os.path.join( basepath, 'src', 'vobject' ) )
 
-# setuptools is required to run the unit tests
-from pkg_resources import resource_stream
+import base, icalendar, behavior, vcard
+import StringIO, re, dateutil.tz, datetime
+
 
 #------------------- Testing and running functions -----------------------------
 def _test():
     import doctest, base, tests, icalendar, __init__, re
     flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_UDIFF \
             | doctest.REPORT_ONLY_FIRST_FAILURE
-    for mod in base, tests, icalendar, __init__:
+    for mod in base, tests, icalendar, __init__, vcard:
         doctest.testmod(mod, verbose=0, optionflags=flags)
     try:
-        doctest.testfile('../../README.txt', optionflags=flags)
+        sys.path.pop()
+        sys.path.insert( 0, os.path.join( basepath, 'src' ) )
+        doctest.testfile('../README.txt', optionflags=flags)
     except IOError: #allow this test to fail if we can't find README.txt
         pass
     
@@ -316,7 +322,7 @@ __test__ = { "Test readOne" :
     
     "unicode test" :
     r"""
-    >>> f = resource_stream(__name__, 'utf8_test.ics')
+    >>> f = open(os.path.join(basepath, 'tests', 'utf8_test.ics'))
     >>> vevent = base.readOne(f).vevent
     >>> vevent.summary.value
     u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
