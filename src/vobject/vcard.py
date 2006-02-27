@@ -66,7 +66,7 @@ class Address(object):
         return lines
 
     def __repr__(self):
-        return "<Address: %s>" % self.__str__().replace('\n', '\\n')
+        return "<Address: %s>" % repr(str(self))[1:-1]
 
 #------------------------ Registered Behavior subclasses -----------------------
 class VCardBehavior(behavior.Behavior):
