@@ -416,6 +416,14 @@ class Component(VBase):
         except KeyError:
             raise exceptions.AttributeError, name  
 
+    def getChildValue(self, childName, childNumber = 0):
+        """Return a child's value (the first, by default), or None."""
+        child = self.contents.get(childName)
+        if child is None:
+            return None
+        else:
+            return child[childNumber].value
+
     def add(self, objOrName, group = None):
         """Add objOrName to contents, set behavior if it can be inferred.
         
