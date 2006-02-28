@@ -426,13 +426,13 @@ class Component(VBase):
             else:
                 object.__delattr__(self, name)
         except KeyError:
-            raise exceptions.AttributeError, name  
+            raise exceptions.AttributeError, name
 
-    def getChildValue(self, childName, childNumber = 0):
+    def getChildValue(self, childName, default = None, childNumber = 0):
         """Return a child's value (the first, by default), or None."""
         child = self.contents.get(toVName(childName))
         if child is None:
-            return None
+            return default
         else:
             return child[childNumber].value
 
