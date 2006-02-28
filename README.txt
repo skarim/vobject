@@ -166,3 +166,60 @@ component at a time from a stream or string.
 datetime.datetime(2006, 2, 16, 0, 0, tzinfo=tzutc())
 
 More examples can be found in source code doctests.
+
+Making vCards proceeds in much the same way. Note that the 'N' and 'FN'
+attributes are required.
+
+>>> j = vobject.vCard()
+>>> j.add('n')
+ <N{}    >
+>>> j.n.value = vobject.vcard.Name( family='Harris', given='Jeffrey' )
+>>> j.add('fn')
+ <FN{}>
+>>> j.fn.value ='Jeffrey Harris'
+>>> j.add('email')
+ <EMAIL{}>
+>>> j.email.value = 'jeffrey@osafoundation.org'
+>>> j.email.params = {'TYPE':['INTERNET']}
+>>> j.prettyPrint()
+ VCARD
+    EMAIL: jeffrey@osafoundation.org
+    params for  EMAIL:
+       TYPE ['INTERNET']
+    FN: Jeffrey Harris
+    N:  Jeffrey  Harris
+
+serializing will add any required computable attributes (like 'VERSION')
+
+>>> j.serialize()
+u'BEGIN:VCARD\r\nVERSION:3.0\r\nEMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r\nFN:Jeffrey Harris\r\nN:Harris;Jeffrey;;;\r\nEND:VCARD\r\n'
+>>> j.prettyPrint()
+ VCARD
+    VERSION: 3.0
+    EMAIL: jeffrey@osafoundation.org
+    params for  EMAIL:
+       TYPE ['INTERNET']
+    FN: Jeffrey Harris
+    N:  Jeffrey  Harris 
+
+or construct a vCard from source data:
+
+>>> s = """
+... BEGIN:VCARD\r
+... VERSION:3.0\r
+... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r
+... FN:Jeffrey Harris\r
+... N:Harris;Jeffrey;;;\r
+... END:VCARD\r
+... """
+>>> v = vobject.readOne( s )
+>>> v.prettyPrint()
+ VCARD
+    VERSION: 3.0
+    EMAIL: jeffrey@osafoundation.org
+    params for  EMAIL:
+       TYPE [u'INTERNET']
+    FN: Jeffrey Harris
+    N:  Jeffrey  Harris 
+
+

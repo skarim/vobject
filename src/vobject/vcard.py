@@ -85,7 +85,8 @@ class VCard3_0(VCardBehavior):
                      'LABEL':     (0, None, None),
                      'UID':       (0, None, None),
                      'ADR':       (0, None, None),
-                     'PHOTO':     (0, None, None)
+                     'PHOTO':     (0, None, None),
+                     'CATEGORIES':(0, None, None)
                     }
                     
     @classmethod
