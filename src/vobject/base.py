@@ -185,7 +185,19 @@ class VBase(object):
             return defaultSerialize(self, buf, lineLength)
 
 def ascii(s):
+    """Turn s into a printable string.  Won't work for 8-bit ASCII."""
     return unicode(s).encode('ascii', 'replace')
+
+def toVName(name, stripNum = 0, upper = False):
+    """
+    Turn a Python name into an iCalendar style name, optionally uppercase and 
+    with characters stripped off.
+    """
+    if upper:
+        name = name.upper()
+    if stripNum != 0:
+        name = name[:-stripNum]
+    return name.replace('_', '-')
 
 class ContentLine(VBase):
     """Holds one content line for formats like vCard and vCalendar.
@@ -260,9 +272,9 @@ class ContentLine(VBase):
         """
         try:
             if name.endswith('_param'):
-                return self.params[name[:-6].upper().replace('_', '-')][0]
+                return self.params[toVName(name, 6, True)][0]
             elif name.endswith('_paramlist'):
-                return self.params[name[:-10].upper().replace('_', '-')]
+                return self.params[toVName(name, 10, True)]
             else:
                 raise exceptions.AttributeError, name
         except KeyError:
@@ -277,12 +289,12 @@ class ContentLine(VBase):
         """
         if name.endswith('_param'):
             if type(value) == list:
-                self.params[name[:-6].upper().replace('_', '-')] = value
+                self.params[toVName(name, 6, True)] = value
             else:
-                self.params[name[:-6].upper().replace('_', '-')] = [value]
+                self.params[toVName(name, 6, True)] = [value]
         elif name.endswith('_paramlist'):
             if type(value) == list:
-                self.params[name[:-10].upper().replace('_', '-')] = value
+                self.params[toVName(name, 10, True)] = value
             else:
                 raise VObjectError("Parameter list set to a non-list")
         else:
@@ -295,9 +307,9 @@ class ContentLine(VBase):
     def __delattr__(self, name):
         try:
             if name.endswith('_param'):
-                del self.params[name[:-6].upper().replace('_', '-')]
+                del self.params[toVName(name, 6, True)]
             elif name.endswith('_paramlist'):
-                del self.params[name[:-10].upper().replace('_', '-')]
+                del self.params[toVName(name, 10, True)]
             else:
                 object.__delattr__(self, name)
         except KeyError:
@@ -376,9 +388,9 @@ class Component(VBase):
         """
         try:
             if name.endswith('_list'):
-                return self.contents[name[:-5].replace('_', '-')]
+                return self.contents[toVName(name, 5)]
             else:
-                return self.contents[name.replace('_', '-')][0]
+                return self.contents[toVName(name)][0]
         except KeyError:
             raise exceptions.AttributeError, name
 
@@ -392,11 +404,11 @@ class Component(VBase):
         """
         if name not in self.normal_attributes and name.lower()==name:
             if type(value) == list:
-                self.contents[name.replace('_', '-')] = value
+                self.contents[toVName(name)] = value
             elif name.endswith('_list'):
                 raise VObjectError("Component list set to a non-list")
             else:
-                self.contents[name.replace('_', '-')] = [value]
+                self.contents[toVName(name)] = [value]
         else:
             prop = getattr(self.__class__, name, None)
             if isinstance(prop, property):
@@ -408,9 +420,9 @@ class Component(VBase):
         try:
             if name not in self.normal_attributes and name.lower()==name:
                 if name.endswith('_list'):
-                    del self.contents[name[:-5].replace('_', '-')]
+                    del self.contents[toVName(name, 5)]
                 else:
-                    del self.contents[name.replace('_', '-')]
+                    del self.contents[toVName(name)]
             else:
                 object.__delattr__(self, name)
         except KeyError:
@@ -418,7 +430,7 @@ class Component(VBase):
 
     def getChildValue(self, childName, childNumber = 0):
         """Return a child's value (the first, by default), or None."""
-        child = self.contents.get(childName)
+        child = self.contents.get(toVName(childName))
         if child is None:
             return None
         else:
