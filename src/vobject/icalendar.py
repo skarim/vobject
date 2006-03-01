@@ -1162,6 +1162,7 @@ class Trigger(behavior.Behavior):
     @staticmethod
     def transformToNative(obj):
         """Turn obj.value into a timedelta or datetime."""
+        if obj.isNative: return obj
         value = getattr(obj, 'value_param', 'DURATION').upper()
         if hasattr(obj, 'value_param'):
             del obj.value_param
@@ -1169,7 +1170,20 @@ class Trigger(behavior.Behavior):
             obj.isNative = True
             return obj
         elif value  == 'DURATION':
-            return Duration.transformToNative(obj)
+            try:
+                return Duration.transformToNative(obj)
+            except ParseError:
+                logger.warn("TRIGGER not recognized as DURATION, trying \
+                             DATE-TIME, because iCal sometimes exports \
+                             DATE-TIMEs without setting VALUE=DATE-TIME")
+                try:
+                    obj.isNative = False
+                    dt = DateTimeBehavior.transformToNative(obj)
+                    return dt
+                except:
+                    msg = "TRIGGER with no VALUE not recognized as DURATION \
+                           or as DATE-TIME"""
+                    raise ParseError(msg)
         elif value == 'DATE-TIME':
             #TRIGGERs with DATE-TIME values must be in UTC, we could validate
             #that fact, for now we take it on faith.
@@ -1181,7 +1195,7 @@ class Trigger(behavior.Behavior):
     def transformFromNative(obj):
         if type(obj.value) == datetime.datetime:
             obj.value_param = 'DATE-TIME'
-            return DateTimeBehavior.transformFromNative(obj)
+            return DateTimeBehavior.transformFromNative(obj, convertToUTC=True)
         elif type(obj.value) == datetime.timedelta:
             return Duration.transformFromNative(obj)
         else:
