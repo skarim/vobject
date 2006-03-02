@@ -30,8 +30,8 @@ or import and call vobject.tests._test() from Python.
  Usage
 -------
 
-Creating objects
-................
+Creating iCalendar objects
+..........................
 
 vobject has a basic datastructure for working with iCalendar-like
 syntaxes.  Additionally, it defines specialized behaviors for many of
@@ -149,7 +149,7 @@ If dtstart's tzinfo had been something other than UTC, an appropriate
 vtimezone would be created for it.
 
 
-Parsing objects
+Parsing iCalendar objects
 ...............
 
 To parse one top level component from an existing iCalendar stream or
@@ -166,6 +166,9 @@ component at a time from a stream or string.
 datetime.datetime(2006, 2, 16, 0, 0, tzinfo=tzutc())
 
 More examples can be found in source code doctests.
+
+vCards
+......
 
 Making vCards proceeds in much the same way. Note that the 'N' and 'FN'
 attributes are required.
@@ -202,7 +205,8 @@ u'BEGIN:VCARD\r\nVERSION:3.0\r\nEMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r\
     FN: Jeffrey Harris
     N:  Jeffrey  Harris 
 
-or construct a vCard from source data:
+Parsing vCards
+..............
 
 >>> s = """
 ... BEGIN:VCARD
@@ -220,6 +224,6 @@ or construct a vCard from source data:
     params for  EMAIL:
        TYPE [u'INTERNET']
     FN: Jeffrey Harris
-    N:  Jeffrey  Harris 
-
-
+    N:  Jeffrey  Harris
+>>> v.n.value.family
+u'Harris'
