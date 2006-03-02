@@ -1173,16 +1173,16 @@ class Trigger(behavior.Behavior):
             try:
                 return Duration.transformToNative(obj)
             except ParseError:
-                logger.warn("TRIGGER not recognized as DURATION, trying \
-                             DATE-TIME, because iCal sometimes exports \
-                             DATE-TIMEs without setting VALUE=DATE-TIME")
+                logger.warn("TRIGGER not recognized as DURATION, trying "
+                             "DATE-TIME, because iCal sometimes exports "
+                             "DATE-TIMEs without setting VALUE=DATE-TIME")
                 try:
                     obj.isNative = False
                     dt = DateTimeBehavior.transformToNative(obj)
                     return dt
                 except:
-                    msg = "TRIGGER with no VALUE not recognized as DURATION \
-                           or as DATE-TIME"""
+                    msg = "TRIGGER with no VALUE not recognized as DURATION " \
+                          "or as DATE-TIME"
                     raise ParseError(msg)
         elif value == 'DATE-TIME':
             #TRIGGERs with DATE-TIME values must be in UTC, we could validate

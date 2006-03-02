@@ -127,7 +127,7 @@ url:http://www.example.com
 version:2.1
 end:vcard"""
 
-badstream = r"""BEGIN:VCALENDAR
+icalWeirdTrigger = r"""BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
 X-WR-TIMEZONE;VALUE=TEXT:US/Pacific
 METHOD:PUBLISH
@@ -140,6 +140,23 @@ BEGIN:VALARM
 TRIGGER:20021028T120000Z
 ACTION:DISPLAY
 DESCRIPTION:This trigger is a date-time without a VALUE=DATE-TIME parameter
+END:VALARM
+END:VEVENT
+END:VCALENDAR"""
+
+badstream = r"""BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+X-WR-TIMEZONE;VALUE=TEXT:US/Pacific
+METHOD:PUBLISH
+PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
+X-WR-CALNAME;VALUE=TEXT:Example
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20021028T140000Z
+BEGIN:VALARM
+TRIGGER:a20021028120000
+ACTION:DISPLAY
+DESCRIPTION:This trigger has a nonsensical value
 END:VALARM
 END:VEVENT
 END:VCALENDAR"""
@@ -313,11 +330,20 @@ __test__ = { "Test readOne" :
     
     "read failure" :
     """
-    >>> f = StringIO.StringIO(badstream)
-    >>> vevent = base.readOne(f)
+    >>> vevent = base.readOne(badstream)
     Traceback (most recent call last):
     ...
-    ParseError: At line 11: got unexpected character reading in duration: 20021028T120000Z
+    ParseError: At line 11: TRIGGER with no VALUE not recognized as DURATION or as DATE-TIME
+    """,
+
+    "ical trigger workaround" :
+    """
+
+    >>> badical = base.readOne(icalWeirdTrigger)
+    >>> badical.vevent.valarm.description.value
+    u'This trigger is a date-time without a VALUE=DATE-TIME parameter'
+    >>> badical.vevent.valarm.trigger.value
+    datetime.datetime(2002, 10, 28, 12, 0, tzinfo=tzutc())
     """,
     
     "unicode test" :

@@ -180,7 +180,7 @@ attributes are required.
 >>> j.add('email')
  <EMAIL{}>
 >>> j.email.value = 'jeffrey@osafoundation.org'
->>> j.email.params = {'TYPE':['INTERNET']}
+>>> j.email.type_param = 'INTERNET'
 >>> j.prettyPrint()
  VCARD
     EMAIL: jeffrey@osafoundation.org
@@ -205,12 +205,12 @@ u'BEGIN:VCARD\r\nVERSION:3.0\r\nEMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r\
 or construct a vCard from source data:
 
 >>> s = """
-... BEGIN:VCARD\r
-... VERSION:3.0\r
-... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r
-... FN:Jeffrey Harris\r
-... N:Harris;Jeffrey;;;\r
-... END:VCARD\r
+... BEGIN:VCARD
+... VERSION:3.0
+... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org
+... FN:Jeffrey Harris
+... N:Harris;Jeffrey;;;
+... END:VCARD
 ... """
 >>> v = vobject.readOne( s )
 >>> v.prettyPrint()
