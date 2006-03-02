@@ -22,9 +22,7 @@ easy_install or downloaded from http://labix.org/python-dateutil
 
 Unit tests live in doctests throughout the source code, to run all tests, use::
 
-  python src/vobject/tests.py
-
-or import and call vobject.tests._test() from Python.
+  python tests/tests.py
 
 -------
  Usage
@@ -150,7 +148,7 @@ vtimezone would be created for it.
 
 
 Parsing iCalendar objects
-...............
+.........................
 
 To parse one top level component from an existing iCalendar stream or
 string, use the readOne function:
