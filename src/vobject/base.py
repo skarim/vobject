@@ -161,25 +161,18 @@ class VBase(object):
         """Recursively transform native children to vanilla representations."""
         pass
 
-    def serialize(self, buf=None, lineLength=75, validate=True):
+    def serialize(self, buf=None, lineLength=75, validate=True, behavior=None):
         """Serialize to buf if it exists, otherwise return a string.
         
         Use self.behavior.serialize if behavior exists.
         
         """
-        undoTransform = False
-        if self.behavior:
+        if not behavior:
+            behavior = self.behavior
+        
+        if behavior:
             if DEBUG: logger.debug("serializing %s with behavior" % self.name)
-            self.behavior.generateImplicitParameters(self)
-            if validate: self.behavior.validate(self, raiseException=True)
-            if self.isNative:
-                transformed = self.transformFromNative()
-                undoTransform = True
-            else:
-                transformed = self
-            out = self.behavior.serialize(transformed, buf, lineLength)
-            if undoTransform: self.transformToNative()
-            return out
+            return behavior.serialize(self, buf, lineLength, validate)
         else:
             if DEBUG: logger.debug("serializing %s without behavior" % self.name)
             return defaultSerialize(self, buf, lineLength)
@@ -789,7 +782,7 @@ def dquoteEscape(param):
     return param
 
 def foldOneLine(outbuf, input, lineLength = 75):
-    if type(input) in (str, unicode): input = StringIO.StringIO(input)
+    if isinstance(input, basestring): input = StringIO.StringIO(input)
     input.seek(0)
     outbuf.write(input.read(lineLength) + CRLF)
     brokenline = input.read(lineLength - 1)
@@ -800,8 +793,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
 
-    if buf: outbuf = buf
-    else: outbuf=StringIO.StringIO()
+    outbuf = buf or StringIO.StringIO()
 
     if isinstance(obj, Component):
         if obj.group is None:
@@ -832,8 +824,8 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
         foldOneLine(outbuf, s, lineLength)
         if DEBUG: logger.debug("Finished %s line" % obj.name.upper())
-    if not buf:
-        return outbuf.getvalue()
+    
+    return buf or outbuf.getvalue()
 
 
 testVCalendar="""

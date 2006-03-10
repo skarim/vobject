@@ -1313,6 +1313,18 @@ def timedeltaToString(delta):
     if seconds: out += str(seconds) + 'S'
     return out
 
+def timeToString(dateOrDateTime):
+    """
+    Wraps dateToString and dateTimeToString, returning the results
+    of either based on the type of the argument
+    """
+    # Didn't use isinstance here as date and datetime sometimes evalutes as both
+    if (type(dateOrDateTime) == datetime.date):
+        return dateToString(dateOrDateTime)
+    elif(type(dateOrDateTime) == datetime.datetime):
+        return dateTimeToString(dateOrDateTime)
+    
+
 def dateToString(date):
     year  = numToDigits( date.year,  4 )
     month = numToDigits( date.month, 2 )

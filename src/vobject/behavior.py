@@ -52,7 +52,8 @@ class Behavior(object):
     def __init__(self):
         err="Behavior subclasses are not meant to be instantiated"
         raise base.VObjectError(err)
-       
+   
+    @classmethod
     def validate(cls, obj, raiseException=False, complainUnrecognized=False):
         """Check if the object satisfies this behavior's requirements.
         
@@ -94,17 +95,21 @@ class Behavior(object):
         else:
             err = str(obj) + " is not a Component or Contentline"
             raise base.VObjectError(err)
-
+    
+    @classmethod
     def lineValidate(cls, line, raiseException, complainUnrecognized):
         """Examine a line's parameters and values, return True if valid."""
         return True
 
+    @classmethod
     def decode(cls, line):
         if line.encoded: line.encoded=0
     
+    @classmethod
     def encode(cls, line):
         if not line.encoded: line.encoded=1
 
+    @classmethod
     def transformToNative(cls, obj):
         """Turn a ContentLine or Component into a Python-native representation.
         
@@ -113,16 +118,19 @@ class Behavior(object):
         
         """
         return obj
-
+    
+    @classmethod
     def transformFromNative(cls, obj):
         """Inverse of transformToNative."""
         raise base.NativeError("No transformFromNative defined")
-
+    
+    @classmethod
     def generateImplicitParameters(cls, obj):
         """Generate any required information that don't yet exist."""
         pass
     
-    def serialize(cls, obj, buf, lineLength):
+    @classmethod
+    def serialize(cls, obj, buf, lineLength, validate=True):
         """Set implicit parameters, do encoding, return unicode string.
         
         If validate is True, raise VObjectError if the line doesn't validate
@@ -131,18 +139,22 @@ class Behavior(object):
         Default is to call base.defaultSerialize.
         
         """
-        return base.defaultSerialize(obj, buf, lineLength)
+      
+        cls.generateImplicitParameters(obj)
+        if validate: cls.validate(obj, raiseException=True)
+        
+        if obj.isNative:
+            transformed = obj.transformFromNative()
+            undoTransform = True
+        else:
+            transformed = obj
+            undoTransform = False
+        
+        out = base.defaultSerialize(transformed, buf, lineLength)
+        if undoTransform: obj.transformToNative()
+        return out
     
+    @classmethod
     def valueRepr( cls, line ):
         """return the representation of the given content line value"""
         return line.value
-    
-    lineValidate = classmethod(lineValidate)
-    validate     = classmethod(validate)
-    decode       = classmethod(decode)
-    encode       = classmethod(encode)
-    serialize    = classmethod(serialize)
-    valueRepr    = classmethod(valueRepr)
-    transformToNative = classmethod(transformToNative)
-    transformFromNative = classmethod(transformFromNative)  
-    generateImplicitParameters = classmethod(generateImplicitParameters)

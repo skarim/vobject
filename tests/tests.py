@@ -5,15 +5,14 @@ import sys, os
 basepath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert( 0, os.path.join( basepath, 'src', 'vobject' ) )
 
-import base, icalendar, behavior, vcard
+import base, icalendar, behavior, vcard, hcalendar
 import StringIO, re, dateutil.tz, datetime
 
 
 #------------------- Testing and running functions -----------------------------
 def _test():
     import doctest, base, tests, icalendar, __init__, re
-    flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_UDIFF \
-            | doctest.REPORT_ONLY_FIRST_FAILURE
+    flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE
     for mod in base, tests, icalendar, __init__, vcard:
         doctest.testmod(mod, verbose=0, optionflags=flags)
     try:
@@ -550,6 +549,45 @@ __test__ = { "Test readOne" :
     RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
     END:VEVENT
     END:VCALENDAR
+    """,
+    
+    "Serializing iCalendar to hCalendar" :
+    
+    """
+    >>> cal = base.newFromBehavior('hcalendar')
+    >>> cal.behavior
+    <class 'hcalendar.HCalendar'>
+    >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
+    >>> cal.add('vevent')
+    <VEVENT| []>
+    >>> cal.vevent.add('summary').value = "this is a note"
+    >>> cal.vevent.add('url').value = "http://microformats.org/code/hcalendar/creator"
+    >>> cal.vevent.add('dtstart').value = datetime.date(2006,2,27)
+    >>> cal.vevent.add('location').value = "a place"
+    >>> cal.vevent.add('dtend').value = datetime.date(2006,2,27) + datetime.timedelta(days = 2)
+    >>> event2 = cal.add('vevent')
+    >>> event2.add('summary').value = "Another one"
+    >>> event2.add('description').value = "The greatest thing ever!"
+    >>> event2.add('dtstart').value = datetime.datetime(1998, 12, 17, 16, 42, tzinfo = pacific)
+    >>> event2.add('location').value = "somewhere else"
+    >>> event2.add('dtend').value = event2.dtstart.value + datetime.timedelta(days = 6)
+    >>> hcal = cal.serialize()
+    >>> print hcal
+    <span class="vevent">
+       <a class="url" href="http://microformats.org/code/hcalendar/creator">
+          <span class="summary">this is a note</span>:
+          <abbr class="dtstart", title="20060227">Monday, February 27</abbr>
+          - <abbr class="dtend", title="20060301">Tuesday, February 28</abbr>
+          at <span class="location">a place</span>
+       </a>
+    </span>
+    <span class="vevent">
+       <span class="summary">Another one</span>:
+       <abbr class="dtstart", title="19981217T164200-0800">Thursday, December 17, 16:42</abbr>
+       - <abbr class="dtend", title="19981223T164200-0800">Wednesday, December 23, 16:42</abbr>
+       at <span class="location">somewhere else</span>
+       <div class="description">The greatest thing ever!</div>
+    </span>
     """,
 
     "Generate UIDs automatically test:" :
