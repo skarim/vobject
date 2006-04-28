@@ -354,6 +354,22 @@ __test__ = { "Test readOne" :
     >>> summary = vevent.summary.value
     """,
     
+    # make sure date valued UNTILs in rrules are in a reasonable timezone,
+    # and include that day (12/28 in this test)
+    "recurrence test" :
+    r"""
+    >>> f = file(os.path.join(basepath, 'tests', 'recurrence.ics'))
+    >>> cal = base.readOne(f)
+    >>> dates = list(cal.vevent.rruleset)
+    >>> dates[0]
+    datetime.datetime(2006, 1, 26, 23, 0, tzinfo=tzutc())
+    >>> dates[1]
+    datetime.datetime(2006, 2, 23, 23, 0, tzinfo=tzutc())
+    >>> dates[-1]
+    datetime.datetime(2006, 12, 28, 23, 0, tzinfo=tzutc())
+    """,
+             
+             
     "regular expression test" :
     """
     >>> re.findall(base.patterns['name'], '12foo-bar:yay')

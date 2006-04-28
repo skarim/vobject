@@ -376,8 +376,24 @@ class RecurringComponent(Component):
                         # if there's no dtstart, just return None
                         return None
                     # rrulestr complains about unicode, so cast to str
-                    addfunc(dateutil.rrule.rrulestr(str(line.value),
-                                                    dtstart=dtstart))
+                    rule = dateutil.rrule.rrulestr(str(line.value),
+                                                   dtstart=dtstart)
+                    until = rule._until 
+                    if until is not None and until.tzinfo != dtstart.tzinfo:
+                        # dateutil converts the UNTIL date to a datetime,
+                        # check to see if the UNTIL parameter value was a date
+                        vals = dict(pair.split('=') for pair in
+                                    line.value.upper().split(';'))
+                        if len(vals.get('UNTIL', '')) == 8:
+                            # it's not entirely clear, but presumably a date
+                            # valued UNTIL should include that date
+                            until = datetime.datetime.combine(until.date(),
+                                                              dtstart.time())
+                        rule._until = until.replace(tzinfo=dtstart.tzinfo)
+                    
+                    # add the rrule or exrule to the rruleset
+                    addfunc(rule)
+                    
                     if name == 'rrule' and addRDate:
                         try:
                             # dateutils does not work with all-day (datetime.date) items
