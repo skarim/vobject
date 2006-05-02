@@ -214,7 +214,8 @@ class TimezoneComponent(Component):
                 comp = self.add(transitionTo)
                 dtstart = comp.add('dtstart')
                 dtstart.value = rule['start']
-                comp.add('tzname').value  = rule['name']
+                if rule['name'] is not None:
+                    comp.add('tzname').value  = rule['name']
                 line = comp.add('tzoffsetto')
                 line.value = deltaToOffset(rule['offset'])
                 line = comp.add('tzoffsetfrom')
