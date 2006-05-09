@@ -466,6 +466,30 @@ __test__ = { "Test readOne" :
     END:VTIMEZONE
     """,
 
+    "Create iCalendar from scratch" :
+             
+    """
+    >>> cal = base.newFromBehavior('vcalendar', '2.0')
+    >>> cal.add('vevent')
+    <VEVENT| []>
+    >>> cal.vevent.add('dtstart').value = datetime.datetime(2006, 5, 9)
+    >>> cal.vevent.add('description').value = "Test event"
+    >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
+    >>> cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=pacific)
+    >>> cal.vevent.add('uid').value = "Not very random UID"
+    >>> print cal.serialize()
+    BEGIN:VCALENDAR
+    VERSION:2.0
+    PRODID:-//PYVOBJECT//NONSGML Version 1//EN
+    BEGIN:VEVENT
+    UID:Not very random UID
+    DTSTART:20060509T000000
+    CREATED:20060101T180000Z
+    DESCRIPTION:Test event
+    END:VEVENT
+    END:VCALENDAR
+    """,
+
     "Serializing with timezones test" :
     
     """

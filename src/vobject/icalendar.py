@@ -566,6 +566,7 @@ class DateTimeBehavior(behavior.Behavior):
         """
         if obj.isNative: return obj
         obj.isNative = True
+        if obj.value == '': return obj
         obj.value=str(obj.value)
         #we're cheating a little here, parseDtstart allows DATE
         obj.value=parseDtstart(obj)
@@ -575,24 +576,21 @@ class DateTimeBehavior(behavior.Behavior):
             del obj.params['TZID']
         return obj
 
-    @staticmethod
-    def transformFromNative(obj, convertToUTC = False):
+    @classmethod
+    def transformFromNative(cls, obj):
         """Replace the datetime in obj.value with an ISO 8601 string."""
         if obj.isNative:
             obj.isNative = False
             tzid = TimezoneComponent.registerTzinfo(obj.value.tzinfo)
-            obj.value = dateTimeToString(obj.value, convertToUTC)
-            if not convertToUTC and tzid is not None:
+            obj.value = dateTimeToString(obj.value, cls.forceUTC)
+            if not cls.forceUTC and tzid is not None:
                 obj.tzid_param = tzid
 
         return obj
 
 class UTCDateTimeBehavior(DateTimeBehavior):
     """A value which must be specified in UTC."""
-
-    @staticmethod
-    def transformFromNative(obj):
-        return DateTimeBehavior.transformFromNative(obj, False)
+    forceUTC = True
 
 class DateOrDateTimeBehavior(behavior.Behavior):
     """Parent Behavior for ContentLines containing one DATE or DATE-TIME."""
@@ -770,7 +768,8 @@ class VCalendar2_0(behavior.Behavior):
         tzidsUsed = {}
 
         def findTzids(obj, table):
-            if isinstance(obj, ContentLine):
+            if isinstance(obj, ContentLine) and (obj.behavior is None or
+                                                 not obj.behavior.forceUTC):
                 if getattr(obj, 'tzid_param', None):
                     table[obj.tzid_param] = 1
                 else:
@@ -786,7 +785,7 @@ class VCalendar2_0(behavior.Behavior):
                         if tzid:
                             table[tzid] = 1
             for child in obj.getChildren():
-                if obj.name is not 'VTIMEZONE':
+                if obj.name != 'VTIMEZONE':
                     findTzids(child, table)
         
         findTzids(obj, tzidsUsed)
@@ -1175,6 +1174,7 @@ class Trigger(behavior.Behavior):
     name='TRIGGER'
     description='This property specifies when an alarm will trigger.'
     hasNative = True
+    forceUTC = True
 
     @staticmethod
     def transformToNative(obj):
@@ -1212,7 +1212,7 @@ class Trigger(behavior.Behavior):
     def transformFromNative(obj):
         if type(obj.value) == datetime.datetime:
             obj.value_param = 'DATE-TIME'
-            return DateTimeBehavior.transformFromNative(obj, convertToUTC=True)
+            return UTCDateTimeBehavior.transformFromNative(obj)
         elif type(obj.value) == datetime.timedelta:
             return Duration.transformFromNative(obj)
         else:
@@ -1249,17 +1249,17 @@ class PeriodBehavior(behavior.Behavior):
         obj.value = [stringToPeriod(x, tzinfo) for x in obj.value.split(",")]
         return obj
         
-    @staticmethod
-    def transformFromNative(obj, convertToUTC = False):
+    @classmethod
+    def transformFromNative(cls, obj):
         """Convert the list of tuples in obj.value to strings."""
         if obj.isNative:
             obj.isNative = False
             transformed = []
             for tup in obj.value:
-                transformed.append(periodToString(tup, convertToUTC))
+                transformed.append(periodToString(tup, cls.forceUTC))
             if len(transformed) > 0:
                 tzid = TimezoneComponent.registerTzinfo(tup[0].tzinfo)
-                if not convertToUTC and tzid is not None:
+                if not cls.forceUTC and tzid is not None:
                     obj.tzid_param = tzid
                             
             obj.value = ','.join(transformed)
@@ -1269,11 +1269,7 @@ class PeriodBehavior(behavior.Behavior):
 class FreeBusy(PeriodBehavior):
     """Free or busy period of time, must be specified in UTC."""
     name = 'FREEBUSY'
-
-    @staticmethod
-    def transformFromNative(obj):
-        """Pass convertToUTC = True to parent method."""
-        return PeriodBehavior.transformFromNative(obj, True)
+    forceUTC = True
 registerBehavior(FreeBusy)
 
 #------------------------ Registration of common classes -----------------------

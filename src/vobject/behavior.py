@@ -47,6 +47,7 @@ class Behavior(object):
     hasNative= False
     isComponent = False
     allowGroup = False
+    forceUTC = False
     sortFirst = []
 
     def __init__(self):
