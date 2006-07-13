@@ -657,8 +657,7 @@ class MultiDateBehavior(behavior.Behavior):
         appropriate strings.
         
         """
-        # Fixme: obj.value should be a list, so this test should never succeed
-        if type(obj.value) == datetime.date:
+        if obj.value and type(obj.value[0]) == datetime.date:
             obj.isNative = False
             obj.value_param = 'DATE'
             obj.value = ','.join([dateToString(val) for val in obj.value])
