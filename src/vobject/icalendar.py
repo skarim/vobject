@@ -380,7 +380,9 @@ class RecurringComponent(Component):
                     rule = dateutil.rrule.rrulestr(str(line.value),
                                                    dtstart=dtstart)
                     until = rule._until 
-                    if until is not None and until.tzinfo != dtstart.tzinfo:
+                    if until is not None and \
+                       isinstance(dtstart, datetime.datetime) and \
+                       (until.tzinfo != dtstart.tzinfo): 
                         # dateutil converts the UNTIL date to a datetime,
                         # check to see if the UNTIL parameter value was a date
                         vals = dict(pair.split('=') for pair in
