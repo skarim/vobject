@@ -16,7 +16,7 @@ from distutils.core import setup
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.3.0"
+PACKAGE_VERSION = "0.4.0"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
@@ -28,7 +28,7 @@ setup(name = "vobject",
       version = PACKAGE_VERSION,
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
-      license = "BSD",
+      license = "Apache",
       zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
 
