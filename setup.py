@@ -7,12 +7,12 @@ Requires dateutil (https://moin.conectiva.com.br/DateUtil) 0.9 or later.
 """
 
 # not using setuptools until Chandler's ready for eggs
-# from ez_setup import use_setuptools
-# use_setuptools()
+from ez_setup import use_setuptools
+use_setuptools()
 
-# from setuptools import setup, find_packages
+from setuptools import setup, find_packages
 
-from distutils.core import setup
+#from distutils.core import setup
 
 # Metadata
 PACKAGE_NAME = "vobject"
