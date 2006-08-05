@@ -274,7 +274,7 @@ END:VTIMEZONE
 
 __test__ = { "Test readOne" :
     r"""
-    >>> silly = base.readOne(testSilly)
+    >>> silly = base.readOne(testSilly, findBegin=False)
     >>> silly
     <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
     >>> silly.stuff
@@ -285,7 +285,7 @@ __test__ = { "Test readOne" :
     >>> silly2.serialize()==original
     True
     >>> s3 = StringIO.StringIO('cn:Babs Jensen\r\ncn:Barbara J Jensen\r\nsn:Jensen\r\nemail:babs@umich.edu\r\nphone:+1 313 747-4454\r\nx-id:1234567890\r\n')
-    >>> ex1 = base.readOne(s3)
+    >>> ex1 = base.readOne(s3, findBegin=False)
     >>> ex1
     <*unnamed*| [<CN{}Babs Jensen>, <CN{}Barbara J Jensen>, <EMAIL{}babs@umich.edu>, <PHONE{}+1 313 747-4454>, <SN{}Jensen>, <X-ID{}1234567890>]>
     >>> ex1.serialize()

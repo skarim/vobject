@@ -611,6 +611,8 @@ patterns['line'] = r"""
 param_values_re = re.compile(patterns['param_value_grouped'], re.VERBOSE)
 params_re       = re.compile(patterns['params_grouped'],      re.VERBOSE)
 line_re         = re.compile(patterns['line'],                re.VERBOSE)
+begin_re        = re.compile('BEGIN', re.IGNORECASE)
+
 
 def parseParams(string):
     """
@@ -687,7 +689,7 @@ Line 1;encoding=quoted-printable:this is an evil=
 Line 2 is a new line, it does not start with whitespace.
 """
 
-def getLogicalLines(fp, allowQP=True):
+def getLogicalLines(fp, allowQP=True, findBegin=False):
     """Iterate through a stream, yielding one logical line at a time.
 
     Because many applications still use vCard 2.1, we have to deal with the
@@ -710,13 +712,26 @@ def getLogicalLines(fp, allowQP=True):
 
     """
     if not allowQP:
-        val = fp.read(-1)
+        bytes = fp.read(-1)
+        if type(bytes[0]) == unicode:
+            val = bytes
+        elif not findBegin:
+            val = bytes.decode('utf-8')
+        else:
+            for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE':
+                try:
+                    val = bytes.decode(encoding)
+                    if begin_re.search(val) is not None:
+                        break
+                except UnicodeDecodeError:
+                    pass
+            else:
+                raise ParseError, 'Could not find BEGIN when trying to determine encoding'
+
         lineNumber = 1
         for match in logical_lines_re.finditer(val):
             line, n = wrap_re.subn('', match.group())
             if line != '':
-                if type(line[0]) != unicode:
-                    line = line.decode('utf-8')
                 yield line, lineNumber
             lineNumber += n
         
@@ -731,8 +746,6 @@ def getLogicalLines(fp, allowQP=True):
             if line == '':
                 break
             else:
-                if type(line[0]) != unicode:
-                    line = line.decode('utf-8')
                 line = line.rstrip(CRLF)
                 lineNumber += 1
             if line.rstrip() == '':
@@ -771,6 +784,7 @@ def getLogicalLines(fp, allowQP=True):
 
 def textLineToContentLine(text, n=None):
     return ContentLine(*parseLine(text, n), **{'encoded':True, 'lineNumber' : n})
+            
 
 def dquoteEscape(param):
     """Return param, or "param" if ',' or ';' or ':' is in param."""
@@ -857,7 +871,7 @@ class Stack:
     def push(self, obj): self.stack.append(obj)
     def pop(self): return self.stack.pop()
 
-def readComponents(streamOrString, validate=False, transform=True):
+def readComponents(streamOrString, validate=False, transform=True, findBegin=True):
     """Generate one Component at a time from a stream.
 
     >>> import StringIO
@@ -876,7 +890,7 @@ def readComponents(streamOrString, validate=False, transform=True):
     stack = Stack()
     versionLine = None
     n = 0
-    for line, n in getLogicalLines(stream, False): # not allowing vCard 2.1
+    for line, n in getLogicalLines(stream, False, findBegin):
         vline = textLineToContentLine(line, n)
         if   vline.name == "VERSION":
             versionLine = vline
@@ -912,9 +926,9 @@ def readComponents(streamOrString, validate=False, transform=True):
         yield stack.pop()
 
 
-def readOne(stream, validate=False, transform=True):
+def readOne(stream, validate=False, transform=True, findBegin=True):
     """Return the first component from stream."""
-    return readComponents(stream, validate, transform).next()
+    return readComponents(stream, validate, transform, findBegin).next()
 
 #--------------------------- version registry ----------------------------------
 __behaviorRegistry={}

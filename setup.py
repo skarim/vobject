@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.4.0"
+PACKAGE_VERSION = "0.4.1"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
