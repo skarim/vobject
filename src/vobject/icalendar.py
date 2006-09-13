@@ -84,6 +84,9 @@ class TimezoneComponent(Component):
         good_lines = ('rdate', 'rrule', 'dtstart', 'tzname', 'tzoffsetfrom',
                       'tzoffsetto', 'tzid')
         buffer = StringIO.StringIO()
+        # allow empty VTIMEZONEs
+        if len(self.contents) == 0:
+            return None
         def customSerialize(obj):
             if isinstance(obj, Component):
                 foldOneLine(buffer, u"BEGIN:" + obj.name)
@@ -794,8 +797,8 @@ class VCalendar2_0(behavior.Behavior):
         findTzids(obj, tzidsUsed)
         oldtzids = [x.tzid.value for x in getattr(obj, 'vtimezone_list', [])]
         for tzid in tzidsUsed.keys():
-            if tzid == 'UTC' or tzid in oldtzids: continue
-            obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
+            if tzid != 'UTC' and tzid not in oldtzids:
+                obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
 registerBehavior(VCalendar2_0)
 
 class VTimezone(behavior.Behavior):
@@ -814,7 +817,11 @@ class VTimezone(behavior.Behavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        return True #TODO: FIXME
+        if not hasattr(obj, 'tzid') or obj.tzid.value is None:
+            if raiseException:
+                m = "VTIMEZONE components must contain a valid TZID"
+                raise ValidateError(m)
+            return False            
         if obj.contents.has_key('standard') or obj.contents.has_key('daylight'):
             return super(VTimezone, cls).validate(obj, raiseException, *args)
         else:
