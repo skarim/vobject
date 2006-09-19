@@ -270,6 +270,10 @@ class TimezoneComponent(Component):
         # try PyICU's tzid key
         if hasattr(tzinfo, 'tzid'):
             return tzinfo.tzid
+            
+        # try pytz zone key
+        if hasattr(tzinfo, 'zone'):
+            return tzinfo.zone
 
         # try tzical's tzid key
         elif hasattr(tzinfo, '_tzid'):
