@@ -381,8 +381,17 @@ class RecurringComponent(Component):
                     try:
                         dtstart = self.dtstart.value
                     except AttributeError, KeyError:
-                        # if there's no dtstart, just return None
-                        return None
+                        # Special for VTODO - try DUE property instead
+                        try:
+                            if self.name == "VTODO":
+                                dtstart = self.due.value
+                            else:
+                                # if there's no dtstart, just return None
+                                return None
+                        except AttributeError, KeyError:
+                            # if there's no due, just return None
+                            return None
+
                     # rrulestr complains about unicode, so cast to str
                     rule = dateutil.rrule.rrulestr(str(line.value),
                                                    dtstart=dtstart)
@@ -426,7 +435,16 @@ class RecurringComponent(Component):
         return rruleset
 
     def setrruleset(self, rruleset):
-        dtstart = self.dtstart.value
+        
+        # Get DTSTART from component (or DUE if no DTSTART in a VTODO)
+        try:
+            dtstart = self.dtstart.value
+        except AttributeError, KeyError:
+            if self.name == "VTODO":
+                dtstart = self.due.value
+            else:
+                raise
+            
         isDate = datetime.date == type(dtstart)
         if isDate:
             dtstart = datetime.datetime(dtstart.year,dtstart.month, dtstart.day)
@@ -492,7 +510,7 @@ class RecurringComponent(Component):
 
                     if rule._bymonth is not None and len(rule._bymonth) > 0:
                         if (rule._byweekday is not None or
-                            len(rrule._bynweekday or ()) > 0 or
+                            len(rule._bynweekday or ()) > 0 or
                             not (rule._freq == dateutil.rrule.YEARLY and
                                  len(rule._bymonth) == 1 and
                                  rule._bymonth[0] == rule._dtstart.month)):
@@ -584,6 +602,8 @@ class DateTimeBehavior(behavior.Behavior):
         if obj.value.tzinfo is None:
             obj.params['X-VOBJ-FLOATINGTIME-ALLOWED'] = ['TRUE']
         if obj.params.get('TZID'):
+            # Keep a copy of the original TZID around
+            obj.params['X-VOBJ-ORIGINAL-TZID'] = obj.params['TZID']
             del obj.params['TZID']
         return obj
 
@@ -596,6 +616,10 @@ class DateTimeBehavior(behavior.Behavior):
             obj.value = dateTimeToString(obj.value, cls.forceUTC)
             if not cls.forceUTC and tzid is not None:
                 obj.tzid_param = tzid
+            if obj.params.get('X-VOBJ-ORIGINAL-TZID'):
+                if not hasattr(obj, 'tzid_param'):
+                    obj.tzid_param = obj.params['X-VOBJ-ORIGINAL-TZID']
+                del obj.params['X-VOBJ-ORIGINAL-TZID']
 
         return obj
 
@@ -616,7 +640,10 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         obj.value=str(obj.value)
         obj.value=parseDtstart(obj)
         if getattr(obj, 'value_param', 'DATE-TIME').upper() == 'DATE-TIME':
-            if hasattr(obj, 'tzid_param'): del obj.tzid_param
+            if hasattr(obj, 'tzid_param'):
+                # Keep a copy of the original TZID around
+                obj.params['X-VOBJ-ORIGINAL-TZID'] = obj.tzid_param
+                del obj.tzid_param
         return obj
 
     @staticmethod
