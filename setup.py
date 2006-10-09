@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 """VObject: module for reading vCard and vCalendar files
 
-Parses iCalendar and vCard files into Python data structures, decoding the relevant encodings. Also serializes vobject data structures to valid iCalendar or vCard unicode strings.
+Parses iCalendar and vCard files into Python data structures, decoding the relevant encodings. Also serializes vobject data structures to iCalendar, vCard, or (expirementally) hCalendar unicode strings.
 
-Requires dateutil (https://moin.conectiva.com.br/DateUtil) 0.9 or later.
+Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or later.
+
+Recent changes: Merge in Apple CalendarServer patches, improve recurring VTODO support
+
+For older changes, see http://vobject.skyhouseconsulting.com/history.html or http://websvn.osafoundation.org/listing.php?repname=vobject&path=/trunk/
+
 """
 
 # not using setuptools until Chandler's ready for eggs
@@ -16,7 +21,7 @@ from setuptools import setup, find_packages
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.4.3"
+PACKAGE_VERSION = "0.4.4"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
