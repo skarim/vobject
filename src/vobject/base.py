@@ -756,20 +756,23 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
     """
     if not allowQP:
         bytes = fp.read(-1)
-        if type(bytes[0]) == unicode:
-            val = bytes
-        elif not findBegin:
-            val = bytes.decode('utf-8')
-        else:
-            for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE':
-                try:
-                    val = bytes.decode(encoding)
-                    if begin_re.search(val) is not None:
-                        break
-                except UnicodeDecodeError:
-                    pass
+        if len(bytes) > 0:
+            if type(bytes[0]) == unicode:
+                val = bytes
+            elif not findBegin:
+                val = bytes.decode('utf-8')
             else:
-                raise ParseError, 'Could not find BEGIN when trying to determine encoding'
+                for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE':
+                    try:
+                        val = bytes.decode(encoding)
+                        if begin_re.search(val) is not None:
+                            break
+                    except UnicodeDecodeError:
+                        pass
+                else:
+                    raise ParseError, 'Could not find BEGIN when trying to determine encoding'
+        else:
+            val = bytes
 
         lineNumber = 1
         for match in logical_lines_re.finditer(val):
