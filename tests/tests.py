@@ -78,6 +78,18 @@ END:DAYLIGHT
 END:VTIMEZONE
 END:VCALENDAR"""
 
+baddtstarttest="""BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20021028
+DTSTAMP:20021028T011706Z
+SUMMARY:Coffee with Jason
+UID:EC9439B1-FF65-11D6-9973-003065F99D04
+END:VEVENT
+END:VCALENDAR"""
+
 vcardtest = """BEGIN:VCARD
 VERSION:3.0
 FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
@@ -591,6 +603,14 @@ __test__ = { "Test readOne" :
     END:VCALENDAR
     """,
     
+    "Handling DATE without a VALUE=DATE" :
+    
+    """
+    >>> cal = base.readOne(baddtstarttest)
+    >>> cal.vevent.dtstart.value
+    datetime.date(2002, 10, 28)
+    """,
+
     "Serializing iCalendar to hCalendar" :
     
     """

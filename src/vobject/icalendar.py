@@ -672,7 +672,7 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         obj.isNative = True
         if obj.value == '': return obj
         obj.value=str(obj.value)
-        obj.value=parseDtstart(obj)
+        obj.value=parseDtstart(obj, allowSignatureMismatch=True)
         if getattr(obj, 'value_param', 'DATE-TIME').upper() == 'DATE-TIME':
             if hasattr(obj, 'tzid_param'):
                 # Keep a copy of the original TZID around
@@ -1433,8 +1433,7 @@ def isDuration(s):
     s = string.upper(s)
     return (string.find(s, "P") != -1) and (string.find(s, "P") < 2)
 
-def stringToDate(s, tzinfos=None):
-    if tzinfos != None: print "Didn't expect a tzinfos here"
+def stringToDate(s):
     year  = int( s[0:4] )
     month = int( s[4:6] )
     day   = int( s[6:8] )
@@ -1637,13 +1636,26 @@ def stringToDurations(s, strict=False):
             state = "error"
             error("error: unknown state: '%s' reached in %s" % (state, s))
 
-def parseDtstart(contentline):
+def parseDtstart(contentline, allowSignatureMismatch=False):
+    """Convert a contentline's value into a date or date-time.
+    
+    A variety of clients don't serialize dates with the appropriate VALUE
+    parameter, so rather than failing on these (technically invalid) lines,
+    if allowSignatureMismatch is True, try to parse both varieties.
+    
+    """
     tzinfo = getTzid(getattr(contentline, 'tzid_param', None))
     valueParam = getattr(contentline, 'value_param', 'DATE-TIME').upper()
     if valueParam == "DATE":
         return stringToDate(contentline.value)
     elif valueParam == "DATE-TIME":
-        return stringToDateTime(contentline.value, tzinfo)
+        try:
+            return stringToDateTime(contentline.value, tzinfo)
+        except:
+            if allowSignatureMismatch:
+                return stringToDate(contentline.value)
+            else:
+                raise
 
 def stringToPeriod(s, tzinfo=None):
     values   = string.split(s, "/")
