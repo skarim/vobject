@@ -94,6 +94,10 @@ class VBase(object):
                     self.setBehavior(behavior, cascade)
                     if isinstance(self, ContentLine) and self.encoded:
                         self.behavior.decode(self)
+            elif isinstance(self, ContentLine):
+                self.behavior = parentBehavior.defaultBehavior   
+                if self.encoded and self.behavior:
+                    self.behavior.decode(self)
 
     def setBehavior(self, behavior, cascade=True):
         """Set behavior. If cascade is True, autoBehavior all descendants."""
@@ -500,6 +504,9 @@ class Component(VBase):
                 obj = obj.transformToNative()     
             except (KeyError, AttributeError):
                 obj = ContentLine(objOrName, [], '', group)
+            if obj.behavior is None and self.behavior is not None:
+                if isinstance(obj, ContentLine):
+                    obj.behavior = self.behavior.defaultBehavior
         self.contents.setdefault(obj.name.lower(), []).append(obj)
         return obj
 

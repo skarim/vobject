@@ -68,38 +68,6 @@ class Address(object):
         return "<Address: %s>" % repr(str(self))[1:-1]
 
 #------------------------ Registered Behavior subclasses -----------------------
-class VCardBehavior(behavior.Behavior):
-    allowGroup = True
-
-class VCard3_0(VCardBehavior):
-    """vCard 3.0 behavior."""
-    name = 'VCARD'
-    description = 'vCard 3.0, defined in rfc2426'
-    versionString = '3.0'
-    isComponent = True
-    sortFirst = ('version', 'prodid', 'uid')
-    knownChildren = {'N':         (1, 1, None),#min, max, behaviorRegistry id
-                     'FN':        (1, 1, None),
-                     'VERSION':   (1, 1, None),#required, auto-generated
-                     'PRODID':    (0, 1, None),
-                     'LABEL':     (0, None, None),
-                     'UID':       (0, None, None),
-                     'ADR':       (0, None, None),
-                     'PHOTO':     (0, None, None),
-                     'CATEGORIES':(0, None, None)
-                    }
-                    
-    @classmethod
-    def generateImplicitParameters(cls, obj):
-        """Create PRODID, VERSION, and VTIMEZONEs if needed.
-        
-        VTIMEZONEs will need to exist whenever TZID parameters exist or when
-        datetimes with tzinfo exist.
-        
-        """
-        if not hasattr(obj, 'version'):
-            obj.add(ContentLine('VERSION', [], cls.versionString))
-registerBehavior(VCard3_0, default=True)
 
 class VCardTextBehavior(behavior.Behavior):
     """Provide backslash escape encoding/decoding for single valued properties.
@@ -140,6 +108,41 @@ class VCardTextBehavior(behavior.Behavior):
             else:
                 line.value = backslashEscape(line.value)
             line.encoded=True
+
+
+class VCardBehavior(behavior.Behavior):
+    allowGroup = True
+    defaultBehavior = VCardTextBehavior
+
+class VCard3_0(VCardBehavior):
+    """vCard 3.0 behavior."""
+    name = 'VCARD'
+    description = 'vCard 3.0, defined in rfc2426'
+    versionString = '3.0'
+    isComponent = True
+    sortFirst = ('version', 'prodid', 'uid')
+    knownChildren = {'N':         (1, 1, None),#min, max, behaviorRegistry id
+                     'FN':        (1, 1, None),
+                     'VERSION':   (1, 1, None),#required, auto-generated
+                     'PRODID':    (0, 1, None),
+                     'LABEL':     (0, None, None),
+                     'UID':       (0, None, None),
+                     'ADR':       (0, None, None),
+                     'PHOTO':     (0, None, None),
+                     'CATEGORIES':(0, None, None)
+                    }
+                    
+    @classmethod
+    def generateImplicitParameters(cls, obj):
+        """Create PRODID, VERSION, and VTIMEZONEs if needed.
+        
+        VTIMEZONEs will need to exist whenever TZID parameters exist or when
+        datetimes with tzinfo exist.
+        
+        """
+        if not hasattr(obj, 'version'):
+            obj.add(ContentLine('VERSION', [], cls.versionString))
+registerBehavior(VCard3_0, default=True)
 
 class FN(VCardTextBehavior):
     name = "FN"

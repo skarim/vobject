@@ -29,6 +29,8 @@ class Behavior(object):
     @cvar quotedPrintable:
         A boolean describing whether the object should be encoded and decoded
         using quoted printable line folding and character escaping.
+    @cvar defaultBehavior:
+        Behavior to apply to ContentLine children when no behavior is found.
     @cvar hasNative:
         A boolean describing whether the object can be transformed into a more
         Pythonic object.
@@ -44,6 +46,7 @@ class Behavior(object):
     versionString=''
     knownChildren = {}
     quotedPrintable = False
+    defaultBehavior = None
     hasNative= False
     isComponent = False
     allowGroup = False

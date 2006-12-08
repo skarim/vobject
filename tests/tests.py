@@ -83,13 +83,13 @@ VERSION:3.0
 FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
 N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto)
 NICKNAME:gnat and gnu and pluto
-BDAY;value=date:02-10;11-05;01-01
+BDAY;value=date:02-10
 TEL;type=HOME:+01-(0)2-765.43.21
 TEL;type=CELL:+01-(0)5-555.55.55
 ACCOUNT;type=HOME:010-1234567-05
 ADR;type=HOME:;;Haight Street 512;Novosibirsk;;80214;Gnuland
 TEL;type=HOME:+01-(0)2-876.54.32
-ORG:University of Novosibirsk, Department of Octopus
+ORG:University of Novosibirsk\, Department of Octopus
   Parthenogenesis
 END:VCARD"""
 
@@ -103,8 +103,8 @@ bday;value=date:1963-09-21
 o:Universit=E6t G=F6rlitz
 title:Mayor
 title;language=de;value=text:Burgermeister
-note:The Mayor of the great city of
-  Goerlitz in the great country of Germany.
+note:The Mayor of the great city of 
+  Goerlitz in the great country of Germany.\nNext line.
 email;internet:mb@goerlitz.de
 home.tel;type=fax,voice;type=msg:+49 3581 123456
 home.label:Hufenshlagel 1234\n
@@ -657,11 +657,11 @@ __test__ = { "Test readOne" :
     VERSION:3.0
     ACCOUNT;TYPE=HOME:010-1234567-05
     ADR;TYPE=HOME:;;Haight Street 512;Novosibirsk;;80214;Gnuland
-    BDAY;VALUE=date:02-10;11-05;01-01
+    BDAY;VALUE=date:02-10
     FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
     N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto);;;
     NICKNAME:gnat and gnu and pluto
-    ORG:University of Novosibirsk, Department of Octopus Parthenogenesis
+    ORG:University of Novosibirsk\, Department of Octopus Parthenogenesis
     TEL;TYPE=HOME:+01-(0)2-765.43.21
     TEL;TYPE=CELL:+01-(0)5-555.55.55
     TEL;TYPE=HOME:+01-(0)2-876.54.32
@@ -707,5 +707,18 @@ __test__ = { "Test readOne" :
     >>> card = base.readOne(lowercaseComponentNames)
     >>> card.version
     <VERSION{}2.1>
+    """,
+
+    "Default behavior test" :
+             
+    """
+    >>> card = base.readOne(vcardWithGroups)
+    >>> base.getBehavior('note') == None
+    True
+    >>> card.note.behavior
+    <class 'vcard.VCardTextBehavior'>
+    >>> print card.note.value
+    The Mayor of the great city of  Goerlitz in the great country of Germany.
+    Next line.
     """
     }

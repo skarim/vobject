@@ -544,10 +544,44 @@ class RecurringComponent(Component):
         else:
             super(RecurringComponent, self).__setattr__(name, value)
 
-class RecurringBehavior(behavior.Behavior):
+class TextBehavior(behavior.Behavior):
+    """Provide backslash escape encoding/decoding for single valued properties.
+    
+    TextBehavior also deals with base64 encoding if the ENCODING parameter is
+    explicitly set to BASE64.
+    
+    """
+    base64string = 'BASE64' # vCard uses B
+    
+    @classmethod
+    def decode(cls, line):
+        """Remove backslash escaping from line.value."""
+        if line.encoded:
+            encoding = getattr(line, 'encoding_param', None)
+            if encoding and encoding.upper() == cls.base64string:
+                line.value = line.value.decode('base64')
+            else:
+                line.value = stringToTextValues(line.value)[0]
+            line.encoded=False
+    
+    @classmethod
+    def encode(cls, line):
+        """Backslash escape line.value."""
+        if not line.encoded:
+            encoding = getattr(line, 'encoding_param', None)
+            if encoding and encoding.upper() == cls.base64string:
+                line.value = line.value.encode('base64').replace('\n', '')
+            else:
+                line.value = backslashEscape(line.value)
+            line.encoded=True
+
+class VCalendarComponentBehavior(behavior.Behavior):
+    defaultBehavior = TextBehavior
+    isComponent = True
+
+class RecurringBehavior(VCalendarComponentBehavior):
     """Parent Behavior for components which should be RecurringComponents."""
     hasNative = True
-    isComponent = True
     
     @staticmethod
     def transformToNative(obj):
@@ -715,37 +749,6 @@ class MultiDateBehavior(behavior.Behavior):
                 obj.value = ','.join(transformed)
             return obj
 
-class TextBehavior(behavior.Behavior):
-    """Provide backslash escape encoding/decoding for single valued properties.
-    
-    TextBehavior also deals with base64 encoding if the ENCODING parameter is
-    explicitly set to BASE64.
-    
-    """
-    base64string = 'BASE64' # vCard uses B
-    
-    @classmethod
-    def decode(cls, line):
-        """Remove backslash escaping from line.value."""
-        if line.encoded:
-            encoding = getattr(line, 'encoding_param', None)
-            if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.decode('base64')
-            else:
-                line.value = stringToTextValues(line.value)[0]
-            line.encoded=False
-    
-    @classmethod
-    def encode(cls, line):
-        """Backslash escape line.value."""
-        if not line.encoded:
-            encoding = getattr(line, 'encoding_param', None)
-            if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.encode('base64').replace('\n', '')
-            else:
-                line.value = backslashEscape(line.value)
-            line.encoded=True
-
 class MultiTextBehavior(behavior.Behavior):
     """Provide backslash escape encoding/decoding of each of several values.
     
@@ -769,12 +772,11 @@ class MultiTextBehavior(behavior.Behavior):
     
 
 #------------------------ Registered Behavior subclasses -----------------------
-class VCalendar2_0(behavior.Behavior):
+class VCalendar2_0(VCalendarComponentBehavior):
     """vCalendar 2.0 behavior."""
     name = 'VCALENDAR'
     description = 'vCalendar 2.0, also known as iCalendar.'
     versionString = '2.0'
-    isComponent = True
     sortFirst = ('version', 'calscale', 'method', 'prodid', 'vtimezone')
     knownChildren = {'CALSCALE':  (0, 1, None),#min, max, behaviorRegistry id
                      'METHOD':    (0, 1, None),
@@ -832,11 +834,10 @@ class VCalendar2_0(behavior.Behavior):
                 obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
 registerBehavior(VCalendar2_0)
 
-class VTimezone(behavior.Behavior):
+class VTimezone(VCalendarComponentBehavior):
     """Timezone behavior."""
     name = 'VTIMEZONE'
     hasNative = True
-    isComponent = True
     description = 'A grouping of component properties that defines a time zone.'
     sortFirst = ('tzid', 'last-modified', 'tzurl', 'standard', 'daylight')
     knownChildren = {'TZID':         (1, 1, None),#min, max, behaviorRegistry id
@@ -878,10 +879,10 @@ class VTimezone(behavior.Behavior):
         
 registerBehavior(VTimezone)
 
-class DaylightOrStandard(behavior.Behavior):
+class DaylightOrStandard(VCalendarComponentBehavior):
     hasNative = False
-    isComponent = True
-    knownChildren = {'DTSTART':      (1, 1, None)}#min, max, behaviorRegistry id
+    knownChildren = {'DTSTART':      (1, 1, None),#min, max, behaviorRegistry id
+                     'RRULE':        (0, 1, None)}
 
 registerBehavior(DaylightOrStandard, 'STANDARD')
 registerBehavior(DaylightOrStandard, 'DAYLIGHT')
@@ -1029,7 +1030,7 @@ class VJournal(RecurringBehavior):
 registerBehavior(VJournal)
 
 
-class VFreeBusy(behavior.Behavior):
+class VFreeBusy(VCalendarComponentBehavior):
     """Free/busy state behavior.
 
     >>> vfb = newFromBehavior('VFREEBUSY')
@@ -1047,7 +1048,6 @@ class VFreeBusy(behavior.Behavior):
 
     """
     name='VFREEBUSY'
-    isComponent = True
     description='A grouping of component properties that describe either a \
                  request for free/busy time, describe a response to a request \
                  for free/busy time or describe a published set of busy time.'
@@ -1068,10 +1068,9 @@ class VFreeBusy(behavior.Behavior):
 registerBehavior(VFreeBusy)
 
 
-class VAlarm(behavior.Behavior):
+class VAlarm(VCalendarComponentBehavior):
     """Alarm behavior."""
     name='VALARM'
-    isComponent = True
     description='Alarms describe when and how to provide alerts about events \
                  and to-dos.'
     knownChildren = {'ACTION':       (1, 1, None),#min, max, behaviorRegistry id
@@ -1312,6 +1311,14 @@ class FreeBusy(PeriodBehavior):
     name = 'FREEBUSY'
     forceUTC = True
 registerBehavior(FreeBusy)
+
+class RRule(behavior.Behavior):
+    """
+    Dummy behavior to avoid having RRULEs being treated as text lines (and thus
+    having semi-colons inaccurately escaped).
+    """
+registerBehavior(RRule, 'RRULE')
+registerBehavior(RRule, 'EXRULE')
 
 #------------------------ Registration of common classes -----------------------
 
