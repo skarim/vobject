@@ -924,7 +924,8 @@ class Stack:
     def push(self, obj): self.stack.append(obj)
     def pop(self): return self.stack.pop()
 
-def readComponents(streamOrString, validate=False, transform=True, findBegin=True):
+def readComponents(streamOrString, validate=False, transform=True,
+                   findBegin=True, ignoreUnreadable=False):
     """Generate one Component at a time from a stream.
 
     >>> import StringIO
@@ -944,7 +945,19 @@ def readComponents(streamOrString, validate=False, transform=True, findBegin=Tru
     versionLine = None
     n = 0
     for line, n in getLogicalLines(stream, False, findBegin):
-        vline = textLineToContentLine(line, n)
+        if ignoreUnreadable:
+            try:
+                vline = textLineToContentLine(line, n)
+            except VObjectError, e:
+                if e.lineNumber is not None:
+                    msg = "Skipped line %(lineNumber)s, message: %(msg)s"
+                else:
+                    msg = "Skipped a line, message: %(msg)s"
+                logger.error(msg % {'lineNumber' : e.lineNumber, 
+                                    'msg' : e.message})
+                continue
+        else:
+            vline = textLineToContentLine(line, n)
         if   vline.name == "VERSION":
             versionLine = vline
             stack.modifyTop(vline)
@@ -979,9 +992,11 @@ def readComponents(streamOrString, validate=False, transform=True, findBegin=Tru
         yield stack.pop()
 
 
-def readOne(stream, validate=False, transform=True, findBegin=True):
+def readOne(stream, validate=False, transform=True, findBegin=True,
+            ignoreUnreadable=False):
     """Return the first component from stream."""
-    return readComponents(stream, validate, transform, findBegin).next()
+    return readComponents(stream, validate, transform, findBegin,
+                          ignoreUnreadable).next()
 
 #--------------------------- version registry ----------------------------------
 __behaviorRegistry={}

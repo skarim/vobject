@@ -78,14 +78,23 @@ END:DAYLIGHT
 END:VTIMEZONE
 END:VCALENDAR"""
 
-baddtstarttest="""BEGIN:VCALENDAR
-CALSCALE:GREGORIAN
+badDtStartTest="""BEGIN:VCALENDAR
 METHOD:PUBLISH
 VERSION:2.0
 BEGIN:VEVENT
 DTSTART:20021028
 DTSTAMP:20021028T011706Z
 SUMMARY:Coffee with Jason
+UID:EC9439B1-FF65-11D6-9973-003065F99D04
+END:VEVENT
+END:VCALENDAR"""
+
+badLineTest="""BEGIN:VCALENDAR
+METHOD:PUBLISH
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:19870405T020000
+X-BAD_UNDERSCORE:TRUE
 UID:EC9439B1-FF65-11D6-9973-003065F99D04
 END:VEVENT
 END:VCALENDAR"""
@@ -345,6 +354,15 @@ __test__ = { "Test readOne" :
     Traceback (most recent call last):
     ...
     ParseError: At line 11: TRIGGER with no VALUE not recognized as DURATION or as DATE-TIME
+    >>> cal = base.readOne(badLineTest)
+    Traceback (most recent call last):
+    ...
+    ParseError: At line 6: Failed to parse line: X-BAD_UNDERSCORE:TRUE
+    >>> cal = base.readOne(badLineTest, ignoreUnreadable=True)
+    >>> cal.x_bad_underscore
+    Traceback (most recent call last):
+    ...
+    AttributeError: x_bad_underscore
     """,
 
     "ical trigger workaround" :
@@ -606,7 +624,7 @@ __test__ = { "Test readOne" :
     "Handling DATE without a VALUE=DATE" :
     
     """
-    >>> cal = base.readOne(baddtstarttest)
+    >>> cal = base.readOne(badDtStartTest)
     >>> cal.vevent.dtstart.value
     datetime.date(2002, 10, 28)
     """,
