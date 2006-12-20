@@ -38,7 +38,7 @@ setup(name = "vobject",
       license = "Apache",
       zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
-
+      entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main'] },
       package_dir = {'':'src'},
       package_data = {'': ALL_EXTS},
 

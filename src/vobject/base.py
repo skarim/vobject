@@ -878,7 +878,6 @@ def defaultSerialize(obj, buf, lineLength):
         
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
-        #TODO: X- lines should be considered TEXT, and should be encoded as such
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
         s=StringIO.StringIO() #unfolded buffer
         if obj.group is not None:
