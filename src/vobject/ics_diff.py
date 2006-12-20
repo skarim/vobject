@@ -24,17 +24,18 @@ def getSortKey(component):
 def sortByUID(components):
     return sorted(components, key=getSortKey)    
 
-def deleteExtraneous(component):
+def deleteExtraneous(component, ignore_dtstamp=False):
     """
     Recursively walk the component's children, deleting extraneous details like
     X-VOBJ-ORIGINAL-TZID.
     """
     for comp in component.components():
-        deleteExtraneous(comp)
+        deleteExtraneous(comp, ignore_dtstamp)
     for line in component.lines():
         if line.params.has_key('X-VOBJ-ORIGINAL-TZID'):
             del line.params['X-VOBJ-ORIGINAL-TZID']
-    
+    if ignore_dtstamp and hasattr(component, 'dtstamp_list'):
+        del component.dtstamp_list
 
 def diff(left, right):
     """
@@ -180,30 +181,36 @@ import os
 import codecs
 
 def main():
-    options = getOptions()
-    if options:
-        ics_file1, ics_file2 = options
+    options, args = getOptions()
+    if args:
+        ignore_dtstamp = options.ignore
+        ics_file1, ics_file2 = args
         cal1 = base.readOne(file(ics_file1))
         cal2 = base.readOne(file(ics_file2))
-        deleteExtraneous(cal1)
-        deleteExtraneous(cal2)
+        deleteExtraneous(cal1, ignore_dtstamp=ignore_dtstamp)
+        deleteExtraneous(cal2, ignore_dtstamp=ignore_dtstamp)
         prettyDiff(cal1, cal2)
+
+version = "0.1"
 
 def getOptions():
     ##### Configuration options #####
 
-    usage = "usage: %prog ics_file1 ics_file2"
-    parser = OptionParser(usage=usage)
+    usage = "usage: %prog [options] ics_file1 ics_file2"
+    parser = OptionParser(usage=usage, version=version)
     parser.set_description("ics_diff will print a comparison of two iCalendar files ")
+
+    parser.add_option("-i", "--ignore-dtstamp", dest="ignore", action="store_true",
+                      default=False, help="ignore DTSTAMP lines [default: False]")
 
     (cmdline_options, args) = parser.parse_args()
     if len(args) < 2:
         print "error: too few arguments given"
         print
         print parser.format_help()
-        return False
+        return False, False
 
-    return args
+    return cmdline_options, args
 
 if __name__ == "__main__":
     try:

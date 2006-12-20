@@ -6,9 +6,7 @@ Parses iCalendar and vCard files into Python data structures, decoding the relev
 Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or later.
 
 Recent changes:
-- Added ignoreUnreadable flag to readOne and readComponents
-- Tolerate date-time or date fields incorrectly failing to set VALUE=DATE for date values
-- Cause unrecognized lines to default to use a text behavior, so commas, carriage returns, and semi-colons are escaped properly in unrecognized lines
+- Added an ics_diff module and an ics_diff command line script for comparing the VEVENTs and VTODOs in similar iCalendar files
 
 For older changes, see http://vobject.skyhouseconsulting.com/history.html or http://websvn.osafoundation.org/listing.php?repname=vobject&path=/trunk/
 
