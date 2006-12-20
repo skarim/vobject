@@ -23,7 +23,7 @@ from setuptools import setup, find_packages
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.4.5"
+PACKAGE_VERSION = "0.4.6"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
