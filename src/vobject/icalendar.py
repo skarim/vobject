@@ -367,11 +367,11 @@ class RecurringComponent(Component):
                     rruleset = dateutil.rrule.rruleset()
                 if addfunc is None:
                     addfunc=getattr(rruleset, name)
-                
+
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
                         map(addfunc, line.value)
-                    elif type(line.value) == datetime.date:
+                    elif type(line.value[0]) == datetime.date:
                         for dt in line.value:
                             addfunc(datetime.datetime(dt.year, dt.month, dt.day))
                     else:
