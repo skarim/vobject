@@ -769,7 +769,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
             elif not findBegin:
                 val = bytes.decode('utf-8')
             else:
-                for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE':
+                for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE', 'iso-8859-1':
                     try:
                         val = bytes.decode(encoding)
                         if begin_re.search(val) is not None:
@@ -780,6 +780,10 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     raise ParseError, 'Could not find BEGIN when trying to determine encoding'
         else:
             val = bytes
+        
+        # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
+
+        val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
 
         lineNumber = 1
         for match in logical_lines_re.finditer(val):
