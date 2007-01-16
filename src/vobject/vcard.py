@@ -164,13 +164,16 @@ class Photo(VCardTextBehavior):
 registerBehavior(Photo)
 
 def toListOrString(string):
-    if string.find(',') >= 0:
-        return string.split(',')
-    return string
+    stringList = stringToTextValues(string)
+    if len(stringList) == 1:
+        return stringList[0]
+    else:
+        return stringList
 
 def splitFields(string):
     """Return a list of strings or lists from a Name or Address."""
-    return [toListOrString(i) for i in string.split(';')]
+    return [toListOrString(i) for i in
+            stringToTextValues(string, listSeparator=';', charList=';')]
 
 def toList(stringOrList):
     if isinstance(stringOrList, basestring):
@@ -179,7 +182,12 @@ def toList(stringOrList):
 
 def serializeFields(obj, order):
     """Turn an object's fields into a ';' and ',' seperated string."""
-    return ';'.join([','.join(toList(getattr(obj, val))) for val in order])
+    fields = []
+    for field in order:
+        escapedValueList = [backslashEscape(val) for val in
+                            toList(getattr(obj, field))]
+        fields.append(','.join(escapedValueList))
+    return ';'.join(fields)
 
 NAME_ORDER = ('family', 'given', 'additional', 'prefix', 'suffix')
 

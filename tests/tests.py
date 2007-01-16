@@ -99,7 +99,7 @@ UID:EC9439B1-FF65-11D6-9973-003065F99D04
 END:VEVENT
 END:VCALENDAR"""
 
-vcardtest = """BEGIN:VCARD
+vcardtest =r"""BEGIN:VCARD
 VERSION:3.0
 FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
 N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto)
@@ -108,7 +108,7 @@ BDAY;value=date:02-10
 TEL;type=HOME:+01-(0)2-765.43.21
 TEL;type=CELL:+01-(0)5-555.55.55
 ACCOUNT;type=HOME:010-1234567-05
-ADR;type=HOME:;;Haight Street 512;Novosibirsk;;80214;Gnuland
+ADR;type=HOME:;;Haight Street 512\;\nEscape\, Test;Novosibirsk;;80214;Gnuland
 TEL;type=HOME:+01-(0)2-876.54.32
 ORG:University of Novosibirsk\, Department of Octopus
   Parthenogenesis
@@ -683,9 +683,10 @@ __test__ = { "Test readOne" :
     r"""
     >>> card = base.readOne(vcardtest)
     >>> card.adr.value
-    <Address: Haight Street 512\nNovosibirsk,  80214\nGnuland>
+    <Address: Haight Street 512;\nEscape, Test\nNovosibirsk,  80214\nGnuland>
     >>> print card.adr.value
-    Haight Street 512
+    Haight Street 512;
+    Escape, Test
     Novosibirsk,  80214
     Gnuland
     >>> card.org.value
@@ -694,7 +695,8 @@ __test__ = { "Test readOne" :
     BEGIN:VCARD
     VERSION:3.0
     ACCOUNT;TYPE=HOME:010-1234567-05
-    ADR;TYPE=HOME:;;Haight Street 512;Novosibirsk;;80214;Gnuland
+    ADR;TYPE=HOME:;;Haight Street 512\;\nEscape\, Test;Novosibirsk;;80214;Gnula
+     nd
     BDAY;VALUE=date:02-10
     FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
     N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto);;;

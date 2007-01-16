@@ -1458,11 +1458,14 @@ def stringToDateTime(s, tzinfo=None):
 
 escapableCharList = "\\;,Nn"
 
-def stringToTextValues(s, strict=False):
+def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
     """Returns list of strings."""
+    
+    if charList is None:
+        charList = escapableCharList
 
     def escapableChar (c):
-        return c in escapableCharList
+        return c in charList
 
     def error(msg):
         if strict:
@@ -1487,7 +1490,7 @@ def stringToTextValues(s, strict=False):
         if state == "read normal":
             if char == '\\':
                 state = "read escaped char"
-            elif char == ',':
+            elif char == listSeparator:
                 state = "read normal"
                 results.append(current)
                 current = ""
@@ -1506,7 +1509,8 @@ def stringToTextValues(s, strict=False):
                     current = current + char
             else:
                 state = "read normal"
-                current = current + char #this is an error, but whatever
+                # leave unrecognized escaped characters for later passes
+                current = current + '\\' + char 
 
         elif state == "end":    #an end state
             if current != "" or len(results) == 0:
