@@ -404,11 +404,14 @@ class RecurringComponent(Component):
                         vals = dict(pair.split('=') for pair in
                                     line.value.upper().split(';'))
                         if len(vals.get('UNTIL', '')) == 8:
-                            # it's not entirely clear, but presumably a date
-                            # valued UNTIL should include that date
                             until = datetime.datetime.combine(until.date(),
                                                               dtstart.time())
-                        rule._until = until.replace(tzinfo=dtstart.tzinfo)
+                            until = until.replace(tzinfo=dtstart.tzinfo)
+
+                        if dtstart.tzinfo is not None:
+                            until = until.astimezone(dtstart.tzinfo)
+
+                        rule._until = until
                     
                     # add the rrule or exrule to the rruleset
                     addfunc(rule)

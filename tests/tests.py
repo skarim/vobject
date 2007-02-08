@@ -8,7 +8,7 @@ sys.path.insert( 0, os.path.join( basepath, 'src', 'vobject' ) )
 import base, icalendar, behavior, vcard, hcalendar
 import StringIO, re, dateutil.tz, datetime
 
-
+base.logger.setLevel(base.logging.FATAL)
 #------------------- Testing and running functions -----------------------------
 def _test():
     import doctest, base, tests, icalendar, __init__, re
