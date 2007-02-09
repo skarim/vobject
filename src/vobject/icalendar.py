@@ -406,6 +406,12 @@ class RecurringComponent(Component):
                         if len(vals.get('UNTIL', '')) == 8:
                             until = datetime.datetime.combine(until.date(),
                                                               dtstart.time())
+                        # While RFC2445 says UNTIL MUST be UTC, Chandler allows
+                        # floating recurring events, and uses floating UNTIL values.
+                        # Also, some odd floating UNTIL but timezoned DTSTART values
+                        # have shown up in the wild, so put floating UNTIL values
+                        # DTSTART's timezone
+                        if until.tzinfo is None:
                             until = until.replace(tzinfo=dtstart.tzinfo)
 
                         if dtstart.tzinfo is not None:
