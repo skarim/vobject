@@ -10,9 +10,9 @@ import exceptions
 import codecs
 
 #------------------------------------ Logging ----------------------------------
-logger = logging.getLogger('vobject')
-if not logger.handlers:
-    handler=logging.StreamHandler()
+logger = logging.getLogger(__name__)
+if not logging.getLogger().handlers:
+    handler = logging.StreamHandler()
     formatter = logging.Formatter('%(name)s %(levelname)s %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
