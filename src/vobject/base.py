@@ -444,6 +444,8 @@ class Component(VBase):
         """
         if name not in self.normal_attributes and name.lower()==name:
             if type(value) == list:
+                if name.endswith('_list'):
+                    name = name[:-5]
                 self.contents[toVName(name)] = value
             elif name.endswith('_list'):
                 raise VObjectError("Component list set to a non-list")
