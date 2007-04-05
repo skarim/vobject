@@ -1377,7 +1377,7 @@ def timedeltaToString(delta):
     if days: out += str(days) + 'D'
     if hours or minutes or seconds: out += 'T'
     elif not days: #Deal with zero duration
-        out += '0S'
+        out += 'T0S'
     if hours: out += str(hours) + 'H'
     if minutes: out += str(minutes) + 'M'
     if seconds: out += str(seconds) + 'S'
