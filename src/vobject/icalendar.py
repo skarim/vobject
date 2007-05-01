@@ -209,7 +209,7 @@ class TimezoneComponent(Component):
         self.daylight = []
         self.standard = []
         
-        self.add('tzid').value = self.pickTzid(tzinfo)
+        self.add('tzid').value = self.pickTzid(tzinfo, True)
         
         old = None
         for transitionTo in 'daylight', 'standard':
@@ -260,11 +260,11 @@ class TimezoneComponent(Component):
     normal_attributes = Component.normal_attributes + ['tzinfo']
 
     @staticmethod
-    def pickTzid(tzinfo):
+    def pickTzid(tzinfo, allowUTC=False):
         """
         Given a tzinfo class, use known APIs to determine TZID, or use tzname.
         """
-        if tzinfo is None or tzinfo_eq(tzinfo, utc):
+        if tzinfo is None or (not allowUTC and tzinfo_eq(tzinfo, utc)):
             #If tzinfo is UTC, we don't need a TZID
             return None
         # try PyICU's tzid key
