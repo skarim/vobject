@@ -5,7 +5,7 @@ import itertools
 
 from base import VObjectError, NativeError, ValidateError, ParseError, \
                     VBase, Component, ContentLine, logger, defaultSerialize, \
-                    registerBehavior, backslashEscape
+                    registerBehavior, backslashEscape, ascii
 from icalendar import stringToTextValues
 
 #------------------------ vCard structs ----------------------------------------
@@ -29,10 +29,21 @@ class Name(object):
 
     def __str__(self):
         eng_order = ('prefix', 'given', 'additional', 'family', 'suffix')
-        return ' '.join(self.toString(getattr(self, val)) for val in eng_order)
+        out = ' '.join(self.toString(getattr(self, val)) for val in eng_order)
+        return ascii(out)
 
     def __repr__(self):
         return "<Name: %s>" % self.__str__()
+
+    def __eq__(self, other):
+        try:
+            return (self.family == other.family and
+                    self.given == other.given and
+                    self.additional == other.additional and
+                    self.prefix == other.prefix and
+                    self.suffix == other.suffix)
+        except:
+            return False
 
 class Address(object):
     def __init__(self, street = '', city = '', region = '', code = '',
@@ -62,10 +73,23 @@ class Address(object):
         lines += "\n%s, %s %s" % one_line
         if self.country:
             lines += '\n' + self.toString(self.country)
-        return lines
+        return ascii(lines)
 
     def __repr__(self):
         return "<Address: %s>" % repr(str(self))[1:-1]
+
+    def __eq__(self, other):
+        try:
+            return (self.box == other.box and
+                    self.extended == other.extended and
+                    self.street == other.street and
+                    self.city == other.city and
+                    self.region == other.region and
+                    self.code == other.code and
+                    self.country == other.country)
+        except:
+            False
+        
 
 #------------------------ Registered Behavior subclasses -----------------------
 

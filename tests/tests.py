@@ -15,6 +15,7 @@ def _test():
     flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE
     for mod in base, tests, icalendar, __init__, vcard:
         doctest.testmod(mod, verbose=0, optionflags=flags)
+    doctest.testfile('more_tests.txt', optionflags=flags)
     try:
         sys.path.pop()
         sys.path.insert( 0, os.path.join( basepath, 'src' ) )
