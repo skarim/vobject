@@ -6,6 +6,7 @@ Parses iCalendar and vCard files into Python data structures, decoding the relev
 Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or later.
 
 Recent changes:
+- Added ORG behavior for vCard, ORG is now treated as a list of organizations
 - Fixed UNTIL values in RRULEs to have the right value when a dateutil rruleset is created
 - Fixed a problem causing DATE valued RDATEs and EXDATEs to be ignored when interpreting recurrence rules
 - Added an ics_diff module and an ics_diff command line script for comparing the VEVENTs and VTODOs in similar iCalendar files
@@ -23,7 +24,7 @@ from setuptools import setup, find_packages
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.4.8"
+PACKAGE_VERSION = "0.4.9"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 

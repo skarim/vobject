@@ -691,7 +691,7 @@ __test__ = { "Test readOne" :
     Novosibirsk,  80214
     Gnuland
     >>> card.org.value
-    u'University of Novosibirsk, Department of Octopus Parthenogenesis'
+    [u'University of Novosibirsk, Department of Octopus Parthenogenesis']
     >>> print card.serialize()
     BEGIN:VCARD
     VERSION:3.0

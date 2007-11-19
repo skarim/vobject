@@ -5,15 +5,15 @@ Unicode in vCards
 >>> card = vobject.vCard()
 >>> card.add('fn').value = u'Hello\u1234 World!'
 >>> card.add('n').value = vobject.vcard.Name('World', u'Hello\u1234')
->>> card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere', 'Berkeley', 'CA', '94704', 'USA')
+>>> card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
 >>> card
-<VCARD| [<ADR{}5? Nowhere\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>
+<VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>
 >>> card.serialize()
-u'BEGIN:VCARD\r\nVERSION:3.0\r\nADR:;;5\u1234 Nowhere;Berkeley;CA;94704;USA\r\nFN:Hello\u1234 World!\r\nN:World;Hello\u1234;;;\r\nEND:VCARD\r\n'
+u'BEGIN:VCARD\r\nVERSION:3.0\r\nADR:;;5\u1234 Nowhere\\, Apt 1;Berkeley;CA;94704;USA\r\nFN:Hello\u1234 World!\r\nN:World;Hello\u1234;;;\r\nEND:VCARD\r\n'
 >>> print card.serialize().encode('ascii', 'replace')
 BEGIN:VCARD
 VERSION:3.0
-ADR:;;5? Nowhere;Berkeley;CA;94704;USA
+ADR:;;5? Nowhere\, Apt 1;Berkeley;CA;94704;USA
 FN:Hello? World!
 N:World;Hello?;;;
 END:VCARD
@@ -24,5 +24,12 @@ Equality in vCards
 
 >>> card.adr.value == vobject.vcard.Address('Just a street')
 False
->>> card.adr.value == vobject.vcard.Address(u'5\u1234 Nowhere', 'Berkeley', 'CA', '94704', 'USA')
+>>> card.adr.value == vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
 True
+
+Organization (org)
+..................
+
+>>> card.add('org').value = ["Company, Inc.", "main unit", "sub-unit"]
+>>> print card.org.serialize()
+ORG:Company\, Inc.;main unit;sub-unit

@@ -152,6 +152,7 @@ class VCard3_0(VCardBehavior):
                      'LABEL':     (0, None, None),
                      'UID':       (0, None, None),
                      'ADR':       (0, None, None),
+                     'ORG':       (0, None, None),
                      'PHOTO':     (0, None, None),
                      'CATEGORIES':(0, None, None)
                     }
@@ -204,13 +205,20 @@ def toList(stringOrList):
         return [stringOrList]
     return stringOrList
 
-def serializeFields(obj, order):
-    """Turn an object's fields into a ';' and ',' seperated string."""
+def serializeFields(obj, order=None):
+    """Turn an object's fields into a ';' and ',' seperated string.
+    
+    If order is None, obj should be a list, backslash escape each field and
+    return a ';' separated string.
+    """
     fields = []
-    for field in order:
-        escapedValueList = [backslashEscape(val) for val in
-                            toList(getattr(obj, field))]
-        fields.append(','.join(escapedValueList))
+    if order is None:
+        fields = [backslashEscape(val) for val in obj]
+    else:
+        for field in order:
+            escapedValueList = [backslashEscape(val) for val in
+                                toList(getattr(obj, field))]
+            fields.append(','.join(escapedValueList))            
     return ';'.join(fields)
 
 NAME_ORDER = ('family', 'given', 'additional', 'prefix', 'suffix')
@@ -257,4 +265,25 @@ class AddressBehavior(VCardBehavior):
         obj.value = serializeFields(obj.value, ADDRESS_ORDER)
         return obj
 registerBehavior(AddressBehavior, 'ADR')
+    
+class OrgBehavior(VCardBehavior):
+    """A list of organization values and sub-organization values."""
+    hasNative = True
+
+    @staticmethod
+    def transformToNative(obj):
+        """Turn obj.value into a list."""
+        if obj.isNative: return obj
+        obj.isNative = True
+        obj.value = splitFields(obj.value)
+        return obj
+
+    @staticmethod
+    def transformFromNative(obj):
+        """Replace the list in obj.value with a string."""
+        if not obj.isNative: return obj
+        obj.isNative = False
+        obj.value = serializeFields(obj.value)
+        return obj
+registerBehavior(OrgBehavior, 'ORG')
     
