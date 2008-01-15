@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """VObject: module for reading vCard and vCalendar files
 
 Parses iCalendar and vCard files into Python data structures, decoding the relevant encodings. Also serializes vobject data structures to iCalendar, vCard, or (expirementally) hCalendar unicode strings.
@@ -24,7 +23,7 @@ from setuptools import setup, find_packages
 
 # Metadata
 PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.4.9"
+PACKAGE_VERSION = "0.5.0"
 
 ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
