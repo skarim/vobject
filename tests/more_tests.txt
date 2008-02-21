@@ -8,9 +8,9 @@ Unicode in vCards
 >>> card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
 >>> card
 <VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>
->>> card.serialize()
+>>> card.serialize().decode("utf-8")
 u'BEGIN:VCARD\r\nVERSION:3.0\r\nADR:;;5\u1234 Nowhere\\, Apt 1;Berkeley;CA;94704;USA\r\nFN:Hello\u1234 World!\r\nN:World;Hello\u1234;;;\r\nEND:VCARD\r\n'
->>> print card.serialize().encode('ascii', 'replace')
+>>> print card.serialize().decode("utf-8").encode('ascii', 'replace')
 BEGIN:VCARD
 VERSION:3.0
 ADR:;;5? Nowhere\, Apt 1;Berkeley;CA;94704;USA

@@ -302,7 +302,7 @@ __test__ = { "Test readOne" :
     >>> silly.stuff
     <STUFF{}foldedline>
     >>> original = silly.serialize()
-    >>> f3 = StringIO.StringIO(original)
+    >>> f3 = StringIO.StringIO(original.decode("utf-8"))
     >>> silly2 = base.readOne(f3)
     >>> silly2.serialize()==original
     True
@@ -311,7 +311,7 @@ __test__ = { "Test readOne" :
     >>> ex1
     <*unnamed*| [<CN{}Babs Jensen>, <CN{}Barbara J Jensen>, <EMAIL{}babs@umich.edu>, <PHONE{}+1 313 747-4454>, <SN{}Jensen>, <X-ID{}1234567890>]>
     >>> ex1.serialize()
-    u'CN:Babs Jensen\r\nCN:Barbara J Jensen\r\nEMAIL:babs@umich.edu\r\nPHONE:+1 313 747-4454\r\nSN:Jensen\r\nX-ID:1234567890\r\n'
+    'CN:Babs Jensen\r\nCN:Barbara J Jensen\r\nEMAIL:babs@umich.edu\r\nPHONE:+1 313 747-4454\r\nSN:Jensen\r\nX-ID:1234567890\r\n'
     """,
     
     "Import icaltest" :
@@ -328,7 +328,7 @@ __test__ = { "Test readOne" :
     >>> c.vevent.valarm.description.value
     u'Event reminder, with comma\nand line feed'
     >>> c.vevent.valarm.description.serialize()
-    u'DESCRIPTION:Event reminder\\, with comma\\nand line feed\r\n'
+    'DESCRIPTION:Event reminder\\, with comma\\nand line feed\r\n'
     >>> vevent = c.vevent.transformFromNative()
     >>> vevent.rrule
     <RRULE{}FREQ=Weekly;COUNT=10>
@@ -342,11 +342,13 @@ __test__ = { "Test readOne" :
     >>> icalendar.stringToTextValues('abcd,efgh')
     ['abcd', 'efgh']
     >>> icalendar.stringToPeriod("19970101T180000Z/19970102T070000Z")
-    (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 46800))
+    (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))
+    >>> icalendar.stringToPeriod("19970101T180000Z/PT1H")
+    (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 3600))
     >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))
     <RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>
     >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))
-    <RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.timedelta(0, 7200)), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>
+    <RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>
     """,
     
     "read failure" :
@@ -383,6 +385,7 @@ __test__ = { "Test readOne" :
     >>> vevent.summary.value
     u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
     >>> summary = vevent.summary.value
+    >>> test = str(vevent.serialize()),
     """,
     
     # make sure date valued UNTILs in rrules are in a reasonable timezone,
@@ -696,8 +699,8 @@ __test__ = { "Test readOne" :
     BEGIN:VCARD
     VERSION:3.0
     ACCOUNT;TYPE=HOME:010-1234567-05
-    ADR;TYPE=HOME:;;Haight Street 512\;\nEscape\, Test;Novosibirsk;;80214;Gnula
-     nd
+    ADR;TYPE=HOME:;;Haight Street 512\;\nEscape\, Test;Novosibirsk;;80214;Gnul
+     and
     BDAY;VALUE=date:02-10
     FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
     N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto);;;
@@ -731,9 +734,9 @@ __test__ = { "Test readOne" :
     u'home'
     >>> card.group = card.tel.group = 'new'
     >>> card.tel.serialize().strip()
-    u'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
+    'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
     >>> card.serialize().splitlines()[0]
-    u'new.BEGIN:VCARD'
+    'new.BEGIN:VCARD'
     >>> dtstart = base.newFromBehavior('dtstart')
     >>> dtstart.group = "badgroup"
     >>> dtstart.serialize()

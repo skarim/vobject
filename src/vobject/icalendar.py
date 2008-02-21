@@ -782,20 +782,21 @@ class MultiTextBehavior(behavior.Behavior):
 
 #------------------------ Registered Behavior subclasses -----------------------
 class VCalendar2_0(VCalendarComponentBehavior):
-    """vCalendar 2.0 behavior."""
+    """vCalendar 2.0 behavior. With added VAVAILABILITY support."""
     name = 'VCALENDAR'
     description = 'vCalendar 2.0, also known as iCalendar.'
     versionString = '2.0'
     sortFirst = ('version', 'calscale', 'method', 'prodid', 'vtimezone')
-    knownChildren = {'CALSCALE':  (0, 1, None),#min, max, behaviorRegistry id
-                     'METHOD':    (0, 1, None),
-                     'VERSION':   (0, 1, None),#required, but auto-generated
-                     'PRODID':    (1, 1, None),
-                     'VTIMEZONE': (0, None, None),
-                     'VEVENT':    (0, None, None),
-                     'VTODO':     (0, None, None),
-                     'VJOURNAL':  (0, None, None),
-                     'VFREEBUSY': (0, None, None)
+    knownChildren = {'CALSCALE':      (0, 1, None),#min, max, behaviorRegistry id
+                     'METHOD':        (0, 1, None),
+                     'VERSION':       (0, 1, None),#required, but auto-generated
+                     'PRODID':        (1, 1, None),
+                     'VTIMEZONE':     (0, None, None),
+                     'VEVENT':        (0, None, None),
+                     'VTODO':         (0, None, None),
+                     'VJOURNAL':      (0, None, None),
+                     'VFREEBUSY':     (0, None, None),
+                     'VAVAILABILITY': (0, None, None),
                     }
                     
     @classmethod
@@ -941,7 +942,7 @@ class VEvent(RecurringBehavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        if obj.contents.has_key('DTEND') and obj.contents.has_key('DURATION'):
+        if obj.contents.has_key('dtend') and obj.contents.has_key('duration'):
             if raiseException:
                 m = "VEVENT components cannot contain both DTEND and DURATION\
                      components"
@@ -996,7 +997,7 @@ class VTodo(RecurringBehavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        if obj.contents.has_key('DUE') and obj.contents.has_key('DURATION'):
+        if obj.contents.has_key('due') and obj.contents.has_key('duration'):
             if raiseException:
                 m = "VTODO components cannot contain both DUE and DURATION\
                      components"
@@ -1047,12 +1048,14 @@ class VFreeBusy(VCalendarComponentBehavior):
     >>> vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
     >>> vfb.add('dtend').value   = vfb.dtstart.value + twoHours
     >>> vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
+    >>> vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
     >>> print vfb.serialize()
     BEGIN:VFREEBUSY
     UID:test
     DTSTART:20060216T010000Z
     DTEND:20060216T030000Z
     FREEBUSY:20060216T010000Z/PT1H
+    FREEBUSY:20060216T010000Z/20060216T030000Z
     END:VFREEBUSY
 
     """
@@ -1172,7 +1175,7 @@ class VAlarm(VCalendarComponentBehavior):
                 ; and MUST NOT occur more than once
 
                 description /
-        if obj.contents.has_key('DTEND') and obj.contents.has_key('DURATION'):
+        if obj.contents.has_key('dtend') and obj.contents.has_key('duration'):
             if raiseException:
                 m = "VEVENT components cannot contain both DTEND and DURATION\
                      components"
@@ -1184,6 +1187,117 @@ class VAlarm(VCalendarComponentBehavior):
         return True
     
 registerBehavior(VAlarm)
+
+class VAvailability(VCalendarComponentBehavior):
+    """Availability state behavior.
+
+    >>> vav = newFromBehavior('VAVAILABILITY')
+    >>> vav.add('uid').value = 'test'
+    >>> vav.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
+    >>> vav.add('dtstart').value = datetime.datetime(2006, 2, 16, 0, tzinfo=utc)
+    >>> vav.add('dtend').value   = datetime.datetime(2006, 2, 17, 0, tzinfo=utc)
+    >>> vav.add('busytype').value = "BUSY"
+    >>> av = newFromBehavior('AVAILABLE')
+    >>> av.add('uid').value = 'test1'
+    >>> av.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
+    >>> av.add('dtstart').value = datetime.datetime(2006, 2, 16, 9, tzinfo=utc)
+    >>> av.add('dtend').value   = datetime.datetime(2006, 2, 16, 12, tzinfo=utc)
+    >>> av.add('summary').value = "Available in the morning"
+    >>> ignore = vav.add(av)
+    >>> print vav.serialize()
+    BEGIN:VAVAILABILITY
+    UID:test
+    DTSTART:20060216T000000Z
+    DTEND:20060217T000000Z
+    BEGIN:AVAILABLE
+    UID:test1
+    DTSTART:20060216T090000Z
+    DTEND:20060216T120000Z
+    DTSTAMP:20060215T000000Z
+    SUMMARY:Available in the morning
+    END:AVAILABLE
+    BUSYTYPE:BUSY
+    DTSTAMP:20060215T000000Z
+    END:VAVAILABILITY
+
+    """
+    name='VAVAILABILITY'
+    description='A component used to represent a user\'s available time slots.'
+    sortFirst = ('uid', 'dtstart', 'duration', 'dtend')
+    knownChildren = {'UID':           (1, 1, None),#min, max, behaviorRegistry id
+                     'DTSTAMP':       (1, 1, None),
+                     'BUSYTYPE':      (0, 1, None),
+                     'CREATED':       (0, 1, None),
+                     'DTSTART':       (0, 1, None),
+                     'LAST-MODIFIED': (0, 1, None),
+                     'ORGANIZER':     (0, 1, None),
+                     'SEQUENCE':      (0, 1, None),
+                     'SUMMARY':       (0, 1, None),
+                     'URL':           (0, 1, None),
+                     'DTEND':         (0, 1, None),
+                     'DURATION':      (0, 1, None),
+                     'CATEGORIES':    (0, None, None),
+                     'COMMENT':       (0, None, None),
+                     'CONTACT':       (0, None, None),
+                     'AVAILABLE':     (0, None, None),
+                    }
+
+    @classmethod
+    def validate(cls, obj, raiseException, *args):
+        if obj.contents.has_key('dtend') and obj.contents.has_key('duration'):
+            if raiseException:
+                m = "VAVAILABILITY components cannot contain both DTEND and DURATION\
+                     components"
+                raise ValidateError(m)
+            return False
+        else:
+            return super(VAvailability, cls).validate(obj, raiseException, *args)
+      
+registerBehavior(VAvailability)
+
+class Available(RecurringBehavior):
+    """Event behavior."""
+    name='AVAILABLE'
+    sortFirst = ('uid', 'recurrence-id', 'dtstart', 'duration', 'dtend')
+
+    description='Defines a period of time in which a user is normally available.'
+    knownChildren = {'DTSTAMP':      (1, 1, None),#min, max, behaviorRegistry id
+                     'DTSTART':      (1, 1, None),
+                     'UID':          (1, 1, None),  
+                     'DTEND':        (0, 1, None), #NOTE: One of DtEnd or
+                     'DURATION':     (0, 1, None), #      Duration must appear, but not both
+                     'CREATED':      (0, 1, None),
+                     'LAST-MODIFIED':(0, 1, None),
+                     'RECURRENCE-ID':(0, 1, None),  
+                     'RRULE':        (0, 1, None),
+                     'SUMMARY':      (0, 1, None),                     
+                     'CATEGORIES':   (0, None, None),
+                     'COMMENT':      (0, None, None),
+                     'CONTACT':      (0, None, None),
+                     'EXDATE':       (0, None, None),
+                     'RDATE':        (0, None, None),
+                    }
+
+    @classmethod
+    def validate(cls, obj, raiseException, *args):
+        has_dtend = obj.contents.has_key('dtend')
+        has_duration = obj.contents.has_key('duration')
+        if has_dtend and has_duration:
+            if raiseException:
+                m = "AVAILABLE components cannot contain both DTEND and DURATION\
+                     properties"
+                raise ValidateError(m)
+            return False
+        elif not (has_dtend or has_duration):
+            if raiseException:
+                m = "AVAILABLE components must contain one of DTEND or DURATION\
+                     properties"
+                raise ValidateError(m)
+            return False
+        else:
+            return super(Available, cls).validate(obj, raiseException, *args)
+      
+registerBehavior(Available)
 
 class Duration(behavior.Behavior):
     """Behavior for Duration ContentLines.  Transform to datetime.timedelta."""
@@ -1344,7 +1458,7 @@ registerBehavior(MultiDateBehavior, 'EXDATE')
 
 textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
             'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
-            'UID', 'ACTION', 'REQUEST-STATUS', 'TZID']
+            'UID', 'ACTION', 'REQUEST-STATUS', 'TZID', 'BUSYTYPE']
 map(lambda x: registerBehavior(TextBehavior, x), textList)
 
 multiTextList = ['CATEGORIES', 'RESOURCES']
@@ -1678,7 +1792,7 @@ def stringToPeriod(s, tzinfo=None):
         delta = stringToDurations(valEnd)[0]
         return (start, delta)
     else:
-        return (start, stringToDateTime(valEnd, tzinfo) - start)
+        return (start, stringToDateTime(valEnd, tzinfo))
 
 
 def getTransition(transitionTo, year, tzinfo):
