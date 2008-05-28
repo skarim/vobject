@@ -4,7 +4,7 @@ import vobject
 from vobject import base, icalendar, behavior, vcard, hcalendar
 import StringIO, re, dateutil.tz, datetime
 
-import doctest, tests, unittest
+import doctest, test_vobject, unittest
 
 from pkg_resources import resource_stream
 
@@ -15,7 +15,7 @@ def additional_tests():
 
     flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE
     suite = unittest.TestSuite()
-    for module in base, tests, icalendar, vobject, vcard:
+    for module in base, test_vobject, icalendar, vobject, vcard:
         suite.addTest(doctest.DocTestSuite(module, optionflags=flags))
 
     suite.addTest(doctest.DocFileSuite(

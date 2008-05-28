@@ -27,7 +27,7 @@ setup(name = "vobject",
       url = "http://vobject.skyhouseconsulting.com",
       entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main'] },
       include_package_data = True,
-      test_suite = "tests",
+      test_suite = "test_vobject",
 
       install_requires = ['python-dateutil >= 1.1'], 
       
