@@ -624,7 +624,9 @@ class NativeError(VObjectError):
 
 patterns = {}
 
-patterns['name'] = '[a-zA-Z0-9\-]+'
+# Note that underscore is not legal for names, it's included because
+# Lotus Notes uses it
+patterns['name'] = '[a-zA-Z0-9\-_]+'                                  
 patterns['safe_char'] = '[^";:,]'
 patterns['qsafe_char'] = '[^"]'
 
@@ -723,7 +725,8 @@ def parseLine(line, lineNumber = None):
     match = line_re.match(line)
     if match is None:
         raise ParseError("Failed to parse line: %s" % line, lineNumber)
-    return (match.group('name'), 
+    # Underscores are replaced with dash to work around Lotus Notes
+    return (match.group('name').replace('_','-'),                                 
             parseParams(match.group('params')),
             match.group('value'), match.group('group'))
 

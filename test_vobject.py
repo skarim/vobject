@@ -96,6 +96,7 @@ METHOD:PUBLISH
 VERSION:2.0
 BEGIN:VEVENT
 DTSTART:19870405T020000
+X-BAD/SLASH:TRUE
 X-BAD_UNDERSCORE:TRUE
 UID:EC9439B1-FF65-11D6-9973-003065F99D04
 END:VEVENT
@@ -361,12 +362,14 @@ __test__ = { "Test readOne" :
     >>> cal = base.readOne(badLineTest)
     Traceback (most recent call last):
     ...
-    ParseError: At line 6: Failed to parse line: X-BAD_UNDERSCORE:TRUE
+    ParseError: At line 6: Failed to parse line: X-BAD/SLASH:TRUE
     >>> cal = base.readOne(badLineTest, ignoreUnreadable=True)
-    >>> cal.x_bad_underscore
+    >>> cal.vevent.x_bad_slash
     Traceback (most recent call last):
     ...
-    AttributeError: x_bad_underscore
+    AttributeError: x_bad_slash
+    >>> cal.vevent.x_bad_underscore
+    <X-BAD-UNDERSCORE{}TRUE>
     """,
 
     "ical trigger workaround" :
