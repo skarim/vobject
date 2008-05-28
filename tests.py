@@ -4,22 +4,29 @@ import vobject
 from vobject import base, icalendar, behavior, vcard, hcalendar
 import StringIO, re, dateutil.tz, datetime
 
+import doctest, tests, unittest
+
+from pkg_resources import resource_stream
+
 base.logger.setLevel(base.logging.FATAL)
 #------------------- Testing and running functions -----------------------------
-def _test():
-    import doctest, tests
+# named additional_tests for setuptools
+def additional_tests():
+
     flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE
+    suite = unittest.TestSuite()
     for module in base, tests, icalendar, vobject, vcard:
-        doctest.testmod(module, verbose=0, optionflags=flags)
-    doctest.testfile('more_tests.txt', optionflags=flags)
-    try:
-        doctest.testfile('../README.txt', optionflags=flags)
-    except IOError: #allow this test to fail if we can't find README.txt
-        print "couldn't find README.txt, skipping it"
-    
+        suite.addTest(doctest.DocTestSuite(module, optionflags=flags))
+
+    suite.addTest(doctest.DocFileSuite(
+        'README.txt', 'test_files/more_tests.txt',
+        package='__main__', optionflags=flags
+    ))
+    return suite
     
 if __name__ == '__main__':
-    _test()
+    runner = unittest.TextTestRunner()
+    runner.run(additional_tests())
 
 
 testSilly="""
@@ -374,7 +381,7 @@ __test__ = { "Test readOne" :
     
     "unicode test" :
     r"""
-    >>> f = open('utf8_test.ics')
+    >>> f = resource_stream(__name__, 'test_files/utf8_test.ics')
     >>> vevent = base.readOne(f).vevent
     >>> vevent.summary.value
     u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
@@ -386,7 +393,7 @@ __test__ = { "Test readOne" :
     # and include that day (12/28 in this test)
     "recurrence test" :
     r"""
-    >>> f = file('recurrence.ics')
+    >>> f = resource_stream(__name__, 'test_files/recurrence.ics')
     >>> cal = base.readOne(f)
     >>> dates = list(cal.vevent.rruleset)
     >>> dates[0]

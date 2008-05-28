@@ -14,9 +14,7 @@ For older changes, see http://vobject.skyhouseconsulting.com/history.html or htt
 from ez_setup import use_setuptools
 use_setuptools()
 
-from setuptools import setup
-
-# ALL_EXTS = ['*.py', '*.ics', '*.txt']
+from setuptools import setup, find_packages
 
 doclines = __doc__.splitlines()
 
@@ -28,14 +26,13 @@ setup(name = "vobject",
       zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
       entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main'] },
-#       package_dir = {'':'vobject'},
       include_package_data = True,
-#       package_data = {'': ALL_EXTS},
+      test_suite = "tests",
 
       install_requires = ['python-dateutil >= 1.1'], 
-
+      
       platforms = ["any"],
-      packages = ["vobject"],
+      packages = find_packages(),
       description = doclines[0],
       long_description = "\n".join(doclines[2:]),
       classifiers =  """
