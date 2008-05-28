@@ -19,11 +19,11 @@ if not logging.getLogger().handlers:
 logger.setLevel(logging.ERROR) # Log errors
 DEBUG = False # Don't waste time on debug calls
 #----------------------------------- Constants ---------------------------------
-CR     = unichr(13)
-LF     = unichr(10)
+CR     = '\r'
+LF     = '\n'
 CRLF   = CR + LF
-SPACE  = unichr(32)
-TAB    = unichr(9)
+SPACE  = ' '
+TAB    = '\t'
 SPACEORTAB = SPACE + TAB
 #-------------------------------- Useful modules -------------------------------
 #   use doctest, it kills two birds with one stone and docstrings often become
@@ -260,6 +260,17 @@ class ContentLine(VBase):
             self.singletonparams.remove('QUOTED-PRINTABLE')
         if qp:
             self.value = str(self.value).decode('quoted-printable')
+
+        # self.value should be unicode for iCalendar, but if quoted-printable
+        # is used, or if the quoted-printable state machine is used, text may be
+        # encoded
+        if type(self.value) is str:
+            charset = 'iso-8859-1'
+            if 'CHARSET' in self.params:
+                charsets = self.params.pop('CHARSET')
+                if charsets:
+                    charset = charsets[0]
+            self.value = unicode(self.value, charset)
 
     @classmethod
     def duplicate(clz, copyit):
@@ -662,7 +673,7 @@ patterns['line'] = r"""
 
 param_values_re = re.compile(patterns['param_value_grouped'], re.VERBOSE)
 params_re       = re.compile(patterns['params_grouped'],      re.VERBOSE)
-line_re         = re.compile(patterns['line'],                re.VERBOSE)
+line_re         = re.compile(patterns['line'],    re.DOTALL | re.VERBOSE)
 begin_re        = re.compile('BEGIN', re.IGNORECASE)
 
 
@@ -957,7 +968,8 @@ class Stack:
 
 
 def readComponents(streamOrString, validate=False, transform=True,
-                   findBegin=True, ignoreUnreadable=False):
+                   findBegin=True, ignoreUnreadable=False,
+                   allowQP=False):
     """Generate one Component at a time from a stream.
 
     >>> import StringIO
@@ -978,7 +990,7 @@ def readComponents(streamOrString, validate=False, transform=True,
         stack = Stack()
         versionLine = None
         n = 0
-        for line, n in getLogicalLines(stream, False, findBegin):
+        for line, n in getLogicalLines(stream, allowQP, findBegin):
             if ignoreUnreadable:
                 try:
                     vline = textLineToContentLine(line, n)
@@ -1031,10 +1043,10 @@ def readComponents(streamOrString, validate=False, transform=True,
 
 
 def readOne(stream, validate=False, transform=True, findBegin=True,
-            ignoreUnreadable=False):
+            ignoreUnreadable=False, allowQP=False):
     """Return the first component from stream."""
     return readComponents(stream, validate, transform, findBegin,
-                          ignoreUnreadable).next()
+                          ignoreUnreadable, allowQP).next()
 
 #--------------------------- version registry ----------------------------------
 __behaviorRegistry={}

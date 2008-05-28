@@ -1,3 +1,4 @@
+
 Unicode in vCards
 .................
 
@@ -33,3 +34,19 @@ Organization (org)
 >>> card.add('org').value = ["Company, Inc.", "main unit", "sub-unit"]
 >>> print card.org.serialize()
 ORG:Company\, Inc.;main unit;sub-unit
+
+
+quoted-printable
+................
+
+>>> vcf = 'BEGIN:VCARD\nVERSION:2.1\nN;ENCODING=QUOTED-PRINTABLE:;=E9\nFN;ENCODING=QUOTED-PRINTABLE:=E9\nTEL;HOME:0111111111\nEND:VCARD\n\n'
+>>> vcf = vobject.readOne(vcf)
+>>> vcf.n.value
+u';\xe9'
+>>> vcf.serialize()
+'BEGIN:VCARD\r\nFN:\xc3\xa9\r\nN:;\xc3\xa9\r\nTEL:0111111111\r\nVERSION:2.1\r\nEND:VCARD\r\n'
+
+>>> vcs = 'BEGIN:VCALENDAR\r\nPRODID:-//OpenSync//NONSGML OpenSync vformat 0.3//EN\r\nVERSION:1.0\r\nBEGIN:VEVENT\r\nDESCRIPTION;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:foo =C3=A5=0Abar =C3=A4=\r\n=0Abaz =C3=B6\r\nUID:20080406T152030Z-7822\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n'
+>>> vcs = vobject.readOne(vcs, allowQP = True)
+>>> vcs.serialize()
+'BEGIN:VCALENDAR\r\nPRODID:-//OpenSync//NONSGML OpenSync vformat 0.3//EN\r\nVERSION:1.0\r\nBEGIN:VEVENT\r\nDESCRIPTION:foo \xc3\xa5\nbar \xc3\xa4\nbaz \xc3\xb6\r\nUID:20080406T152030Z-7822\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n'
