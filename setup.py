@@ -14,30 +14,23 @@ For older changes, see http://vobject.skyhouseconsulting.com/history.html or htt
 from ez_setup import use_setuptools
 use_setuptools()
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
-#from distutils.core import setup
-
-# Metadata
-PACKAGE_NAME = "vobject"
-PACKAGE_VERSION = "0.6.0"
-
-ALL_EXTS = ['*.py', '*.ics', '*.txt']
-
-packages = ['vobject']
+# ALL_EXTS = ['*.py', '*.ics', '*.txt']
 
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = PACKAGE_VERSION,
+      version = "0.6.0",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       license = "Apache",
       zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
       entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main'] },
-      package_dir = {'':'src'},
-      package_data = {'': ALL_EXTS},
+#       package_dir = {'':'vobject'},
+      include_package_data = True,
+#       package_data = {'': ALL_EXTS},
 
       install_requires = ['python-dateutil >= 1.1'], 
 
