@@ -11,14 +11,24 @@ Unicode in vCards
 <VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>
 >>> card.serialize().decode("utf-8")
 u'BEGIN:VCARD\r\nVERSION:3.0\r\nADR:;;5\u1234 Nowhere\\, Apt 1;Berkeley;CA;94704;USA\r\nFN:Hello\u1234 World!\r\nN:World;Hello\u1234;;;\r\nEND:VCARD\r\n'
->>> print card.serialize().decode("utf-8").encode('ascii', 'replace')
+>>> print card.serialize()
 BEGIN:VCARD
 VERSION:3.0
-ADR:;;5? Nowhere\, Apt 1;Berkeley;CA;94704;USA
-FN:Hello? World!
-N:World;Hello?;;;
+ADR:;;5ሴ Nowhere\, Apt 1;Berkeley;CA;94704;USA
+FN:Helloሴ World!
+N:World;Helloሴ;;;
 END:VCARD
 
+Unicode in TZID
+...............
+
+>>> from pkg_resources import resource_stream
+>>> f = resource_stream(__name__, 'test_files/tzid_8bit.ics')
+>>> cal = vobject.readOne(f)
+>>> print cal.vevent.dtstart.value
+2008-05-30 15:00:00+06:00
+>>> print cal.vevent.dtstart.serialize()
+DTSTART;TZID=Екатеринбург:20080530T150000
 
 Equality in vCards
 ..................

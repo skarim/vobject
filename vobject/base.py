@@ -4,7 +4,7 @@ import copy
 import re
 import sys
 import logging
-import StringIO
+import StringIO, cStringIO
 import string
 import exceptions
 import codecs
@@ -902,7 +902,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
 
-    outbuf = buf or StringIO.StringIO()
+    outbuf = buf or cStringIO.StringIO()
 
     if isinstance(obj, Component):
         if obj.group is None:
@@ -916,26 +916,19 @@ def defaultSerialize(obj, buf, lineLength):
             child.serialize(outbuf, lineLength, validate=False)
         if obj.useBegin:
             foldOneLine(outbuf, str(groupString + u"END:" + obj.name), lineLength)
-        if DEBUG: logger.debug("Finished %s" % obj.name.upper())
         
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
-        s=StringIO.StringIO() #unfolded buffer
+        s=codecs.getwriter('utf-8')(cStringIO.StringIO()) #unfolded buffer
         if obj.group is not None:
-            s.write(str(obj.group + '.'))
-        if DEBUG: logger.debug("Serializing line" + str(obj))
-        s.write(str(obj.name.upper()))
+            s.write(obj.group + '.')
+        s.write(obj.name.upper())
         for key, paramvals in obj.params.iteritems():
-            s.write(';' + str(key) + '=' + ','.join(map(dquoteEscape, paramvals)).encode("utf-8"))
-        if isinstance(obj.value, unicode):
-            strout = obj.value.encode("utf-8")
-        else:
-            strout = obj.value
-        s.write(':' + strout)
+            s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
+        s.write(':' + obj.value)
         if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
-        if DEBUG: logger.debug("Finished %s line" % obj.name.upper())
     
     return buf or outbuf.getvalue()
 

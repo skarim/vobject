@@ -4,15 +4,15 @@ import string
 import behavior
 import dateutil.rrule
 import dateutil.tz
-import StringIO
+import StringIO, cStringIO
 import datetime
 import socket, random #for generating a UID
 import itertools
 
-from base import VObjectError, NativeError, ValidateError, ParseError, \
-                    VBase, Component, ContentLine, logger, defaultSerialize, \
-                    registerBehavior, backslashEscape, foldOneLine, \
-                    newFromBehavior, CRLF, LF
+from base import (VObjectError, NativeError, ValidateError, ParseError,
+                    VBase, Component, ContentLine, logger, defaultSerialize,
+                    registerBehavior, backslashEscape, foldOneLine,
+                    newFromBehavior, CRLF, LF, ascii)
 
 #------------------------------- Constants -------------------------------------
 DATENAMES = ("rdate", "exdate")
@@ -30,13 +30,19 @@ twoHours  = datetime.timedelta(hours=2)
 #---------------------------- TZID registry ------------------------------------
 __tzidMap={}
 
+def toUnicode(s):
+    """Take a string or unicode, turn it into unicode, decoding as utf-8"""
+    if isinstance(s, str):
+        s = s.decode('utf-8')
+    return s
+
 def registerTzid(tzid, tzinfo):
     """Register a tzid -> tzinfo mapping."""
-    __tzidMap[tzid]=tzinfo
+    __tzidMap[toUnicode(tzid)]=tzinfo
 
 def getTzid(tzid):
     """Return the tzid if it exists, or None."""
-    return __tzidMap.get(tzid, None)
+    return __tzidMap.get(toUnicode(tzid), None)
 
 utc = dateutil.tz.tzutc()
 registerTzid("UTC", utc)
@@ -83,7 +89,8 @@ class TimezoneComponent(Component):
         # workaround for dateutil failing to parse some experimental properties
         good_lines = ('rdate', 'rrule', 'dtstart', 'tzname', 'tzoffsetfrom',
                       'tzoffsetto', 'tzid')
-        buffer = StringIO.StringIO()
+        # serialize encodes as utf-8, cStringIO will leave utf-8 alone
+        buffer = cStringIO.StringIO()
         # allow empty VTIMEZONEs
         if len(self.contents) == 0:
             return None
@@ -97,7 +104,8 @@ class TimezoneComponent(Component):
                     customSerialize(comp)
                 foldOneLine(buffer, u"END:" + obj.name)
         customSerialize(self)
-        return dateutil.tz.tzical(StringIO.StringIO(str(buffer.getvalue()))).get()
+        buffer.seek(0) # tzical wants to read a stream
+        return dateutil.tz.tzical(buffer).get()
 
     def settzinfo(self, tzinfo, start=2000, end=2030):
         """Create appropriate objects in self to represent tzinfo.
@@ -269,22 +277,22 @@ class TimezoneComponent(Component):
             return None
         # try PyICU's tzid key
         if hasattr(tzinfo, 'tzid'):
-            return tzinfo.tzid
+            return toUnicode(tzinfo.tzid)
             
         # try pytz zone key
         if hasattr(tzinfo, 'zone'):
-            return tzinfo.zone
+            return toUnicode(tzinfo.zone)
 
         # try tzical's tzid key
         elif hasattr(tzinfo, '_tzid'):
-            return tzinfo._tzid
+            return toUnicode(tzinfo._tzid)
         else:
             # return tzname for standard (non-DST) time
             notDST = datetime.timedelta(0)
             for month in xrange(1,13):
                 dt = datetime.datetime(2000, month, 1)
                 if tzinfo.dst(dt) == notDST:
-                    return tzinfo.tzname(dt)
+                    return toUnicode(tzinfo.tzname(dt))
         # there was no standard time in 2000!
         raise VObjectError("Unable to guess TZID for tzinfo %s" % str(tzinfo))
 
@@ -646,7 +654,7 @@ class DateTimeBehavior(behavior.Behavior):
             obj.params['X-VOBJ-FLOATINGTIME-ALLOWED'] = ['TRUE']
         if obj.params.get('TZID'):
             # Keep a copy of the original TZID around
-            obj.params['X-VOBJ-ORIGINAL-TZID'] = obj.params['TZID']
+            obj.params['X-VOBJ-ORIGINAL-TZID'] = [obj.params['TZID']]
             del obj.params['TZID']
         return obj
 
@@ -661,7 +669,7 @@ class DateTimeBehavior(behavior.Behavior):
                 obj.tzid_param = tzid
             if obj.params.get('X-VOBJ-ORIGINAL-TZID'):
                 if not hasattr(obj, 'tzid_param'):
-                    obj.tzid_param = obj.params['X-VOBJ-ORIGINAL-TZID']
+                    obj.tzid_param = obj.x_vobj_original_tzid_param
                 del obj.params['X-VOBJ-ORIGINAL-TZID']
 
         return obj
@@ -685,7 +693,7 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         if getattr(obj, 'value_param', 'DATE-TIME').upper() == 'DATE-TIME':
             if hasattr(obj, 'tzid_param'):
                 # Keep a copy of the original TZID around
-                obj.params['X-VOBJ-ORIGINAL-TZID'] = obj.tzid_param
+                obj.params['X-VOBJ-ORIGINAL-TZID'] = [obj.tzid_param]
                 del obj.tzid_param
         return obj
 
@@ -838,9 +846,10 @@ class VCalendar2_0(VCalendarComponentBehavior):
                     findTzids(child, table)
         
         findTzids(obj, tzidsUsed)
-        oldtzids = [x.tzid.value for x in getattr(obj, 'vtimezone_list', [])]
+        oldtzids = [toUnicode(x.tzid.value) for x in getattr(obj, 'vtimezone_list', [])]
         for tzid in tzidsUsed.keys():
-            if tzid != 'UTC' and tzid not in oldtzids:
+            tzid = toUnicode(tzid)
+            if tzid != u'UTC' and tzid not in oldtzids:
                 obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
 registerBehavior(VCalendar2_0)
 
