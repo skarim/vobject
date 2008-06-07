@@ -293,6 +293,19 @@ class ContentLine(VBase):
         except:
             return False
 
+    def _getAttributeNames(self):
+        """Return a list of attributes of the object.
+
+           Python 2.6 will add __dir__ to customize what attributes are returned
+           by dir, for now copy PyCrust so that IPython can accurately do
+           completion.
+
+        """
+        keys = self.params.keys()
+        params = [param + '_param' for param in keys]
+        params.extend(param + '_paramlist' for param in keys)
+        return params
+
     def __getattr__(self, name):
         """Make params accessible via self.foo_param or self.foo_paramlist.
 
@@ -430,6 +443,18 @@ class Component(VBase):
             raise VObjectError("This component already has a PROFILE or uses BEGIN.")
         self.name = name.upper()
 
+    def _getAttributeNames(self):
+        """Return a list of attributes of the object.
+
+           Python 2.6 will add __dir__ to customize what attributes are returned
+           by dir, for now copy PyCrust so that IPython can accurately do
+           completion.
+
+        """
+        names = self.contents.keys()
+        names.extend(name + '_list' for name in self.contents.keys())
+        return names
+
     def __getattr__(self, name):
         """For convenience, make self.contents directly accessible.
         
@@ -437,6 +462,10 @@ class Component(VBase):
         which are legal in IANA tokens.
         
         """
+        # if the object is being re-created by pickle, self.contents may not
+        # be set, don't get into an infinite loop over the issue
+        if name == 'contents':
+            return object.__getattribute__(self, name) 
         try:
             if name.endswith('_list'):
                 return self.contents[toVName(name, 5)]
