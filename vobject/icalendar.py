@@ -401,8 +401,10 @@ class RecurringComponent(Component):
                             return None
 
                     # rrulestr complains about unicode, so cast to str
-                    rule = dateutil.rrule.rrulestr(str(line.value),
-                                                   dtstart=dtstart)
+                    # a Ruby iCalendar library escapes semi-colons in rrules,
+                    # so also remove any backslashes
+                    value = str(line.value).replace('\\', '')
+                    rule = dateutil.rrule.rrulestr(value, dtstart=dtstart)
                     until = rule._until 
                     if until is not None and \
                        isinstance(dtstart, datetime.datetime) and \

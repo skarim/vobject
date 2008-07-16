@@ -59,6 +59,14 @@ Organization (org)
 >>> print card.org.serialize()
 ORG:Company\, Inc.;main unit;sub-unit
 
+Ruby escapes semi-colons in rrules
+..................................
+
+>>> f = get_stream("ruby_rrule.ics")
+>>> cal = vobject.readOne(f)
+>>> iter(cal.vevent.rruleset).next()
+datetime.datetime(2003, 1, 1, 7, 0)
+
 
 quoted-printable
 ................
