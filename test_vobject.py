@@ -13,7 +13,7 @@ base.logger.setLevel(base.logging.FATAL)
 # named additional_tests for setuptools
 def additional_tests():
 
-    flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE
+    flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE | doctest.ELLIPSIS
     suite = unittest.TestSuite()
     for module in base, test_vobject, icalendar, vobject, vcard:
         suite.addTest(doctest.DocTestSuite(module, optionflags=flags))
@@ -531,7 +531,7 @@ __test__ = { "Test readOne" :
     "Serializing with timezones test" :
     
     """
-    >>> from dateutil.rrule import rrule, rruleset, WEEKLY
+    >>> from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
     >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
     >>> cal = base.Component('VCALENDAR')
     >>> cal.setBehavior(icalendar.VCalendar2_0)
@@ -539,9 +539,9 @@ __test__ = { "Test readOne" :
     >>> ev.add('dtstart').value = datetime.datetime(2005, 10, 12, 9, tzinfo = pacific)
     >>> set = rruleset()
     >>> set.rrule(rrule(WEEKLY, interval=2, byweekday=[2,4], until=datetime.datetime(2005, 12, 15, 9)))
+    >>> set.rrule(rrule(MONTHLY, bymonthday=[-1,-5]))
     >>> set.exdate(datetime.datetime(2005, 10, 14, 9, tzinfo = pacific))
     >>> ev.rruleset = set
-    >>> ev.add('uid').value = "uid could be generated but doctest complains"
     >>> ev.add('duration').value = datetime.timedelta(hours=1)
     >>> print cal.serialize()
     BEGIN:VCALENDAR
@@ -565,11 +565,12 @@ __test__ = { "Test readOne" :
     END:DAYLIGHT
     END:VTIMEZONE
     BEGIN:VEVENT
-    UID:uid could be generated but doctest complains
+    UID:...
     DTSTART;TZID=US/Pacific:20051012T090000
     DURATION:PT1H
     EXDATE;TZID=US/Pacific:20051014T090000
     RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
+    RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
     END:VEVENT
     END:VCALENDAR
     >>> apple = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('America/Montreal')
@@ -620,11 +621,12 @@ __test__ = { "Test readOne" :
     END:DAYLIGHT
     END:VTIMEZONE
     BEGIN:VEVENT
-    UID:uid could be generated but doctest complains
+    UID:...
     DTSTART;TZID=America/Montreal:20051012T090000
     DURATION:PT1H
     EXDATE;TZID=US/Pacific:20051014T090000
     RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
+    RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
     END:VEVENT
     END:VCALENDAR
     """,
