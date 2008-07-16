@@ -19,16 +19,30 @@ FN:Helloሴ World!
 N:World;Helloሴ;;;
 END:VCARD
 
+Helper function
+...............
+>>> from pkg_resources import resource_stream
+>>> def get_stream(path):
+...     try:
+...         return resource_stream(__name__, 'test_files/' + path)
+...     except: # different paths, depending on whether doctest is run directly
+...         return resource_stream(__name__, path)
+
 Unicode in TZID
 ...............
-
->>> from pkg_resources import resource_stream
->>> f = resource_stream(__name__, 'test_files/tzid_8bit.ics')
+>>> f = get_stream("tzid_8bit.ics")
 >>> cal = vobject.readOne(f)
 >>> print cal.vevent.dtstart.value
 2008-05-30 15:00:00+06:00
 >>> print cal.vevent.dtstart.serialize()
 DTSTART;TZID=Екатеринбург:20080530T150000
+
+Commas in TZID
+..............
+>>> f = get_stream("ms_tzid.ics")
+>>> cal = vobject.readOne(f)
+>>> print cal.vevent.dtstart.value
+2008-05-30 15:00:00+10:00
 
 Equality in vCards
 ..................

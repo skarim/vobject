@@ -894,9 +894,18 @@ class VTimezone(VCalendarComponentBehavior):
     @staticmethod
     def transformFromNative(obj):
         return obj
-
-        
 registerBehavior(VTimezone)
+
+class TZID(behavior.Behavior):
+    """Don't use TextBehavior for TZID.
+    
+    RFC2445 only allows TZID lines to be paramtext, so they shouldn't need any
+    encoding or decoding.  Unfortunately, some Microsoft products use commas
+    in TZIDs which should NOT be treated as a multi-valued text property, nor
+    do we want to escape them.  Leaving them alone works for Microsoft's breakage,
+    and doesn't affect compliant iCalendar streams.
+    """
+registerBehavior(TZID)
 
 class DaylightOrStandard(VCalendarComponentBehavior):
     hasNative = False
@@ -1467,7 +1476,7 @@ registerBehavior(MultiDateBehavior, 'EXDATE')
 
 textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
             'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
-            'UID', 'ACTION', 'REQUEST-STATUS', 'TZID', 'BUSYTYPE']
+            'UID', 'ACTION', 'REQUEST-STATUS', 'BUSYTYPE']
 map(lambda x: registerBehavior(TextBehavior, x), textList)
 
 multiTextList = ['CATEGORIES', 'RESOURCES']
