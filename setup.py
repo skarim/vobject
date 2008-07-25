@@ -12,7 +12,7 @@ Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or
 
 Recent changes
 --------------
-   - Added tz_change module and script for quickly changing event timezones for an
+   - Added change_tz module and script for quickly changing event timezones for an
      ics file.  Requires PyICU.
    - Add support for BYMONTHDAY=-1 (days before the end of the month) when setting rrules
      from a dateutil rrule
