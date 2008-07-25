@@ -12,7 +12,8 @@ Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or
 
 Recent changes
 --------------
-
+   - Added tz_change module and script for quickly changing event timezones for an
+     ics file.  Requires PyICU.
    - Add support for BYMONTHDAY=-1 (days before the end of the month) when setting rrules
      from a dateutil rrule
    - Tolerate a Ruby iCalendar library escaping semi-colons in RRULEs
@@ -41,13 +42,14 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.7.0",
+      version = "0.7.1",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       license = "Apache",
       zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
-      entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main'] },
+      entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main',
+                                           'change_tz = vobject.change_tz:main']},
       include_package_data = True,
       test_suite = "test_vobject",
 
