@@ -777,21 +777,26 @@ class MultiTextBehavior(behavior.Behavior):
     After transformation, value is a list of strings.
     
     """
+    listSeparator = ","
 
-    @staticmethod
-    def decode(line):
+    @classmethod
+    def decode(cls, line):
         """Remove backslash escaping from line.value, then split on commas."""
         if line.encoded:
-            line.value = stringToTextValues(line.value)
+            line.value = stringToTextValues(line.value,
+                listSeparator=cls.listSeparator)
             line.encoded=False
     
-    @staticmethod
-    def encode(line):
+    @classmethod
+    def encode(cls, line):
         """Backslash escape line.value."""
         if not line.encoded:
-            line.value = ','.join(backslashEscape(val) for val in line.value)
+            line.value = cls.listSeparator.join(backslashEscape(val) for val in line.value)
             line.encoded=True
     
+
+class SemicolonMultiTextBehavior(MultiTextBehavior):
+    listSeparator = ";"
 
 #------------------------ Registered Behavior subclasses -----------------------
 class VCalendar2_0(VCalendarComponentBehavior):
@@ -1481,11 +1486,12 @@ registerBehavior(MultiDateBehavior, 'EXDATE')
 
 textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
             'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
-            'UID', 'ACTION', 'REQUEST-STATUS', 'BUSYTYPE']
+            'UID', 'ACTION', 'BUSYTYPE']
 map(lambda x: registerBehavior(TextBehavior, x), textList)
 
 multiTextList = ['CATEGORIES', 'RESOURCES']
 map(lambda x: registerBehavior(MultiTextBehavior, x), multiTextList)
+registerBehavior(SemicolonMultiTextBehavior, 'REQUEST-STATUS')
 
 #------------------------ Serializing helper functions -------------------------
 

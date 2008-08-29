@@ -730,6 +730,15 @@ __test__ = { "Test readOne" :
     CATEGORIES:Random category,Other category
     """,
              
+    "Semi-colon separated multi-text serialization test:" :
+             
+    """
+    >>> requestStatus = base.newFromBehavior('request-status')
+    >>> requestStatus.value = ['5.1', 'Service unavailable']
+    >>> print requestStatus.serialize().strip()
+    REQUEST-STATUS:5.1;Service unavailable
+    """,
+             
     "vCard groups test:" :
              
     """
