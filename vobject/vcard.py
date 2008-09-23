@@ -177,7 +177,7 @@ registerBehavior(FN)
 class Label(VCardTextBehavior):
     name = "Label"
     description = 'Formatted address'
-registerBehavior(FN)
+registerBehavior(Label)
 
 class Photo(VCardTextBehavior):
     name = "Photo"
