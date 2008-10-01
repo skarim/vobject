@@ -1,7 +1,7 @@
 """Translate an ics file's events to a different timezone."""
 
 from optparse import OptionParser
-import icalendar, base
+from vobject import icalendar, base
 import sys
 try:
     import PyICU
