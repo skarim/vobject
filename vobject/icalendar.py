@@ -1630,7 +1630,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
     charIterator = enumerate(s)
     state        = "read normal"
 
-    current = ""
+    current = []
     results = []
 
     while True:
@@ -1644,28 +1644,30 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
                 state = "read escaped char"
             elif char == listSeparator:
                 state = "read normal"
+                current = "".join(current)
                 results.append(current)
-                current = ""
+                current = []
             elif char == "eof":
                 state = "end"
             else:
                 state = "read normal"
-                current = current + char
+                current.append(char)
 
         elif state == "read escaped char":
             if escapableChar(char):
                 state = "read normal"
                 if char in 'nN': 
-                    current = current + '\n'
+                    current.append('\n')
                 else:
-                    current = current + char
+                    current.append(char)
             else:
                 state = "read normal"
                 # leave unrecognized escaped characters for later passes
-                current = current + '\\' + char 
+                current.append('\\' + char)
 
         elif state == "end":    #an end state
-            if current != "" or len(results) == 0:
+            if len(current) or len(results) == 0:
+                current = "".join(current)
                 results.append(current)
             return results
 
