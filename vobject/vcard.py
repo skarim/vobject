@@ -179,13 +179,25 @@ class Label(VCardTextBehavior):
     description = 'Formatted address'
 registerBehavior(Label)
 
+wacky_apple_photo_serialize = True
+REALLY_LARGE = 1E50
+
 class Photo(VCardTextBehavior):
     name = "Photo"
     description = 'Photograph'
     @classmethod
     def valueRepr( cls, line ):
         return " (BINARY PHOTO DATA at 0x%s) " % id( line.value )
-    
+
+    @classmethod
+    def serialize(cls, obj, buf, lineLength, validate):
+        """Apple's Address Book is *really* weird with images, it expects
+           base64 data to have very specific whitespace.  It seems Address Book
+           can handle PHOTO if it's not wrapped, so don't wrap it."""
+        if wacky_apple_photo_serialize:
+            lineLength = REALLY_LARGE
+        VCardTextBehavior.serialize(obj, buf, lineLength, validate)
+
 registerBehavior(Photo)
 
 def toListOrString(string):

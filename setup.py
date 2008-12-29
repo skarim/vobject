@@ -12,6 +12,9 @@ Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or
 
 Recent changes
 --------------
+   - Fixed a bad performance bug when parsing large text bodies, thanks to Morgen Sagen at Apple
+   - Changed license to Apache 2.0 from Apache 1.1
+   - Worked around an issue with Apple Address Book's vcard PHOTO parser
    - Added change_tz module and script for quickly changing event timezones for an
      ics file.  Requires PyICU.
    - Add support for BYMONTHDAY=-1 (days before the end of the month) when setting rrules
@@ -24,12 +27,12 @@ Recent changes
    - Allow unicode names for TZIDs
    - Worked around Lotus Notes use of underscores in names by just silently replacing
      with dashes
-   - When allowing quoted-printable data, honor CHARSET for each line, defaulting to 
+   - When allowing quoted-printable data, honor CHARSET for each line, defaulting to
      iso-8859-1
    - Simplified directory layout, unit tests are now available via setup.py test
 
 For older changes, see
-   - http://vobject.skyhouseconsulting.com/history.html or 
+   - http://vobject.skyhouseconsulting.com/history.html or
    - http://websvn.osafoundation.org/listing.php?repname=vobject&path=/trunk/
 
 """
@@ -42,7 +45,7 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.7.1",
+      version = "0.8.0",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       license = "Apache",
