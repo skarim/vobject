@@ -1608,7 +1608,9 @@ def stringToDateTime(s, tzinfo=None):
     return datetime.datetime(year, month, day, hour, minute, second, 0, tzinfo)
 
 
-escapableCharList = "\\;,Nn"
+# DQUOTE included to work around iCal's penchant for backslash escaping it,
+# although it isn't actually supposed to be escaped according to rfc2445 TEXT
+escapableCharList = '\\;,Nn"'
 
 def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
     """Returns list of strings."""
