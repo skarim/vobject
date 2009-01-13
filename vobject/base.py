@@ -1105,8 +1105,8 @@ def getBehavior(name, id=None):
             for n, behavior in __behaviorRegistry[name]:
                 if n==id:
                     return behavior
-        else:
-            return __behaviorRegistry[name][0][1]
+
+        return __behaviorRegistry[name][0][1]
     return None
 
 def newFromBehavior(name, id=None):
@@ -1132,4 +1132,4 @@ def backslashEscape(s):
 #------------------- Testing and running functions -----------------------------
 if __name__ == '__main__':
     import tests
-    tests._test()   
+    tests._test()

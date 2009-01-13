@@ -12,6 +12,8 @@ Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or
 
 Recent changes
 --------------
+   - Fall back to default (the most recent standard) behavior if a VCARD
+     or VCALENDAR doesn't have a recognized VERSION
    - Fixed a bad performance bug when parsing large text bodies, thanks to Morgen Sagen at Apple
    - Changed license to Apache 2.0 from Apache 1.1
    - Worked around an issue with Apple Address Book's vcard PHOTO parser
@@ -45,7 +47,7 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.8.0",
+      version = "0.8.1",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       license = "Apache",
