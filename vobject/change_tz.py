@@ -32,7 +32,11 @@ def main():
             print tz_string
     elif args:
         utc_only = options.utc
-        print "Converting %s events" % "only UTC" if utc_only else "all"
+        if utc_only:
+            which = "only UTC"
+        else:
+            which = "all"
+        print "Converting %s events" % which
         ics_file = args[0]
         if len(args) > 1:
             timezone = PyICU.ICUtzinfo.getInstance(args[1])
