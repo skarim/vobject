@@ -12,6 +12,7 @@ Requires python 2.4 or later, dateutil (http://labix.org/python-dateutil) 1.1 or
 
 Recent changes
 --------------
+   - Make change_tz.py compatible with python 2.4, so the entire package stays compatible
    - Fall back to default (the most recent standard) behavior if a VCARD
      or VCALENDAR doesn't have a recognized VERSION
    - Fixed a bad performance bug when parsing large text bodies, thanks to Morgen Sagen at Apple
@@ -47,7 +48,7 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.8.1b",
+      version = "0.8.1c",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       license = "Apache",
@@ -58,8 +59,8 @@ setup(name = "vobject",
       include_package_data = True,
       test_suite = "test_vobject",
 
-      install_requires = ['python-dateutil >= 1.1'], 
-      
+      install_requires = ['python-dateutil >= 1.1'],
+
       platforms = ["any"],
       packages = find_packages(),
       description = doclines[0],

@@ -7,7 +7,7 @@ try:
     import PyICU
 except:
     PyICU = None
-    
+
 from datetime import datetime
 
 def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
@@ -23,7 +23,7 @@ def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
                         dt = dt.replace(tzinfo = default)
                     node.value = dt.astimezone(new_timezone)
 
-def main():        
+def main():
     options, args = get_options()
     if PyICU is None:
         print "Failure. change_tz requires PyICU, exiting"
@@ -34,11 +34,14 @@ def main():
         utc_only = options.utc
         print "Converting %s events" % "only UTC" if utc_only else "all"
         ics_file = args[0]
-        timezone = PyICU.ICUtzinfo.getInstance(args[1]) if len(args) > 1 else PyICU.ICUtzinfo.default
+        if len(args) > 1:
+            timezone = PyICU.ICUtzinfo.getInstance(args[1])
+        else:
+            timezone = PyICU.ICUtzinfo.default
         print "... Reading %s" % ics_file
         cal = base.readOne(file(ics_file))
         change_tz(cal, timezone, PyICU.ICUtzinfo.default, utc_only)
-        
+
         out_name = ics_file + '.converted'
         print "... Writing %s" % out_name
         out = file(out_name, 'wb')
