@@ -284,6 +284,8 @@ class ContentLine(VBase):
         self.value = copy.copy(copyit.value)
         self.encoded = self.encoded
         self.params = copy.copy(copyit.params)
+        for k,v in self.params.items():
+            self.params[k] = copy.copy(v)
         self.singletonparams = copy.copy(copyit.singletonparams)
         self.lineNumber = copyit.lineNumber
         
@@ -627,16 +629,16 @@ class Component(VBase):
         print
 
 class VObjectError(Exception):
-    def __init__(self, message, lineNumber=None):
-        self.message = message
+    def __init__(self, msg, lineNumber=None):
+        self.msg = msg
         if lineNumber is not None:
             self.lineNumber = lineNumber
     def __str__(self):
         if hasattr(self, 'lineNumber'):
             return "At line %s: %s" % \
-                   (self.lineNumber, self.message)
+                   (self.lineNumber, self.msg)
         else:
-            return repr(self.message)
+            return repr(self.msg)
 
 class ParseError(VObjectError):
     pass
@@ -953,7 +955,9 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.group is not None:
             s.write(obj.group + '.')
         s.write(obj.name.upper())
-        for key, paramvals in obj.params.iteritems():
+        keys = sorted(obj.params.iterkeys())
+        for key in keys:
+            paramvals = obj.params[key]
             s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
         s.write(':' + obj.value)
         if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
