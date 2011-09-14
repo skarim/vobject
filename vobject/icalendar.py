@@ -1617,6 +1617,7 @@ def stringToDateTime(s, tzinfo=None):
                 tzinfo = utc
     except:
         raise ParseError("'%s' is not a valid DATE-TIME" % s)
+    year = year and year or 2000
     return datetime.datetime(year, month, day, hour, minute, second, 0, tzinfo)
 
 
