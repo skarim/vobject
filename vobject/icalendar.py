@@ -40,9 +40,20 @@ def registerTzid(tzid, tzinfo):
     """Register a tzid -> tzinfo mapping."""
     __tzidMap[toUnicode(tzid)]=tzinfo
 
-def getTzid(tzid):
+def getTzid(tzid, smart=True):
     """Return the tzid if it exists, or None."""
-    return __tzidMap.get(toUnicode(tzid), None)
+    tz = __tzidMap.get(toUnicode(tzid), None)
+    if smart and tzid and not tz:
+        try:
+            from pytz import timezone, UnknownTimeZoneError
+            try:
+                tz = timezone(tzid)
+                registerTzid(toUnicode(tzid), tz)
+            except UnknownTimeZoneError:
+                pass
+        except ImportError:
+            pass
+    return tz
 
 utc = dateutil.tz.tzutc()
 registerTzid("UTC", utc)
@@ -81,7 +92,7 @@ class TimezoneComponent(Component):
     def registerTzinfo(obj, tzinfo):
         """Register tzinfo if it's not already registered, return its tzid."""
         tzid = obj.pickTzid(tzinfo)
-        if tzid and not getTzid(tzid):
+        if tzid and not getTzid(tzid, False):
             registerTzid(tzid, tzinfo)
         return tzid
 
