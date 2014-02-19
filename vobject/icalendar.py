@@ -1,15 +1,22 @@
 """Definitions and behavior for iCalendar, also known as vCalendar 2.0"""
 
+from __future__ import print_function
+
 import string
-import behavior
+
+try:
+    from cStringIO import StringIO as StringIO
+except ImportError:
+    from six import StringIO
+
 import dateutil.rrule
 import dateutil.tz
-import StringIO, cStringIO
 import datetime
 import socket, random #for generating a UID
 import itertools
 
-from base import (VObjectError, NativeError, ValidateError, ParseError,
+from . import behavior
+from .base import (VObjectError, NativeError, ValidateError, ParseError,
                     VBase, Component, ContentLine, logger, defaultSerialize,
                     registerBehavior, backslashEscape, foldOneLine,
                     newFromBehavior, CRLF, LF, ascii)
@@ -101,7 +108,7 @@ class TimezoneComponent(Component):
         good_lines = ('rdate', 'rrule', 'dtstart', 'tzname', 'tzoffsetfrom',
                       'tzoffsetto', 'tzid')
         # serialize encodes as utf-8, cStringIO will leave utf-8 alone
-        buffer = cStringIO.StringIO()
+        buffer = StringIO.StringIO()
         # allow empty VTIMEZONEs
         if len(self.contents) == 0:
             return None
@@ -315,8 +322,8 @@ class TimezoneComponent(Component):
     
     def prettyPrint(self, level, tabwidth):
         pre = ' ' * level * tabwidth
-        print pre, self.name
-        print pre, "TZID:", self.tzid
+        print(pre, self.name)
+        print(pre, "TZID:", self.tzid)
         print
 
 class RecurringComponent(Component):
@@ -399,7 +406,7 @@ class RecurringComponent(Component):
                 elif name in RULENAMES:
                     try:
                         dtstart = self.dtstart.value
-                    except AttributeError, KeyError:
+                    except (AttributeError, KeyError):
                         # Special for VTODO - try DUE property instead
                         try:
                             if self.name == "VTODO":
@@ -407,7 +414,7 @@ class RecurringComponent(Component):
                             else:
                                 # if there's no dtstart, just return None
                                 return None
-                        except AttributeError, KeyError:
+                        except (AttributeError, KeyError):
                             # if there's no due, just return None
                             return None
 
@@ -481,7 +488,7 @@ class RecurringComponent(Component):
         # Get DTSTART from component (or DUE if no DTSTART in a VTODO)
         try:
             dtstart = self.dtstart.value
-        except AttributeError, KeyError:
+        except (AttributeError, KeyError):
             if self.name == "VTODO":
                 dtstart = self.due.value
             else:
@@ -1650,7 +1657,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
             raise ParseError(msg)
         else:
             #logger.error(msg)
-            print msg
+            print(msg)
 
     #vars which control state machine
     charIterator = enumerate(s)
@@ -1760,8 +1767,8 @@ def stringToDurations(s, strict=False):
                 current = current + char   #update this part when updating "read field"
             else:
                 state = "error"
-                print "got unexpected character %s reading in duration: %s" % (char, s)
-                error("got unexpected character %s reading in duration: %s" % (char, s))
+                print("got unexpected character {} reading in duration: {}".format(char, s))
+                error("got unexpected character {} reading in duration: {}".format(char, s))
 
         elif state == "read field":
             if (char in string.digits):

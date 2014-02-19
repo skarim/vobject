@@ -1,12 +1,16 @@
 """vobject module for reading vCard and vCalendar files."""
 
+from __future__ import print_function
+try:
+    from cStringIO import StringIO as StringIO
+except ImportError:
+    from six import StringIO
+
 import copy
 import re
 import sys
 import logging
-import StringIO, cStringIO
 import string
-import exceptions
 import codecs
 
 #------------------------------------ Logging ----------------------------------
@@ -120,7 +124,7 @@ class VBase(object):
         else:
             try:
                 return self.behavior.transformToNative(self)
-            except Exception, e:      
+            except Exception as e:
                 # wrap errors in transformation in a ParseError
                 lineNumber = getattr(self, 'lineNumber', None)
                 if isinstance(e, ParseError):
@@ -131,7 +135,7 @@ class VBase(object):
                     msg = "In transformToNative, unhandled exception: %s: %s"
                     msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
                     new_error = ParseError(msg, lineNumber)
-                    raise ParseError, new_error, sys.exc_info()[2]
+                    raise (ParseError, new_error, sys.exc_info()[2])
                 
 
     def transformFromNative(self):
@@ -150,7 +154,7 @@ class VBase(object):
         if self.isNative and self.behavior and self.behavior.hasNative:
             try:
                 return self.behavior.transformFromNative(self)
-            except Exception, e:
+            except Exception as e:
                 # wrap errors in transformation in a NativeError
                 lineNumber = getattr(self, 'lineNumber', None)
                 if isinstance(e, NativeError):
@@ -161,7 +165,7 @@ class VBase(object):
                     msg = "In transformFromNative, unhandled exception: %s: %s"
                     msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
                     new_error = NativeError(msg, lineNumber)
-                    raise NativeError, new_error, sys.exc_info()[2]
+                    raise (NativeError, new_error, sys.exc_info()[2])
         else: return self
 
     def transformChildrenToNative(self):
@@ -292,7 +296,7 @@ class ContentLine(VBase):
     def __eq__(self, other):
         try:
             return (self.name == other.name) and (self.params == other.params) and (self.value == other.value)
-        except:
+        except Exception:
             return False
 
     def _getAttributeNames(self):
@@ -321,9 +325,9 @@ class ContentLine(VBase):
             elif name.endswith('_paramlist'):
                 return self.params[toVName(name, 10, True)]
             else:
-                raise exceptions.AttributeError, name
+                raise (exceptions.AttributeError, name)
         except KeyError:
-            raise exceptions.AttributeError, name
+            raise (exceptions.AttributeError, name)
 
     def __setattr__(self, name, value):
         """Make params accessible via self.foo_param or self.foo_paramlist.
@@ -358,7 +362,7 @@ class ContentLine(VBase):
             else:
                 object.__delattr__(self, name)
         except KeyError:
-            raise exceptions.AttributeError, name
+            raise (exceptions.AttributeError, name)
 
     def valueRepr( self ):
         """transform the representation of the value according to the behavior,
@@ -376,12 +380,12 @@ class ContentLine(VBase):
 
     def prettyPrint(self, level = 0, tabwidth=3):
         pre = ' ' * level * tabwidth
-        print pre, self.name + ":", self.valueRepr()
+        print(pre, self.name + ":", self.valueRepr())
         if self.params:
             lineKeys= self.params.keys()
-            print pre, "params for ", self.name +':'
+            print(pre, "params for ", self.name +':')
             for aKey in lineKeys:
-                print pre + ' ' * tabwidth, aKey, ascii(self.params[aKey])
+                print(pre + ' ' * tabwidth, aKey, ascii(self.params[aKey]))
 
 class Component(VBase):
     """A complex property that can contain multiple ContentLines.
@@ -474,7 +478,7 @@ class Component(VBase):
             else:
                 return self.contents[toVName(name)][0]
         except KeyError:
-            raise exceptions.AttributeError, name
+            raise (exceptions.AttributeError, name)
 
     normal_attributes = ['contents','name','behavior','parentBehavior','group']
     def __setattr__(self, name, value):
@@ -510,7 +514,7 @@ class Component(VBase):
             else:
                 object.__delattr__(self, name)
         except KeyError:
-            raise exceptions.AttributeError, name
+            raise (exceptions.AttributeError, name)
 
     def getChildValue(self, childName, default = None, childNumber = 0):
         """Return a child's value (the first, by default), or None."""
@@ -581,7 +585,7 @@ class Component(VBase):
     def sortChildKeys(self):
         try:
             first = [s for s in self.behavior.sortFirst if s in self.contents]
-        except:
+        except Exception:
             first = []
         return first + sorted(k for k in self.contents.keys() if k not in first)
 
@@ -622,7 +626,7 @@ class Component(VBase):
 
     def prettyPrint(self, level = 0, tabwidth=3):
         pre = ' ' * level * tabwidth
-        print pre, self.name
+        print(pre, self.name)
         if isinstance(self, Component):
             for line in self.getChildren():
                 line.prettyPrint(level + 1, tabwidth)
@@ -824,7 +828,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     except UnicodeDecodeError:
                         pass
                 else:
-                    raise ParseError, 'Could not find BEGIN when trying to determine encoding'
+                    raise (ParseError, 'Could not find BEGIN when trying to determine encoding')
         else:
             val = bytes
         
@@ -933,7 +937,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
 
-    outbuf = buf or cStringIO.StringIO()
+    outbuf = buf or stringIO.StringIO()
 
     if isinstance(obj, Component):
         if obj.group is None:
@@ -951,7 +955,7 @@ def defaultSerialize(obj, buf, lineLength):
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
-        s=codecs.getwriter('utf-8')(cStringIO.StringIO()) #unfolded buffer
+        s=codecs.getwriter('utf-8')(stringIO.StringIO()) #unfolded buffer
         if obj.group is not None:
             s.write(obj.group + '.')
         s.write(obj.name.upper())
@@ -1023,7 +1027,7 @@ def readComponents(streamOrString, validate=False, transform=True,
             if ignoreUnreadable:
                 try:
                     vline = textLineToContentLine(line, n)
-                except VObjectError, e:
+                except VObjectError as e:
                     if e.lineNumber is not None:
                         msg = "Skipped line %(lineNumber)s, message: %(msg)s"
                     else:
@@ -1070,7 +1074,7 @@ def readComponents(streamOrString, validate=False, transform=True,
                 raise ParseError("Component %s was never closed" % (stack.topName()), n)
             yield stack.pop()
 
-    except ParseError, e:
+    except ParseError as e:
         e.input = streamOrString
         raise
 
