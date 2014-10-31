@@ -914,7 +914,7 @@ class VTimezone(VCalendarComponentBehavior):
                 m = "VTIMEZONE components must contain a valid TZID"
                 raise ValidateError(m)
             return False            
-        if obj.contents.has_key('standard') or obj.contents.has_key('daylight'):
+        if 'standard' in obj.contents or 'daylight' in obj.contents:
             return super(VTimezone, cls).validate(obj, raiseException, *args)
         else:
             if raiseException:
@@ -1001,7 +1001,7 @@ class VEvent(RecurringBehavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        if obj.contents.has_key('dtend') and obj.contents.has_key('duration'):
+        if 'dtend' in obj.contents and 'duration' in obj.contents:
             if raiseException:
                 m = "VEVENT components cannot contain both DTEND and DURATION\
                      components"
@@ -1056,7 +1056,7 @@ class VTodo(RecurringBehavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        if obj.contents.has_key('due') and obj.contents.has_key('duration'):
+        if 'due' in obj.contents and 'duration' in obj.contents:
             if raiseException:
                 m = "VTODO components cannot contain both DUE and DURATION\
                      components"
@@ -1303,7 +1303,7 @@ class VAvailability(VCalendarComponentBehavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        if obj.contents.has_key('dtend') and obj.contents.has_key('duration'):
+        if 'dtend' in obj.contents and 'duration' in obj.contents:
             if raiseException:
                 m = "VAVAILABILITY components cannot contain both DTEND and DURATION\
                      components"
@@ -1339,8 +1339,8 @@ class Available(RecurringBehavior):
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
-        has_dtend = obj.contents.has_key('dtend')
-        has_duration = obj.contents.has_key('duration')
+        has_dtend = 'dtend' in obj.contents
+        has_duration = 'duration' in obj.contents
         if has_dtend and has_duration:
             if raiseException:
                 m = "AVAILABLE components cannot contain both DTEND and DURATION\
