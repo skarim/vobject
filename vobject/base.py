@@ -907,7 +907,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
 
     if len(input) < lineLength:
         # Optimize for unfolded line case
-        outbuf.write(input)
+        outbuf.write(six.u(input))
     else:
         # Look for valid utf8 range and write that out
         start = 0
@@ -917,7 +917,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
             offset = start + lineLength - 1
             if offset >= len(input):
                 line = input[start:]
-                outbuf.write(line)
+                outbuf.write(six.u(line))
                 written = len(input)
             else:
                 # Check whether next char is valid utf8 lead byte
@@ -926,7 +926,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
                     offset -= 1
 
                 line = input[start:offset]
-                outbuf.write(line)
+                outbuf.write(six.u(line))
                 outbuf.write("\r\n ")
                 written += offset - start
                 start = offset
