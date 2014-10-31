@@ -73,7 +73,7 @@ class Behavior(object):
 
         """
         if not cls.allowGroup and obj.group is not None:
-            err = str(obj) + " has a group, but this object doesn't support groups"
+            err = "{0} has a group, but this object doesn't support groups".format(obj)
             raise base.VObjectError(err)
         if isinstance(obj, base.ContentLine):
             return cls.lineValidate(obj, raiseException, complainUnrecognized)
@@ -97,7 +97,7 @@ class Behavior(object):
                     return False
             return True
         else:
-            err = str(obj) + " is not a Component or Contentline"
+            err = "{0} is not a Component or Contentline".format(obj)
             raise base.VObjectError(err)
 
     @classmethod

@@ -1,12 +1,10 @@
 """Definitions and behavior for vCard 3.0"""
 
-import itertools
+import six
 
 from . import behavior
 
-from .base import VObjectError, NativeError, ValidateError, ParseError, \
-                    VBase, Component, ContentLine, logger, defaultSerialize, \
-                    registerBehavior, backslashEscape, ascii
+from .base import ContentLine, registerBehavior, backslashEscape, ascii
 from .icalendar import stringToTextValues
 
 #------------------------ vCard structs ----------------------------------------
@@ -20,7 +18,7 @@ class Name(object):
         self.additional = additional
         self.prefix     = prefix
         self.suffix     = suffix
-        
+
     @staticmethod
     def toString(val):
         """Turn a string or array value into a string."""
@@ -57,7 +55,7 @@ class Address(object):
         self.region   = region
         self.code     = code
         self.country  = country
-        
+
     @staticmethod
     def toString(val, join_char='\n'):
         """Turn a string or array value into a string."""
@@ -77,7 +75,7 @@ class Address(object):
         return ascii(lines)
 
     def __repr__(self):
-        return "<Address: %s>" % repr(str(self))[1:-1]
+        return "<Address: %s>" % repr(six.u(self))[1:-1]
 
     def __eq__(self, other):
         try:
@@ -90,20 +88,20 @@ class Address(object):
                     self.country == other.country)
         except:
             False
-        
+
 
 #------------------------ Registered Behavior subclasses -----------------------
 
 class VCardTextBehavior(behavior.Behavior):
     """Provide backslash escape encoding/decoding for single valued properties.
-    
+
     TextBehavior also deals with base64 encoding if the ENCODING parameter is
     explicitly set to BASE64.
-    
+
     """
     allowGroup = True
     base64string = 'B'
-    
+
     @classmethod
     def decode(cls, line):
         """Remove backslash escaping from line.valueDecode line, either to remove
@@ -122,7 +120,7 @@ class VCardTextBehavior(behavior.Behavior):
             else:
                 line.value = stringToTextValues(line.value)[0]
             line.encoded=False
-    
+
     @classmethod
     def encode(cls, line):
         """Backslash escape line.value."""
@@ -157,14 +155,14 @@ class VCard3_0(VCardBehavior):
                      'PHOTO':     (0, None, None),
                      'CATEGORIES':(0, None, None)
                     }
-                    
+
     @classmethod
     def generateImplicitParameters(cls, obj):
         """Create PRODID, VERSION, and VTIMEZONEs if needed.
-        
+
         VTIMEZONEs will need to exist whenever TZID parameters exist or when
         datetimes with tzinfo exist.
-        
+
         """
         if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
@@ -220,7 +218,7 @@ def toList(stringOrList):
 
 def serializeFields(obj, order=None):
     """Turn an object's fields into a ';' and ',' seperated string.
-    
+
     If order is None, obj should be a list, backslash escape each field and
     return a ';' separated string.
     """
@@ -231,7 +229,7 @@ def serializeFields(obj, order=None):
         for field in order:
             escapedValueList = [backslashEscape(val) for val in
                                 toList(getattr(obj, field))]
-            fields.append(','.join(escapedValueList))            
+            fields.append(','.join(escapedValueList))
     return ';'.join(fields)
 
 NAME_ORDER = ('family', 'given', 'additional', 'prefix', 'suffix')
@@ -256,7 +254,7 @@ class NameBehavior(VCardBehavior):
         return obj
 registerBehavior(NameBehavior, 'N')
 
-ADDRESS_ORDER = ('box', 'extended', 'street', 'city', 'region', 'code', 
+ADDRESS_ORDER = ('box', 'extended', 'street', 'city', 'region', 'code',
                  'country')
 
 class AddressBehavior(VCardBehavior):
@@ -278,7 +276,7 @@ class AddressBehavior(VCardBehavior):
         obj.value = serializeFields(obj.value, ADDRESS_ORDER)
         return obj
 registerBehavior(AddressBehavior, 'ADR')
-    
+
 class OrgBehavior(VCardBehavior):
     """A list of organization values and sub-organization values."""
     hasNative = True
@@ -299,4 +297,4 @@ class OrgBehavior(VCardBehavior):
         obj.value = serializeFields(obj.value)
         return obj
 registerBehavior(OrgBehavior, 'ORG')
-    
+
