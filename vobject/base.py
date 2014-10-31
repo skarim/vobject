@@ -12,6 +12,7 @@ import sys
 import logging
 import string
 import codecs
+import six
 
 #------------------------------------ Logging ----------------------------------
 logger = logging.getLogger(__name__)
@@ -194,7 +195,7 @@ class VBase(object):
 
 def ascii(s):
     """Turn s into a printable string.  Won't work for 8-bit ASCII."""
-    return unicode(s).encode('ascii', 'replace')
+    return six.u(s).encode('ascii', 'replace')
 
 def toVName(name, stripNum = 0, upper = False):
     """
@@ -274,7 +275,7 @@ class ContentLine(VBase):
                 charsets = self.params.pop('CHARSET')
                 if charsets:
                     charset = charsets[0]
-            self.value = unicode(self.value, charset)
+            self.value = six.u(self.value, charset)
 
     @classmethod
     def duplicate(clz, copyit):
