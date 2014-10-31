@@ -2,9 +2,9 @@
 
 from __future__ import print_function
 try:
-    from cStringIO import StringIO as StringIO
+    from cStringIO import StringIO as BytesIO
 except ImportError:
-    from six import StringIO
+    from six import BytesIO
 
 import copy
 import re
@@ -845,7 +845,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
         
     else:
         quotedPrintable=False
-        newbuffer = StringIO.StringIO
+        newbuffer = BytesIO
         logicalLine = newbuffer()
         lineNumber = 0
         lineStartNumber = 0
@@ -937,7 +937,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
 
-    outbuf = buf or stringIO.StringIO()
+    outbuf = buf or BytesIO()
 
     if isinstance(obj, Component):
         if obj.group is None:
@@ -955,7 +955,7 @@ def defaultSerialize(obj, buf, lineLength):
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
-        s=codecs.getwriter('utf-8')(stringIO.StringIO()) #unfolded buffer
+        s=codecs.getwriter('utf-8')(BytesIO()) #unfolded buffer
         if obj.group is not None:
             s.write(obj.group + '.')
         s.write(obj.name.upper())
@@ -1015,7 +1015,7 @@ def readComponents(streamOrString, validate=False, transform=True,
     
     """
     if isinstance(streamOrString, basestring):
-        stream = StringIO.StringIO(streamOrString)
+        stream = BytesIO(streamOrString)
     else:
         stream = streamOrString
 
