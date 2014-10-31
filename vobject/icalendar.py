@@ -659,11 +659,11 @@ class RecurringBehavior(VCalendarComponentBehavior):
 
         """
         if not hasattr(obj, 'uid'):
-            rand = six.u(int(random.random() * 100000))
+            rand = int(random.random() * 100000)
             now = datetime.datetime.now(utc)
             now = dateTimeToString(now)
             host = socket.gethostname()
-            obj.add(ContentLine('UID', [], now + '-' + rand + '@' + host))
+            obj.add(ContentLine('UID', [], "{0} - {1}@{2}".format(now, rand, host)))
 
 
 class DateTimeBehavior(behavior.Behavior):
