@@ -1,8 +1,8 @@
 """Definitions and behavior for iCalendar, also known as vCalendar 2.0"""
 
-import six
 from __future__ import print_function
 
+import six
 import string
 
 try:
