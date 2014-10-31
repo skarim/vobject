@@ -1,5 +1,6 @@
 """Definitions and behavior for iCalendar, also known as vCalendar 2.0"""
 
+import six
 from __future__ import print_function
 
 import string
@@ -39,7 +40,7 @@ __tzidMap={}
 
 def toUnicode(s):
     """Take a string or unicode, turn it into unicode, decoding as utf-8"""
-    if isinstance(s, str):
+    if isinstance(s, six.binary_type):
         s = s.decode('utf-8')
     return s
 
