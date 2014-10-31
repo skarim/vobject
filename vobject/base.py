@@ -43,7 +43,7 @@ SPACEORTAB = SPACE + TAB
 #--------------------------------- Main classes --------------------------------
 class VBase(object):
     """Base class for ContentLine and Component.
-    
+
     @ivar behavior:
         The Behavior class associated with this object, which controls
         validation, transformations, and encoding.
@@ -52,7 +52,7 @@ class VBase(object):
     @ivar isNative:
         Boolean describing whether this component is a Native instance.
     @ivar group:
-        An optional group prefix, should be used only to indicate sort order in 
+        An optional group prefix, should be used only to indicate sort order in
         vCards, according to RFC2426
     """
     def __init__(self, group=None, *args, **kwds):
@@ -61,13 +61,13 @@ class VBase(object):
         self.behavior   = None
         self.parentBehavior = None
         self.isNative = False
-    
+
     def copy(self, copyit):
         self.group = copyit.group
         self.behavior = copyit.behavior
         self.parentBehavior = copyit.parentBehavior
         self.isNative = copyit.isNative
-        
+
     def validate(self, *args, **kwds):
         """Call the behavior's validate method, or return True."""
         if self.behavior:
@@ -85,10 +85,10 @@ class VBase(object):
 
     def autoBehavior(self, cascade=False):
         """Set behavior if name is in self.parentBehavior.knownChildren.
-        
+
         If cascade is True, unset behavior and parentBehavior for all
         descendants, then recalculate behavior and parentBehavior.
-        
+
         """
         parentBehavior = self.parentBehavior
         if parentBehavior is not None:
@@ -100,7 +100,7 @@ class VBase(object):
                     if isinstance(self, ContentLine) and self.encoded:
                         self.behavior.decode(self)
             elif isinstance(self, ContentLine):
-                self.behavior = parentBehavior.defaultBehavior   
+                self.behavior = parentBehavior.defaultBehavior
                 if self.encoded and self.behavior:
                     self.behavior.decode(self)
 
@@ -114,11 +114,11 @@ class VBase(object):
 
     def transformToNative(self):
         """Transform this object into a custom VBase subclass.
-        
+
         transformToNative should always return a representation of this object.
         It may do so by modifying self in place then returning self, or by
         creating a new object.
-        
+
         """
         if self.isNative or not self.behavior or not self.behavior.hasNative:
             return self
@@ -137,20 +137,20 @@ class VBase(object):
                     msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
                     new_error = ParseError(msg, lineNumber)
                     raise (ParseError, new_error, sys.exc_info()[2])
-                
+
 
     def transformFromNative(self):
         """Return self transformed into a ContentLine or Component if needed.
-        
+
         May have side effects.  If it does, transformFromNative and
         transformToNative MUST have perfectly inverse side effects. Allowing
         such side effects is convenient for objects whose transformations only
         change a few attributes.
-        
+
         Note that it isn't always possible for transformFromNative to be a
         perfect inverse of transformToNative, in such cases transformFromNative
         should return a new object, not self after modifications.
-        
+
         """
         if self.isNative and self.behavior and self.behavior.hasNative:
             try:
@@ -179,13 +179,13 @@ class VBase(object):
 
     def serialize(self, buf=None, lineLength=75, validate=True, behavior=None):
         """Serialize to buf if it exists, otherwise return a string.
-        
+
         Use self.behavior.serialize if behavior exists.
-        
+
         """
         if not behavior:
             behavior = self.behavior
-        
+
         if behavior:
             if DEBUG: logger.debug("serializing %s with behavior" % self.name)
             return behavior.serialize(self, buf, lineLength, validate)
@@ -199,7 +199,7 @@ def ascii(s):
 
 def toVName(name, stripNum = 0, upper = False):
     """
-    Turn a Python name into an iCalendar style name, optionally uppercase and 
+    Turn a Python name into an iCalendar style name, optionally uppercase and
     with characters stripped off.
     """
     if upper:
@@ -233,7 +233,7 @@ class ContentLine(VBase):
     @ivar lineNumber:
         An optional line number associated with the contentline.
     """
-    def __init__(self, name, params, value, group=None, 
+    def __init__(self, name, params, value, group=None,
                  encoded=False, isNative=False,
                  lineNumber = None, *args, **kwds):
         """Take output from parseLine, convert params list to dictionary."""
@@ -264,7 +264,7 @@ class ContentLine(VBase):
             qp = True
             self.singletonparams.remove('QUOTED-PRINTABLE')
         if qp:
-            self.value = str(self.value).decode('quoted-printable')
+            self.value = six.u(self.value).decode('quoted-printable')
 
         # self.value should be unicode for iCalendar, but if quoted-printable
         # is used, or if the quoted-printable state machine is used, text may be
@@ -288,7 +288,7 @@ class ContentLine(VBase):
             self.params[k] = copy.copy(v)
         self.singletonparams = copy.copy(copyit.singletonparams)
         self.lineNumber = copyit.lineNumber
-        
+
     def __eq__(self, other):
         try:
             return (self.name == other.name) and (self.params == other.params) and (self.value == other.value)
@@ -330,7 +330,7 @@ class ContentLine(VBase):
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-        
+
         """
         if name.endswith('_param'):
             if type(value) == list:
@@ -367,7 +367,7 @@ class ContentLine(VBase):
         if self.behavior:
             v = self.behavior.valueRepr( self )
         return ascii( v )
-        
+
     def __str__(self):
         return "<"+ascii(self.name)+ascii(self.params)+self.valueRepr()+">"
 
@@ -385,7 +385,7 @@ class ContentLine(VBase):
 
 class Component(VBase):
     """A complex property that can contain multiple ContentLines.
-    
+
     For our purposes, a component must start with a BEGIN:xxxx line and end with
     END:xxxx, or have a PROFILE:xxx line if a top-level component.
 
@@ -410,7 +410,7 @@ class Component(VBase):
         else:
             self.name = ''
             self.useBegin = False
-        
+
         self.autoBehavior()
 
     @classmethod
@@ -421,7 +421,7 @@ class Component(VBase):
 
     def copy(self, copyit):
         super(Component, self).copy(copyit)
-        
+
         # deep copy of contents
         self.contents = {}
         for key, lvalue in copyit.contents.items():
@@ -433,12 +433,12 @@ class Component(VBase):
 
         self.name = copyit.name
         self.useBegin = copyit.useBegin
-         
+
     def setProfile(self, name):
         """Assign a PROFILE to this unnamed component.
-        
+
         Used by vCard, not by vCalendar.
-        
+
         """
         if self.name or self.useBegin:
             if self.name == name: return
@@ -459,15 +459,15 @@ class Component(VBase):
 
     def __getattr__(self, name):
         """For convenience, make self.contents directly accessible.
-        
+
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-        
+
         """
         # if the object is being re-created by pickle, self.contents may not
         # be set, don't get into an infinite loop over the issue
         if name == 'contents':
-            return object.__getattribute__(self, name) 
+            return object.__getattribute__(self, name)
         try:
             if name.endswith('_list'):
                 return self.contents[toVName(name, 5)]
@@ -482,7 +482,7 @@ class Component(VBase):
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-        
+
         """
         if name not in self.normal_attributes and name.lower()==name:
             if type(value) == list:
@@ -522,7 +522,7 @@ class Component(VBase):
 
     def add(self, objOrName, group = None):
         """Add objOrName to contents, set behavior if it can be inferred.
-        
+
         If objOrName is a string, create an empty component or line based on
         behavior. If no behavior is found for the object, add a ContentLine.
 
@@ -545,7 +545,7 @@ class Component(VBase):
                     obj = ContentLine(name, [], '', group)
                 obj.parentBehavior = self.behavior
                 obj.behavior = behavior
-                obj = obj.transformToNative()     
+                obj = obj.transformToNative()
             except (KeyError, AttributeError):
                 obj = ContentLine(objOrName, [], '', group)
             if obj.behavior is None and self.behavior is not None:
@@ -610,12 +610,12 @@ class Component(VBase):
                 if clearBehavior:
                     childArray[i].behavior = None
                     childArray[i].parentBehavior = None
-    
+
     def __str__(self):
         if self.name:
-            return "<" + self.name + "| " + str(self.getSortedChildren()) + ">"
+            return   "<{0}| {1}>".format(self.name, self.getSortedChildren())
         else:
-            return '<' + '*unnamed*' + '| ' + str(self.getSortedChildren()) + '>'
+            return '<*unnamed*| {0}>'.format(self.getSortedChildren())
 
     def __repr__(self):
         return self.__str__()
@@ -657,7 +657,7 @@ patterns = {}
 
 # Note that underscore is not legal for names, it's included because
 # Lotus Notes uses it
-patterns['name'] = '[a-zA-Z0-9\-_]+'                                  
+patterns['name'] = '[a-zA-Z0-9\-_]+'
 patterns['safe_char'] = '[^";:,]'
 patterns['qsafe_char'] = '[^"]'
 
@@ -678,9 +678,9 @@ patterns['param_value_grouped'] = """
 patterns['param'] = r"""
 ; (?: %(name)s )                     # parameter name
 (?:
-    (?: = (?: %(param_value)s ) )?   # 0 or more parameter values, multiple 
+    (?: = (?: %(param_value)s ) )?   # 0 or more parameter values, multiple
     (?: , (?: %(param_value)s ) )*   # parameters are comma separated
-)*                         
+)*
 """ % patterns
 
 # get a parameter, saving groups for name and value (value still needs parsing)
@@ -689,7 +689,7 @@ patterns['params_grouped'] = r"""
 
 (?: =
     (
-        (?:   (?: %(param_value)s ) )?   # 0 or more parameter values, multiple 
+        (?:   (?: %(param_value)s ) )?   # 0 or more parameter values, multiple
         (?: , (?: %(param_value)s ) )*   # parameters are comma separated
     )
 )?
@@ -752,12 +752,12 @@ def parseLine(line, lineNumber = None):
     ...
     ParseError: 'Failed to parse line: :'
     """
-    
+
     match = line_re.match(line)
     if match is None:
         raise ParseError("Failed to parse line: %s" % line, lineNumber)
     # Underscores are replaced with dash to work around Lotus Notes
-    return (match.group('name').replace('_','-'),                                 
+    return (match.group('name').replace('_','-'),
             parseParams(match.group('params')),
             match.group('value'), match.group('group'))
 
@@ -793,9 +793,9 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
     quoted-printable encoding for long lines, as well as the vCard 3.0 and
     vCalendar line folding technique, a whitespace character at the start
     of the line.
-       
+
     Quoted-printable data will be decoded in the Behavior decoding phase.
-       
+
     >>> import StringIO
     >>> f=StringIO.StringIO(testLines)
     >>> for n, l in enumerate(getLogicalLines(f)):
@@ -827,7 +827,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     raise ParseError('Could not find BEGIN when trying to determine encoding')
         else:
             val = bytes
-        
+
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
 
         val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
@@ -838,7 +838,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
             if line != '':
                 yield line, lineNumber
             lineNumber += n
-        
+
     else:
         quotedPrintable=False
         newbuffer = BytesIO
@@ -859,7 +859,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                 logicalLine = newbuffer()
                 quotedPrintable=False
                 continue
-    
+
             if quotedPrintable and allowQP:
                 logicalLine.write('\n')
                 logicalLine.write(line)
@@ -874,21 +874,21 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
             else:
                 logicalLine = newbuffer()
                 logicalLine.write(line)
-            
+
             # hack to deal with the fact that vCard 2.1 allows parameters to be
             # encoded without a parameter name.  False positives are unlikely, but
             # possible.
             val = logicalLine.getvalue()
             if val[-1]=='=' and val.lower().find('quoted-printable') >= 0:
                 quotedPrintable=True
-    
+
         if logicalLine.pos > 0:
             yield logicalLine.getvalue(), lineStartNumber
 
 
 def textLineToContentLine(text, n=None):
     return ContentLine(*parseLine(text, n), **{'encoded':True, 'lineNumber' : n})
-            
+
 
 def dquoteEscape(param):
     """Return param, or "param" if ',' or ';' or ':' is in param."""
@@ -902,6 +902,8 @@ def dquoteEscape(param):
 def foldOneLine(outbuf, input, lineLength = 75):
     # Folding line procedure that ensures multi-byte utf-8 sequences are not broken
     # across lines
+
+    # To-do: This all seems odd. Is it still needed, especially in python3
 
     if len(input) < lineLength:
         # Optimize for unfolded line case
@@ -922,7 +924,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
                 while (input[offset] > 0x7F) and ((ord(input[offset]) & 0xC0) == 0x80):
                     # Step back until we have a valid char
                     offset -= 1
-                
+
                 line = input[start:offset]
                 outbuf.write(line)
                 outbuf.write("\r\n ")
@@ -941,13 +943,13 @@ def defaultSerialize(obj, buf, lineLength):
         else:
             groupString = obj.group + '.'
         if obj.useBegin:
-            foldOneLine(outbuf, str(groupString + u"BEGIN:" + obj.name), lineLength)
+            foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name), lineLength)
         for child in obj.getSortedChildren():
             #validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
         if obj.useBegin:
-            foldOneLine(outbuf, str(groupString + u"END:" + obj.name), lineLength)
-        
+            foldOneLine(outbuf, "{0}END:{1}".format(groupString, obj.name), lineLength)
+
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
@@ -962,7 +964,7 @@ def defaultSerialize(obj, buf, lineLength):
         s.write(':' + obj.value)
         if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
-    
+
     return buf or outbuf.getvalue()
 
 
@@ -1008,7 +1010,7 @@ def readComponents(streamOrString, validate=False, transform=True,
     <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>
     >>> cal.vevent.summary
     <SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>
-    
+
     """
     if isinstance(streamOrString, basestring):
         stream = BytesIO(streamOrString)
@@ -1028,7 +1030,7 @@ def readComponents(streamOrString, validate=False, transform=True,
                         msg = "Skipped line %(lineNumber)s, message: %(msg)s"
                     else:
                         msg = "Skipped a line, message: %(msg)s"
-                    logger.error(msg % {'lineNumber' : e.lineNumber, 
+                    logger.error(msg % {'lineNumber' : e.lineNumber,
                                         'msg' : e.message})
                     continue
             else:
@@ -1060,7 +1062,7 @@ def readComponents(streamOrString, validate=False, transform=True,
                         yield component #EXIT POINT
                     else: stack.modifyTop(stack.pop())
                 else:
-                    err = "%s component wasn't closed" 
+                    err = "%s component wasn't closed"
                     raise ParseError(err % stack.topName(), n)
             else: stack.modifyTop(vline) #not a START or END line
         if stack.top():
@@ -1086,10 +1088,10 @@ __behaviorRegistry={}
 
 def registerBehavior(behavior, name=None, default=False, id=None):
     """Register the given behavior.
-    
-    If default is True (or if this is the first version registered with this 
+
+    If default is True (or if this is the first version registered with this
     name), the version will be the default if no id is given.
-    
+
     """
     if not name: name=behavior.name.upper()
     if id is None: id=behavior.versionString
@@ -1103,9 +1105,9 @@ def registerBehavior(behavior, name=None, default=False, id=None):
 
 def getBehavior(name, id=None):
     """Return a matching behavior if it exists, or None.
-    
+
     If id is None, return the default for name.
-    
+
     """
     name=name.upper()
     if name in __behaviorRegistry:
