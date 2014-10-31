@@ -321,9 +321,9 @@ class ContentLine(VBase):
             elif name.endswith('_paramlist'):
                 return self.params[toVName(name, 10, True)]
             else:
-                raise (AttributeError, name)
+                raise AttributeError(name)
         except KeyError:
-            raise (AttributeError, name)
+            raise AttributeError(name)
 
     def __setattr__(self, name, value):
         """Make params accessible via self.foo_param or self.foo_paramlist.
@@ -358,7 +358,7 @@ class ContentLine(VBase):
             else:
                 object.__delattr__(self, name)
         except KeyError:
-            raise (AttributeError, name)
+            raise AttributeError(name)
 
     def valueRepr( self ):
         """transform the representation of the value according to the behavior,
@@ -474,7 +474,7 @@ class Component(VBase):
             else:
                 return self.contents[toVName(name)][0]
         except KeyError:
-            raise (AttributeError, name)
+            raise AttributeError(name)
 
     normal_attributes = ['contents','name','behavior','parentBehavior','group']
     def __setattr__(self, name, value):
@@ -510,7 +510,7 @@ class Component(VBase):
             else:
                 object.__delattr__(self, name)
         except KeyError:
-            raise (AttributeError, name)
+            raise AttributeError(name)
 
     def getChildValue(self, childName, default = None, childNumber = 0):
         """Return a child's value (the first, by default), or None."""
@@ -824,7 +824,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     except UnicodeDecodeError:
                         pass
                 else:
-                    raise (ParseError, 'Could not find BEGIN when trying to determine encoding')
+                    raise ParseError('Could not find BEGIN when trying to determine encoding')
         else:
             val = bytes
         
