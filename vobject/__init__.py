@@ -76,7 +76,7 @@ VObject Overview
     
 """
 
-import base, icalendar, vcard
+from . import base, icalendar, vcard
 from .base import readComponents, readOne, newFromBehavior
 
 
