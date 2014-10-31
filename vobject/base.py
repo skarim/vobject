@@ -270,12 +270,7 @@ class ContentLine(VBase):
         # is used, or if the quoted-printable state machine is used, text may be
         # encoded
         if type(self.value) is str:
-            charset = 'iso-8859-1'
-            if 'CHARSET' in self.params:
-                charsets = self.params.pop('CHARSET')
-                if charsets:
-                    charset = charsets[0]
-            self.value = six.u(self.value, charset)
+            self.value = six.u(self.value)
 
     @classmethod
     def duplicate(clz, copyit):
