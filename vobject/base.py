@@ -907,7 +907,11 @@ def foldOneLine(outbuf, input, lineLength = 75):
 
     if len(input) < lineLength:
         # Optimize for unfolded line case
-        outbuf.write(bytes(input, 'UTF-8'))
+        try:
+            outbuf.write(bytes(input, 'UTF-8'))
+        except Exception:
+            # fall back on py2 syntax
+            outbuf.write(input)
 
     else:
         # Look for valid utf8 range and write that out
@@ -918,7 +922,11 @@ def foldOneLine(outbuf, input, lineLength = 75):
             offset = start + lineLength - 1
             if offset >= len(input):
                 line = input[start:]
-                outbuf.write(bytes(line, 'UTF-8'))
+                try:
+                    outbuf.write(bytes(line, 'UTF-8'))
+                except Exception:
+                    # fall back on py2 syntax
+                    outbuf.write(line)
                 written = len(input)
             else:
                 # Check whether next char is valid utf8 lead byte
@@ -931,7 +939,11 @@ def foldOneLine(outbuf, input, lineLength = 75):
                 outbuf.write("\r\n ")
                 written += offset - start
                 start = offset
-    outbuf.write("\r\n")
+    try:
+        outbuf.write(bytes("\r\n", 'UTF-8'))
+    except Exception:
+        # fall back on py2 syntax
+        outbuf.write("\r\n")
 
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
