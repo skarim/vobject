@@ -1153,7 +1153,7 @@ def newFromBehavior(name, id=None):
 
 #--------------------------- Helper function -----------------------------------
 def backslashEscape(s):
-    s=s.replace("\\","\\\\").replace(";","\;").replace(",","\,")
+    s = s.replace("\\","\\\\").replace(";","\;").replace(",","\,")
     return s.replace("\r\n", "\\n").replace("\n","\\n").replace("\r","\\n")
 
 #------------------- Testing and running functions -----------------------------

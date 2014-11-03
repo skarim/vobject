@@ -625,7 +625,7 @@ class TextBehavior(behavior.Behavior):
             if encoding and encoding.upper() == cls.base64string:
                 line.value = line.value.encode('base64').replace('\n', '')
             else:
-                line.value = backslashEscape(line.value)
+                line.value = backslashEscape(str(line.value))
             line.encoded=True
 
 class VCalendarComponentBehavior(behavior.Behavior):
