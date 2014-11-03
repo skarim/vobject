@@ -970,7 +970,7 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.group is not None:
             s.write(obj.group + '.')
         s.write(obj.name.upper())
-        keys = sorted(obj.params.iterkeys())
+        keys = sorted(obj.params.keys())
         for key in keys:
             paramvals = obj.params[key]
             s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
