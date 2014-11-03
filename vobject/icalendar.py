@@ -1528,7 +1528,7 @@ registerBehavior(SemicolonMultiTextBehavior, 'REQUEST-STATUS')
 
 def numToDigits(num, places):
     """Helper, for converting numbers to textual digits."""
-    s = unicode(num)
+    s = str(num)
     if len(s) < places:
         return ("0" * (places - len(s))) + s
     elif len(s) > places:
