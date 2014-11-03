@@ -956,13 +956,14 @@ def defaultSerialize(obj, buf, lineLength):
         s=codecs.getwriter('utf-8')(StringIO()) #unfolded buffer
         if obj.group is not None:
             s.write(obj.group + '.')
-        s.write(obj.name.upper())
+        s.write(str(obj.name.upper()))
         keys = sorted(obj.params.keys())
         for key in keys:
             paramvals = obj.params[key]
-            s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
-        s.write(':' + obj.value)
-        if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
+            s.write(';{0}={1}'.format(key, ','.join(dquoteEscape(p) for p in paramvals)))
+        s.write(':{0}'.format(obj.value))
+        if obj.behavior and not startedEncoded:
+            obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
 
     return buf or outbuf.getvalue()
