@@ -2,14 +2,15 @@
 
 from __future__ import print_function
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO as BytesIO
 except ImportError:
-    from six import StringIO
+    from six import BytesIO
 
 import copy
 import re
 import sys
 import logging
+import string
 import codecs
 import six
 
@@ -840,7 +841,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
 
     else:
         quotedPrintable=False
-        newbuffer = StringIO
+        newbuffer = BytesIO
         logicalLine = newbuffer()
         lineNumber = 0
         lineStartNumber = 0
@@ -906,7 +907,11 @@ def foldOneLine(outbuf, input, lineLength = 75):
 
     if len(input) < lineLength:
         # Optimize for unfolded line case
-        outbuf.write(input)
+        try:
+            outbuf.write(bytes(input, 'UTF-8'))
+        except Exception:
+            # fall back on py2 syntax
+            outbuf.write(input)
 
     else:
         # Look for valid utf8 range and write that out
@@ -917,7 +922,11 @@ def foldOneLine(outbuf, input, lineLength = 75):
             offset = start + lineLength - 1
             if offset >= len(input):
                 line = input[start:]
-                outbuf.write(line)
+                try:
+                    outbuf.write(bytes(line, 'UTF-8'))
+                except Exception:
+                    # fall back on py2 syntax
+                    outbuf.write(line)
                 written = len(input)
             else:
                 # Check whether next char is valid utf8 lead byte
@@ -926,16 +935,24 @@ def foldOneLine(outbuf, input, lineLength = 75):
                     offset -= 1
 
                 line = input[start:offset]
-                outbuf.write(line)
-                outbuf.write("\r\n")
+                outbuf.write(bytes(line))
+                try:
+                    outbuf.write(bytes("\r\n", 'UTF-8'))
+                except Exception:
+                    # fall back on py2 syntax
+                    outbuf.write("\r\n")
                 written += offset - start
                 start = offset
-    outbuf.write("\r\n")
+    try:
+        outbuf.write(bytes("\r\n", 'UTF-8'))
+    except Exception:
+        # fall back on py2 syntax
+        outbuf.write("\r\n")
 
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
 
-    outbuf = buf or StringIO()
+    outbuf = buf or BytesIO()
 
     if isinstance(obj, Component):
         if obj.group is None:
@@ -953,17 +970,16 @@ def defaultSerialize(obj, buf, lineLength):
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
-        s=codecs.getwriter('utf-8')(StringIO()) #unfolded buffer
+        s=codecs.getwriter('utf-8')(BytesIO()) #unfolded buffer
         if obj.group is not None:
             s.write(obj.group + '.')
-        s.write(str(obj.name.upper()))
+        s.write(obj.name.upper())
         keys = sorted(obj.params.keys())
         for key in keys:
             paramvals = obj.params[key]
-            s.write(';{0}={1}'.format(key, ','.join(dquoteEscape(p) for p in paramvals)))
-        s.write(':{0}'.format(obj.value))
-        if obj.behavior and not startedEncoded:
-            obj.behavior.decode(obj)
+            s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
+        s.write(':' + obj.value)
+        if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
 
     return buf or outbuf.getvalue()
@@ -1014,7 +1030,7 @@ def readComponents(streamOrString, validate=False, transform=True,
 
     """
     if isinstance(streamOrString, basestring):
-        stream = StringIO(streamOrString)
+        stream = BytesIO(streamOrString)
     else:
         stream = streamOrString
 
