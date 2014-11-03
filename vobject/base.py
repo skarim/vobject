@@ -903,11 +903,12 @@ def foldOneLine(outbuf, input, lineLength = 75):
     # Folding line procedure that ensures multi-byte utf-8 sequences are not broken
     # across lines
 
-    # To-do: This all seems odd. Is it still needed, especially in python3
+    # To-do: This all seems odd. Is it still needed, especially in python3?
 
     if len(input) < lineLength:
         # Optimize for unfolded line case
-        outbuf.write(str(input))
+        outbuf.write(bytes(input, 'UTF-8'))
+
     else:
         # Look for valid utf8 range and write that out
         start = 0
@@ -917,7 +918,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
             offset = start + lineLength - 1
             if offset >= len(input):
                 line = input[start:]
-                outbuf.write(str(line))
+                outbuf.write(bytes(line, 'UTF-8'))
                 written = len(input)
             else:
                 # Check whether next char is valid utf8 lead byte
