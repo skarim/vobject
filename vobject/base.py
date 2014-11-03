@@ -917,7 +917,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
             offset = start + lineLength - 1
             if offset >= len(input):
                 line = input[start:]
-                outbuf.write(bytes(line, 'UTF-8'))
+                outbuf.write(bytes(line))
                 written = len(input)
             else:
                 # Check whether next char is valid utf8 lead byte
