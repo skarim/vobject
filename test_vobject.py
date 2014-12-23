@@ -17,7 +17,7 @@ def additional_tests():
         suite.addTest(doctest.DocTestSuite(module, optionflags=flags))
 
     suite.addTest(doctest.DocFileSuite(
-        'README.txt', 'test_files/more_tests.txt',
+        'README.md', 'test_files/more_tests.txt',
         package='__main__', optionflags=flags
     ))
     return suite
