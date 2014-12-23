@@ -3,4 +3,5 @@ python:
   - "2.7"
   - "3.4"
 install: pip install git+https://github.com/tBaxter/vobject.git
-script: test_vobject.py additional_tests
+script:
+    - python test_vobject.py additional_tests
