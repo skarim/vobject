@@ -2,6 +2,8 @@
 VObject
 =======
 
+[![Build Status](https://travis-ci.org/tBaxter/vobject.svg?branch=master)](https://travis-ci.org/tBaxter/vobject)
+
 VObject simplifies the process of parsing and creating iCalendar and
 vCard objects.
 
