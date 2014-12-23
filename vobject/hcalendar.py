@@ -28,9 +28,9 @@ and an equivalent event in hCalendar format with various elements optimized appr
 </span>
 """
 
-import StringIO
 
 from datetime import date, datetime, timedelta
+from six import StringIO
 
 from .base import CRLF, registerBehavior
 from .icalendar import VCalendar2_0

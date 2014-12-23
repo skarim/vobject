@@ -16,6 +16,8 @@ To install vobject, run::
 vobject requires the dateutil package, which can be installed via
 easy_install or downloaded from http://labix.org/python-dateutil
 
+six should also be installed: `pip install six`
+
 ---------------
  Running tests
 ---------------
@@ -201,7 +203,7 @@ serializing will add any required computable attributes (like 'VERSION')
     params for  EMAIL:
        TYPE ['INTERNET']
     FN: Jeffrey Harris
-    N:  Jeffrey  Harris 
+    N:  Jeffrey  Harris
 
 Parsing vCards
 ..............
