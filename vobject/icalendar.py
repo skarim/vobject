@@ -5,22 +5,15 @@ from __future__ import print_function
 import six
 import string
 
-try:
-    from cStringIO import StringIO as StringIO
-except ImportError:
-    from six import StringIO
-
+import datetime
 import dateutil.rrule
 import dateutil.tz
-import datetime
 import socket, random #for generating a UID
-import itertools
 
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
-                    VBase, Component, ContentLine, logger, defaultSerialize,
-                    registerBehavior, backslashEscape, foldOneLine,
-                    newFromBehavior, CRLF, LF, ascii)
+                    Component, ContentLine, logger, registerBehavior,
+                    backslashEscape, foldOneLine, newFromBehavior)
 
 #------------------------------- Constants -------------------------------------
 DATENAMES = ("rdate", "exdate")
@@ -109,7 +102,7 @@ class TimezoneComponent(Component):
         good_lines = ('rdate', 'rrule', 'dtstart', 'tzname', 'tzoffsetfrom',
                       'tzoffsetto', 'tzid')
         # serialize encodes as utf-8, cStringIO will leave utf-8 alone
-        buffer = StringIO.StringIO()
+        buffer = six.StringIO()
         # allow empty VTIMEZONEs
         if len(self.contents) == 0:
             return None
@@ -517,7 +510,7 @@ class RecurringComponent(Component):
                     self.add(name).value = setlist
             elif name in RULENAMES:
                 for rule in setlist:
-                    buf = StringIO.StringIO()
+                    buf = six.StringIO()
                     buf.write('FREQ=')
                     buf.write(FREQUENCIES[rule._freq])
 
