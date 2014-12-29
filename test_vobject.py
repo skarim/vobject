@@ -531,6 +531,7 @@ __test__ = { "Test readOne" :
     "Serializing with timezones test" :
 
     """
+    >>> import dateutil
     >>> from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
     >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
     >>> cal = base.Component('VCALENDAR')
