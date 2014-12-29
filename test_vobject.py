@@ -506,6 +506,7 @@ __test__ = { "Test readOne" :
     "Create iCalendar from scratch" :
 
     """
+    >>> import datetime
     >>> cal = base.newFromBehavior('vcalendar', '2.0')
     >>> cal.add('vevent')
     <VEVENT| []>
