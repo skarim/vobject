@@ -854,7 +854,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                 line = line.rstrip(CRLF)
                 lineNumber += 1
             if line.rstrip() == '':
-                if logicalLine.pos > 0:
+                if logicalLine.tell() > 0:
                     yield logicalLine.getvalue(), lineStartNumber
                 lineStartNumber = lineNumber
                 logicalLine = newbuffer()
@@ -867,7 +867,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                 quotedPrintable=False
             elif line[0] in SPACEORTAB:
                 logicalLine.write(line[1:])
-            elif logicalLine.pos > 0:
+            elif logicalLine.tell() > 0:
                 yield logicalLine.getvalue(), lineStartNumber
                 lineStartNumber = lineNumber
                 logicalLine = newbuffer()
@@ -883,7 +883,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
             if val[-1]=='=' and val.lower().find('quoted-printable') >= 0:
                 quotedPrintable=True
 
-        if logicalLine.pos > 0:
+        if logicalLine.tell() > 0:
             yield logicalLine.getvalue(), lineStartNumber
 
 
