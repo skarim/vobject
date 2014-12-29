@@ -508,6 +508,7 @@ __test__ = { "Test readOne" :
 
     """
     >>> import datetime
+    >>> import dateutil
     >>> cal = base.newFromBehavior('vcalendar', '2.0')
     >>> cal.add('vevent')
     <VEVENT| []>
