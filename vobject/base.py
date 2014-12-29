@@ -192,7 +192,7 @@ class VBase(object):
 def ascii(s):
     """Turn s into a printable string.  Won't work for 8-bit ASCII."""
     #return six.u(s).encode('ascii', 'replace')
-    return s.encode('ascii', 'replace')
+    return six.u(s)
 
 def toVName(name, stripNum = 0, upper = False):
     """
