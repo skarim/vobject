@@ -58,8 +58,7 @@ def getTzid(tzid, smart=True):
             pass
     return tz
 
-utc = dateutil.tz.tzutc()
-registerTzid("UTC", utc)
+registerTzid("UTC", tz.tzutc())
 
 
 #-------------------- Helper subclasses ----------------------------------------
@@ -68,7 +67,7 @@ registerTzid("UTC", utc)
 class TimezoneComponent(Component):
     """A VTIMEZONE object.
 
-    VTIMEZONEs are parsed by dateutil.tz.tzical, the resulting datetime.tzinfo
+    VTIMEZONEs are parsed by tz.tzical, the resulting datetime.tzinfo
     subclass is stored in self.tzinfo, self.tzid stores the TZID associated
     with this timezone.
 
@@ -535,8 +534,7 @@ class RecurringComponent(Component):
                                 len(rule._byweekday) != 1 or
                                 rule._dtstart.weekday() != rule._byweekday[0])):
                         # ignore byweekday if freq is WEEKLY and day correlates
-                        # with dtstart because it was automatically set by
-                        # dateutil
+                        # with dtstart because it was automatically set by dateutil
                         days.extend(WEEKDAYS[n] for n in rule._byweekday)
 
                     if rule._bynweekday is not None:
