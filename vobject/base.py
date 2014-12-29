@@ -6,7 +6,7 @@ import copy
 import re
 import sys
 import logging
-import codecs
+#import codecs
 import six
 
 
@@ -831,8 +831,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
             val = bytes
 
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
-
-        val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
+        #val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
 
         lineNumber = 1
         for match in logical_lines_re.finditer(val):
@@ -972,7 +971,10 @@ def defaultSerialize(obj, buf, lineLength):
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
-        s=codecs.getwriter('utf-8')(six.StringIO()) #unfolded buffer
+
+        #s = codecs.getwriter('utf-8')(six.StringIO()) #unfolded buffer
+        s = six.StringIO()
+
         if obj.group is not None:
             s.write(obj.group + '.')
         s.write(obj.name.upper())
@@ -981,7 +983,8 @@ def defaultSerialize(obj, buf, lineLength):
             paramvals = obj.params[key]
             s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
         s.write(':' + obj.value)
-        if obj.behavior and not startedEncoded: obj.behavior.decode(obj)
+        if obj.behavior and not startedEncoded:
+            obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
 
     return buf or outbuf.getvalue()
