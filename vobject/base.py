@@ -55,7 +55,9 @@ class VBase(object):
         Boolean describing whether this component is a Native instance.
     @ivar group:
         An optional group prefix, should be used only to indicate sort order in
-        vCards, according to RFC2426
+        vCards, according to spec.
+
+    Current spec: 4.0 (http://tools.ietf.org/html/rfc6350)
     """
     def __init__(self, group=None, *args, **kwds):
         super(VBase, self).__init__(*args, **kwds)
@@ -245,6 +247,7 @@ class ContentLine(VBase):
         self.singletonparams = []
         self.isNative = isNative
         self.lineNumber = lineNumber
+
         def updateTable(x):
             if len(x) == 1:
                 self.singletonparams += x
@@ -308,7 +311,8 @@ class ContentLine(VBase):
         return params
 
     def __getattr__(self, name):
-        """Make params accessible via self.foo_param or self.foo_paramlist.
+        """
+        Make params accessible via self.foo_param or self.foo_paramlist.
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
@@ -360,8 +364,10 @@ class ContentLine(VBase):
             raise AttributeError(name)
 
     def valueRepr( self ):
-        """transform the representation of the value according to the behavior,
-        if any"""
+        """
+        Transform the representation of the value
+        according to the behavior, if any.
+        """
         v = self.value
         if self.behavior:
             v = self.behavior.valueRepr( self )
@@ -371,7 +377,8 @@ class ContentLine(VBase):
         return "<%s%s%s>" % (self.name, self.params, self.valueRepr())
 
     def __repr__(self):
-        return self.__str__().replace('\n', '\\n')
+        #return self.__str__().replace('\n', '\\n')
+        return self.__str__()
 
     def prettyPrint(self, level = 0, tabwidth=3):
         pre = ' ' * level * tabwidth
@@ -614,9 +621,9 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return "<%s| %s>" % (self.name, ''.join(str(c) for c in self.getSortedChildren()))
+            return "<%s| [%s]>" % (self.name, ''.join(str(c) for c in self.getSortedChildren()))
         else:
-            return u'<*unnamed*| {}>'.format(self.getSortedChildren())
+            return u'<*unnamed*| [{}]>'.format(self.getSortedChildren())
 
     def __repr__(self):
         return self.__str__()
