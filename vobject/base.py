@@ -363,10 +363,10 @@ class ContentLine(VBase):
         v = self.value
         if self.behavior:
             v = self.behavior.valueRepr( self )
-        return ascii( v )
+        return v
 
     def __str__(self):
-        return "<"+ascii(self.name)+ascii(self.params)+self.valueRepr()+">"
+        return "<{}{}{}>".format(self.name, self.params, self.valueRepr())
 
     def __repr__(self):
         return self.__str__().replace('\n', '\\n')
