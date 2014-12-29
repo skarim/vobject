@@ -634,7 +634,6 @@ class Component(VBase):
         if isinstance(self, Component):
             for line in self.getChildren():
                 line.prettyPrint(level + 1, tabwidth)
-        print('')
 
 
 class VObjectError(Exception):

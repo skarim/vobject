@@ -48,7 +48,7 @@ VObject Overview
     >>> x = iCalendar()
     >>> x.add('vevent')
     <VEVENT| []>
-    >>> six.u(x)
+    >>> x
     <VCALENDAR| [<VEVENT| []>]>
     >>> v = x.vevent
     >>> utc = icalendar.utc
