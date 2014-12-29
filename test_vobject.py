@@ -24,7 +24,7 @@ def additional_tests():
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
-    runner.run(additional_tests())
+    unittest.main(testRunner=runner)
 
 
 testSilly="""
