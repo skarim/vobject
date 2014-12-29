@@ -614,7 +614,7 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return u"<{}| {}>".format(self.name, self.getSortedChildren())
+            return "<{}| {}>".format(self.name, unicode(self.getSortedChildren()))
         else:
             return u'<*unnamed*| {}>'.format(self.getSortedChildren())
 
