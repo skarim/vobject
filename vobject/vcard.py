@@ -75,7 +75,7 @@ class Address(object):
         return ascii(lines)
 
     def __repr__(self):
-        return "<Address: %s>" % repr(six.u(self))[1:-1]
+        return "<Address: %s>" % self.__str__()
 
     def __eq__(self, other):
         try:

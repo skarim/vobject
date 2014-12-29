@@ -536,6 +536,7 @@ __test__ = { "Test readOne" :
     "Serializing with timezones test" :
 
     """
+    >>> import datetime
     >>> import dateutil
     >>> from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
     >>> from six import StringIO
