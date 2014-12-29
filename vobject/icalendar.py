@@ -417,7 +417,7 @@ class RecurringComponent(Component):
 
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
-                    value = line.value.replace('\\', '')
+                    value = str(line.value).replace('\\', '')
                     rule = rrule.rrule(value, dtstart=dtstart)
                     until = rule._until
                     if until is not None and isinstance(dtstart, datetime.datetime) and \
