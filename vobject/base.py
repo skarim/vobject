@@ -614,7 +614,7 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return "<%s| %s>" % (six.u(self.name), ''.join(six.u(e) for e in self.getSortedChildren()))
+            return "<%s| %s>" % (six.u(self.name), ''.join(self.getSortedChildren()))
         else:
             return u'<*unnamed*| {}>'.format(self.getSortedChildren())
 
