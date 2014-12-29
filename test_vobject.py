@@ -412,7 +412,7 @@ __test__ = { "Test readOne" :
 
     "regular expression test" :
     """
-    ... import re
+    >>> import re
     >>> re.findall(base.patterns['name'], '12foo-bar:yay')
     ['12foo-bar', 'yay']
     >>> re.findall(base.patterns['safe_char'], 'a;b"*,cd')
