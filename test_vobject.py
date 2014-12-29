@@ -296,6 +296,7 @@ END:VTIMEZONE
 
 __test__ = { "Test readOne" :
     r"""
+    >>> import datetime
     >>> silly = base.readOne(testSilly, findBegin=False)
     >>> silly
     <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
