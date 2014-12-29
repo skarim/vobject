@@ -586,7 +586,7 @@ class Component(VBase):
         return first + sorted(k for k in self.contents.keys() if k not in first)
 
     def getSortedChildren(self):
-        return [six.u(obj) for k in self.sortChildKeys() for obj in self.contents[k]]
+        return [obj for k in self.sortChildKeys() for obj in self.contents[k]]
 
     def setBehaviorFromVersionLine(self, versionLine):
         """Set behavior if one matches name, versionLine.value."""
