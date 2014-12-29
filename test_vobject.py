@@ -429,6 +429,7 @@ __test__ = { "Test readOne" :
     "VTIMEZONE creation test:" :
 
     """
+    >>> import dateutil
     >>> f = StringIO.StringIO(timezones)
     >>> tzs = dateutil.tz.tzical(f)
     >>> tzs.get("US/Pacific")
@@ -643,6 +644,7 @@ __test__ = { "Test readOne" :
     "Serializing iCalendar to hCalendar" :
 
     """
+    >>> import dateutil
     >>> cal = base.newFromBehavior('hcalendar')
     >>> cal.behavior
     <class 'vobject.hcalendar.HCalendar'>
