@@ -614,7 +614,7 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return "<{}| {}>".format(self.name, unicode(self.getSortedChildren()))
+            return "<%s| %s>" % (self.name, unicode(self.getSortedChildren()))
         else:
             return u'<*unnamed*| {}>'.format(self.getSortedChildren())
 
@@ -637,8 +637,7 @@ class VObjectError(Exception):
             self.lineNumber = lineNumber
     def __str__(self):
         if hasattr(self, 'lineNumber'):
-            return "At line %s: %s" % \
-                   (self.lineNumber, self.msg)
+            return "At line %s: %s" % (self.lineNumber, self.msg)
         else:
             return repr(self.msg)
 
