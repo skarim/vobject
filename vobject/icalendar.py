@@ -336,7 +336,7 @@ class RecurringComponent(Component):
     around, to access it getrruleset must be called with addRDate set True.
 
     >>> import datetime
-    >>> import dateutil.rrule
+    >>> from dateutil import rrule
     >>> vevent = RecurringComponent(name='VEVENT')
     >>> vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
     >>> vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
@@ -553,7 +553,7 @@ class RecurringComponent(Component):
                             values['BYMONTHDAY'] = [six.u(n) for n in rule._bymonthday]
 
                     if rule._bynmonthday is not None and len(rule._bynmonthday) > 0:
-                        values.setdefault('BYMONTHDAY', []).extend(six.u(n) for n in rule._bynmonthday)
+                        values.setdefault('BYMONTHDAY', []).extend(str(n) for n in rule._bynmonthday)
 
                     if rule._bymonth is not None and len(rule._bymonth) > 0:
                         if (rule._byweekday is not None or

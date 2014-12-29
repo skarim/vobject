@@ -73,7 +73,7 @@ class Address(object):
         return lines
 
     def __repr__(self):
-        return "<Address: %s>" % self.__str__()
+        return "<Address: %s>" % self
 
     def __eq__(self, other):
         try:
