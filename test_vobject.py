@@ -687,6 +687,7 @@ __test__ = { "Test readOne" :
     "Generate UIDs automatically test:" :
 
     """
+    >>> import datetime
     >>> cal = base.newFromBehavior('vcalendar')
     >>> cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
     >>> ser = cal.serialize()
