@@ -614,9 +614,9 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return   "<%s| %s>" % (self.name, self.getSortedChildren())
+            return u"<{}| {}>".format(self.name, self.getSortedChildren())
         else:
-            return '<*unnamed*| %s>' % self.getSortedChildren()
+            return u'<*unnamed*| {}>'.format(self.getSortedChildren())
 
     def __repr__(self):
         return self.__str__()
