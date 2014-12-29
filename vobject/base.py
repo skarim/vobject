@@ -19,6 +19,7 @@ if not logging.getLogger().handlers:
     logger.addHandler(handler)
 logger.setLevel(logging.ERROR) # Log errors
 DEBUG = False # Don't waste time on debug calls
+
 #----------------------------------- Constants ---------------------------------
 CR     = '\r'
 LF     = '\n'
@@ -26,6 +27,7 @@ CRLF   = CR + LF
 SPACE  = ' '
 TAB    = '\t'
 SPACEORTAB = SPACE + TAB
+
 #-------------------------------- Useful modules -------------------------------
 #   use doctest, it kills two birds with one stone and docstrings often become
 #                more readable to boot (see parseLine's docstring).
@@ -36,7 +38,11 @@ SPACEORTAB = SPACE + TAB
 #                follow http://www.python.org/peps/pep-0257.html for docstrings.
 #-------------------------------------------------------------------------------
 
+
+
 #--------------------------------- Main classes --------------------------------
+
+
 class VBase(object):
     """Base class for ContentLine and Component.
 
@@ -189,10 +195,6 @@ class VBase(object):
             if DEBUG: logger.debug("serializing %s without behavior" % self.name)
             return defaultSerialize(self, buf, lineLength)
 
-def ascii(s):
-    """Turn s into a printable string.  Won't work for 8-bit ASCII."""
-    #return six.u(s).encode('ascii', 'replace')
-    return six.u(s)
 
 def toVName(name, stripNum = 0, upper = False):
     """
@@ -378,7 +380,8 @@ class ContentLine(VBase):
             lineKeys= self.params.keys()
             print(pre, "params for ", self.name +':')
             for aKey in lineKeys:
-                print(pre + ' ' * tabwidth, aKey, ascii(self.params[aKey]))
+                print(pre + ' ' * tabwidth, aKey, self.params[aKey])
+
 
 class Component(VBase):
     """A complex property that can contain multiple ContentLines.
@@ -1019,7 +1022,7 @@ def readComponents(streamOrString, validate=False, transform=True,
     """Generate one Component at a time from a stream.
 
     >>> from six import StringIO
-    >>> f = StringIO.StringIO(testVCalendar)
+    >>> f = StringIO(testVCalendar)
     >>> cal=readComponents(f).next()
     >>> cal
     <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>
@@ -1108,8 +1111,10 @@ def registerBehavior(behavior, name=None, default=False, id=None):
     name), the version will be the default if no id is given.
 
     """
-    if not name: name=behavior.name.upper()
-    if id is None: id=behavior.versionString
+    if not name:
+        name=behavior.name.upper()
+    if id is None:
+        id=behavior.versionString
     if name in __behaviorRegistry:
         if default:
             __behaviorRegistry[name].insert(0, (id, behavior))

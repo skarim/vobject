@@ -335,7 +335,8 @@ class RecurringComponent(Component):
     result set, but by default, the rruleset property doesn't do this work
     around, to access it getrruleset must be called with addRDate set True.
 
-    >>> import dateutil.rrule, datetime
+    >>> import datetime
+    >>> import dateutil.rrule
     >>> vevent = RecurringComponent(name='VEVENT')
     >>> vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
     >>> vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
