@@ -441,7 +441,7 @@ __test__ = { "Test readOne" :
     >>> icalendar.TimezoneComponent(_)
     <VTIMEZONE | <TZID{}US/Pacific>>
     >>> pacific = _
-    >>> print pacific.serialize()
+    >>> print(pacific.serialize())
     BEGIN:VTIMEZONE
     TZID:US/Pacific
     BEGIN:STANDARD
@@ -463,7 +463,7 @@ __test__ = { "Test readOne" :
     <VTIMEZONE | <TZID{}US/Pacific>>
     >>> santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
     >>> ser = santiago.serialize()
-    >>> print ser
+    >>> print(ser)
     BEGIN:VTIMEZONE
     TZID:Santiago
     BEGIN:STANDARD
@@ -488,7 +488,7 @@ __test__ = { "Test readOne" :
     ...         if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
     ...             print "Failed for:", dt
     >>> fict = icalendar.TimezoneComponent(tzs.get('US/Fictitious-Eastern'))
-    >>> print fict.serialize()
+    >>> print(fict.serialize())
     BEGIN:VTIMEZONE
     TZID:US/Fictitious-Eastern
     BEGIN:STANDARD
@@ -522,7 +522,7 @@ __test__ = { "Test readOne" :
     >>> pacific = dateutil.tz.tzical(StringIO(timezones)).get('US/Pacific')
     >>> cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=pacific)
     >>> cal.vevent.add('uid').value = "Not very random UID"
-    >>> print cal.serialize()
+    >>> print(cal.serialize())
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -553,7 +553,7 @@ __test__ = { "Test readOne" :
     >>> set.exdate(datetime.datetime(2005, 10, 14, 9, tzinfo = pacific))
     >>> ev.rruleset = set
     >>> ev.add('duration').value = datetime.timedelta(hours=1)
-    >>> print cal.serialize()
+    >>> print(cal.serialize())
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -585,7 +585,7 @@ __test__ = { "Test readOne" :
     END:VCALENDAR
     >>> apple = dateutil.tz.tzical(StringIO(timezones)).get('America/Montreal')
     >>> ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
-    >>> print cal.serialize()
+    >>> print(cal.serialize())
     BEGIN:VCALENDAR
     VERSION:2.0
     PRODID:-//PYVOBJECT//NONSGML Version 1//EN
@@ -672,7 +672,7 @@ __test__ = { "Test readOne" :
     >>> event2.add('location').value = "somewhere else"
     >>> event2.add('dtend').value = event2.dtstart.value + datetime.timedelta(days = 6)
     >>> hcal = cal.serialize()
-    >>> print hcal
+    >>> print(hcal)
     <span class="vevent">
        <a class="url" href="http://microformats.org/code/hcalendar/creator">
           <span class="summary">this is a note</span>:
@@ -707,14 +707,14 @@ __test__ = { "Test readOne" :
     >>> card = base.readOne(vcardtest)
     >>> card.adr.value
     <Address: Haight Street 512;\nEscape, Test\nNovosibirsk,  80214\nGnuland>
-    >>> print card.adr.value
+    >>> print(card.adr.value)
     Haight Street 512;
     Escape, Test
     Novosibirsk,  80214
     Gnuland
     >>> card.org.value
     [u'University of Novosibirsk, Department of Octopus Parthenogenesis']
-    >>> print card.serialize()
+    >>> print(card.serialize())
     BEGIN:VCARD
     VERSION:3.0
     ACCOUNT;TYPE=HOME:010-1234567-05
@@ -736,10 +736,10 @@ __test__ = { "Test readOne" :
     """
     >>> category = base.newFromBehavior('categories')
     >>> category.value = ['Random category']
-    >>> print category.serialize().strip()
+    >>> print(category.serialize().strip())
     CATEGORIES:Random category
     >>> category.value.append('Other category')
-    >>> print category.serialize().strip()
+    >>> print(category.serialize().strip())
     CATEGORIES:Random category,Other category
     """,
 
@@ -748,7 +748,7 @@ __test__ = { "Test readOne" :
     """
     >>> requestStatus = base.newFromBehavior('request-status')
     >>> requestStatus.value = ['5.1', 'Service unavailable']
-    >>> print requestStatus.serialize().strip()
+    >>> print(requestStatus.serialize().strip())
     REQUEST-STATUS:5.1;Service unavailable
     """,
 
@@ -789,7 +789,7 @@ __test__ = { "Test readOne" :
     True
     >>> card.note.behavior
     <class 'vobject.vcard.VCardTextBehavior'>
-    >>> print card.note.value
+    >>> print(card.note.value)
     The Mayor of the great city of  Goerlitz in the great country of Germany.
     Next line.
     """

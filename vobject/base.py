@@ -1018,7 +1018,7 @@ def readComponents(streamOrString, validate=False, transform=True,
                    allowQP=False):
     """Generate one Component at a time from a stream.
 
-    >>> import StringIO
+    >>> from six import StringIO
     >>> f = StringIO.StringIO(testVCalendar)
     >>> cal=readComponents(f).next()
     >>> cal

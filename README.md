@@ -102,7 +102,7 @@ given name by appending _list to the attribute name:
 
 >>> cal.add('vevent').add('summary').value = "Second VEVENT"
 >>> for ev in cal.vevent_list:
-...     print ev.summary.value
+...     print(ev.summary.value)
 This is a note
 Second VEVENT
 
@@ -133,7 +133,7 @@ Components and ContentLines have serialize methods:
 
 >>> cal.vevent.add('uid').value = 'Sample UID'
 >>> icalstream = cal.serialize()
->>> print icalstream
+>>> print(icalstream)
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//PYVOBJECT//NONSGML Version 1//EN
