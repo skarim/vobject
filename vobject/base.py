@@ -590,8 +590,9 @@ class Component(VBase):
 
     def setBehaviorFromVersionLine(self, versionLine):
         """Set behavior if one matches name, versionLine.value."""
-        v=getBehavior(self.name, versionLine.value)
-        if v: self.setBehavior(v)
+        v = getBehavior(self.name, versionLine.value)
+        if v:
+            self.setBehavior(v)
 
     def transformChildrenToNative(self):
         """Recursively replace children with their native representation."""
@@ -613,9 +614,9 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return   "<{0}| {1}>".format(self.name, self.getSortedChildren())
+            return   "<%s| %s>" % (self.name, self.getSortedChildren())
         else:
-            return '<*unnamed*| {0}>'.format(self.getSortedChildren())
+            return '<*unnamed*| %s>' % self.getSortedChildren()
 
     def __repr__(self):
         return self.__str__()
@@ -626,7 +627,8 @@ class Component(VBase):
         if isinstance(self, Component):
             for line in self.getChildren():
                 line.prettyPrint(level + 1, tabwidth)
-        print
+        print('')
+
 
 class VObjectError(Exception):
     def __init__(self, msg, lineNumber=None):

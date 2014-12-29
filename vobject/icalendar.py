@@ -58,7 +58,8 @@ def getTzid(tzid, smart=True):
             pass
     return tz
 
-registerTzid("UTC", tz.tzutc())
+utc = tz.tzutc()
+registerTzid("UTC", utc)
 
 
 #-------------------- Helper subclasses ----------------------------------------
@@ -340,7 +341,6 @@ class RecurringComponent(Component):
     around, to access it getrruleset must be called with addRDate set True.
 
     >>> import datetime
-    >>> from dateutil import rrule
     >>> vevent = RecurringComponent(name='VEVENT')
     >>> vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
     >>> vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
@@ -417,8 +417,8 @@ class RecurringComponent(Component):
 
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
-                    value = six.u(line.value).replace('\\', '')
-                    rule = rrule.rrulesix.u(value, dtstart=dtstart)
+                    value = line.value.replace('\\', '')
+                    rule = rrule.rrule(value, dtstart=dtstart)
                     until = rule._until
                     if until is not None and isinstance(dtstart, datetime.datetime) and \
                        (until.tzinfo != dtstart.tzinfo):
