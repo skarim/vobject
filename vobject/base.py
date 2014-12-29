@@ -796,8 +796,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
     >>> import StringIO
     >>> f=StringIO.StringIO(testLines)
     >>> for n, l in enumerate(getLogicalLines(f)):
-    ...     print (n)
-    ...     print (l[0])
+    ...     print("Line %s: %s" % (n, l[0]))
     ...
     Line 0: Line 0 text, Line 0 continued.
     Line 1: Line 1;encoding=quoted-printable:this is an evil=
