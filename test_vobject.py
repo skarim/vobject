@@ -297,17 +297,18 @@ END:VTIMEZONE
 __test__ = { "Test readOne" :
     r"""
     >>> import datetime
+    >>> from six import StringIO
     >>> silly = base.readOne(testSilly, findBegin=False)
     >>> silly
     <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
     >>> silly.stuff
     <STUFF{}foldedline>
     >>> original = silly.serialize()
-    >>> f3 = StringIO.StringIO(original.decode("utf-8"))
+    >>> f3 = StringIO(original.decode("utf-8"))
     >>> silly2 = base.readOne(f3)
     >>> silly2.serialize()==original
     True
-    >>> s3 = StringIO.StringIO('cn:Babs Jensen\r\ncn:Barbara J Jensen\r\nsn:Jensen\r\nemail:babs@umich.edu\r\nphone:+1 313 747-4454\r\nx-id:1234567890\r\n')
+    >>> s3 = StringIO('cn:Babs Jensen\r\ncn:Barbara J Jensen\r\nsn:Jensen\r\nemail:babs@umich.edu\r\nphone:+1 313 747-4454\r\nx-id:1234567890\r\n')
     >>> ex1 = base.readOne(s3, findBegin=False)
     >>> ex1
     <*unnamed*| [<CN{}Babs Jensen>, <CN{}Barbara J Jensen>, <EMAIL{}babs@umich.edu>, <PHONE{}+1 313 747-4454>, <SN{}Jensen>, <X-ID{}1234567890>]>
@@ -431,7 +432,7 @@ __test__ = { "Test readOne" :
     """
     >>> import dateutil
     >>> from six import StringIO
-    >>> f = StringIO.StringIO(timezones)
+    >>> f = StringIO(timezones)
     >>> tzs = dateutil.tz.tzical(f)
     >>> tzs.get("US/Pacific")
     <tzicalvtz 'US/Pacific'>
@@ -478,7 +479,7 @@ __test__ = { "Test readOne" :
     TZOFFSETTO:-0300
     END:DAYLIGHT
     END:VTIMEZONE
-    >>> roundtrip = dateutil.tz.tzical(StringIO.StringIO(str(ser))).get()
+    >>> roundtrip = dateutil.tz.tzical(StringIO(str(ser))).get()
     >>> for year in range(2001, 2010):
     ...     for month in (2, 9):
     ...         dt = datetime.datetime(year, month, 15, tzinfo = roundtrip)
@@ -516,7 +517,7 @@ __test__ = { "Test readOne" :
     <VEVENT| []>
     >>> cal.vevent.add('dtstart').value = datetime.datetime(2006, 5, 9)
     >>> cal.vevent.add('description').value = "Test event"
-    >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
+    >>> pacific = dateutil.tz.tzical(StringIO(timezones)).get('US/Pacific')
     >>> cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=pacific)
     >>> cal.vevent.add('uid').value = "Not very random UID"
     >>> print cal.serialize()
@@ -537,7 +538,8 @@ __test__ = { "Test readOne" :
     """
     >>> import dateutil
     >>> from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
-    >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
+    >>> from six import StringIO
+    >>> pacific = dateutil.tz.tzical(StringIO(timezones)).get('US/Pacific')
     >>> cal = base.Component('VCALENDAR')
     >>> cal.setBehavior(icalendar.VCalendar2_0)
     >>> ev = cal.add('vevent')
@@ -578,7 +580,7 @@ __test__ = { "Test readOne" :
     RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
     END:VEVENT
     END:VCALENDAR
-    >>> apple = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('America/Montreal')
+    >>> apple = dateutil.tz.tzical(StringIO(timezones)).get('America/Montreal')
     >>> ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
     >>> print cal.serialize()
     BEGIN:VCALENDAR
@@ -648,10 +650,11 @@ __test__ = { "Test readOne" :
 
     """
     >>> import dateutil
+    >>> from six import StringIO
     >>> cal = base.newFromBehavior('hcalendar')
     >>> cal.behavior
     <class 'vobject.hcalendar.HCalendar'>
-    >>> pacific = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('US/Pacific')
+    >>> pacific = dateutil.tz.tzical(StringIO(timezones)).get('US/Pacific')
     >>> cal.add('vevent')
     <VEVENT| []>
     >>> cal.vevent.add('summary').value = "this is a note"
