@@ -517,14 +517,14 @@ class RecurringComponent(Component):
                     values = {}
 
                     if rule._interval != 1:
-                        values['INTERVAL'] = [six.u(rule._interval)]
+                        values['INTERVAL'] = [str(rule._interval)]
                     if rule._wkst != 0: # wkst defaults to Monday
                         values['WKST'] = [WEEKDAYS[rule._wkst]]
                     if rule._bysetpos is not None:
-                        values['BYSETPOS'] = [six.u(i) for i in rule._bysetpos]
+                        values['BYSETPOS'] = [str(i) for i in rule._bysetpos]
 
                     if rule._count is not None:
-                        values['COUNT'] = [six.u(rule._count)]
+                        values['COUNT'] = [str(rule._count)]
                     elif rule._until is not None:
                         values['UNTIL'] = [untilSerialize(rule._until)]
 

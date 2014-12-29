@@ -384,6 +384,7 @@ __test__ = { "Test readOne" :
 
     "unicode test" :
     r"""
+    >>> from pkg_resources import resource_stream
     >>> f = resource_stream(__name__, 'test_files/utf8_test.ics')
     >>> vevent = base.readOne(f).vevent
     >>> vevent.summary.value
@@ -396,6 +397,7 @@ __test__ = { "Test readOne" :
     # and include that day (12/28 in this test)
     "recurrence test" :
     r"""
+    >>> from pkg_resources import resource_stream
     >>> f = resource_stream(__name__, 'test_files/recurrence.ics')
     >>> cal = base.readOne(f)
     >>> dates = list(cal.vevent.rruleset)
