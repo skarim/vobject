@@ -1,10 +1,8 @@
 """Definitions and behavior for vCard 3.0"""
 
-import six
-
 from . import behavior
 
-from .base import ContentLine, registerBehavior, backslashEscape, ascii
+from .base import ContentLine, registerBehavior, backslashEscape
 from .icalendar import stringToTextValues
 
 #------------------------ vCard structs ----------------------------------------
@@ -29,7 +27,7 @@ class Name(object):
     def __str__(self):
         eng_order = ('prefix', 'given', 'additional', 'family', 'suffix')
         out = ' '.join(self.toString(getattr(self, val)) for val in eng_order)
-        return ascii(out)
+        return out
 
     def __repr__(self):
         return "<Name: %s>" % self.__str__()
@@ -72,7 +70,7 @@ class Address(object):
         lines += "\n%s, %s %s" % one_line
         if self.country:
             lines += '\n' + self.toString(self.country)
-        return ascii(lines)
+        return lines
 
     def __repr__(self):
         return "<Address: %s>" % self.__str__()
