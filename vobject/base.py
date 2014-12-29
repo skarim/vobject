@@ -368,7 +368,7 @@ class ContentLine(VBase):
         return v
 
     def __str__(self):
-        return "<{}{}{}>".format(self.name, self.params, self.valueRepr())
+        return "<%s%s%s>" % (self.name, self.params, self.valueRepr())
 
     def __repr__(self):
         return self.__str__().replace('\n', '\\n')
