@@ -787,7 +787,8 @@ Line 2 is a new line, it does not start with whitespace.
 """
 
 def getLogicalLines(fp, allowQP=True, findBegin=False):
-    """Iterate through a stream, yielding one logical line at a time.
+    """
+    Iterate through a stream, yielding one logical line at a time.
 
     Because many applications still use vCard 2.1, we have to deal with the
     quoted-printable encoding for long lines, as well as the vCard 3.0 and
@@ -799,7 +800,8 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
     >>> import StringIO
     >>> f=StringIO.StringIO(testLines)
     >>> for n, l in enumerate(getLogicalLines(f)):
-    ...     print "Line %s: %s" % (n, l[0])
+    ...     print (n)
+    ...     print (l[0])
     ...
     Line 0: Line 0 text, Line 0 continued.
     Line 1: Line 1;encoding=quoted-printable:this is an evil=
