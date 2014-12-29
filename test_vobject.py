@@ -430,6 +430,7 @@ __test__ = { "Test readOne" :
 
     """
     >>> import dateutil
+    >>> from six import StringIO
     >>> f = StringIO.StringIO(timezones)
     >>> tzs = dateutil.tz.tzical(f)
     >>> tzs.get("US/Pacific")
@@ -509,6 +510,7 @@ __test__ = { "Test readOne" :
     """
     >>> import datetime
     >>> import dateutil
+    >>> from six import StringIO
     >>> cal = base.newFromBehavior('vcalendar', '2.0')
     >>> cal.add('vevent')
     <VEVENT| []>

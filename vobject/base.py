@@ -794,7 +794,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
 
     Quoted-printable data will be decoded in the Behavior decoding phase.
 
-    >>> import StringIO
+    >>> from six import StringIO
     >>> f=StringIO.StringIO(testLines)
     >>> for n, l in enumerate(getLogicalLines(f)):
     ...     print("Line %s: %s" % (n, l[0]))
