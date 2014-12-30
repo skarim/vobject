@@ -304,7 +304,7 @@ __test__ = { "Test readOne" :
     >>> silly.stuff
     <STUFF{}foldedline>
     >>> original = silly.serialize()
-    >>> f3 = StringIO(original.decode("utf-8"))
+    >>> f3 = StringIO(original)
     >>> silly2 = base.readOne(f3)
     >>> silly2.serialize()==original
     True
