@@ -169,9 +169,9 @@ class VBase(object):
                 else:
                     msg = "In transformFromNative, unhandled exception: %s: %s"
                     msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
-                    new_error = NativeError(msg, lineNumber)
-                    raise (NativeError, new_error, sys.exc_info()[2])
-        else: return self
+                    raise NativeError(msg, lineNumber)
+        else:
+            return self
 
     def transformChildrenToNative(self):
         """Recursively replace children with their native representation."""
