@@ -131,16 +131,16 @@ class VBase(object):
                 return self.behavior.transformToNative(self)
             except Exception as e:
                 # wrap errors in transformation in a ParseError
-                lineNumber = getattr(self, 'lineNumber', None)
+                lineNumber = str(getattr(self, 'lineNumber', None))
                 if isinstance(e, ParseError):
                     if lineNumber is not None:
                         e.lineNumber = lineNumber
                     raise
                 else:
-                    msg = "In transformToNative, unhandled exception: %s: %s"
-                    msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
-                    new_error = ParseError(msg, lineNumber)
-                    raise (ParseError, new_error, sys.exc_info()[2])
+                    msg = "In transformToNative, unhandled exception on line %s: %s: %s"
+                    msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
+                    raise ParseError(msg, lineNumber)
+                    #raise ParseError, new_error, sys.exc_info()[2])
 
 
     def transformFromNative(self):
@@ -161,14 +161,14 @@ class VBase(object):
                 return self.behavior.transformFromNative(self)
             except Exception as e:
                 # wrap errors in transformation in a NativeError
-                lineNumber = getattr(self, 'lineNumber', None)
+                lineNumber = str(getattr(self, 'lineNumber', None))
                 if isinstance(e, NativeError):
                     if lineNumber is not None:
                         e.lineNumber = lineNumber
                     raise
                 else:
-                    msg = "In transformFromNative, unhandled exception: %s: %s"
-                    msg = msg % (sys.exc_info()[0], sys.exc_info()[1])
+                    msg = "In transformFromNative, unhandled exception on line %s %s: %s"
+                    msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise NativeError(msg, lineNumber)
         else:
             return self
@@ -1022,8 +1022,12 @@ class Stack:
             new = Component()
             self.push(new)
             new.add(item) #add sets behavior for item and children
-    def push(self, obj): self.stack.append(obj)
-    def pop(self): return self.stack.pop()
+
+    def push(self, obj):
+        self.stack.append(obj)
+
+    def pop(self):
+        return self.stack.pop()
 
 
 def readComponents(streamOrString, validate=False, transform=True,
@@ -1033,7 +1037,7 @@ def readComponents(streamOrString, validate=False, transform=True,
 
     >>> from six import StringIO
     >>> f = StringIO(testVCalendar)
-    >>> cal=readComponents(f).next()
+    >>> cal = next(readComponents(f))
     >>> cal
     <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>
     >>> cal.vevent.summary
