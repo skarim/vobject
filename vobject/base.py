@@ -1031,9 +1031,9 @@ class Stack:
 
 
 def readComponents(streamOrString, validate=False, transform=True,
-                   findBegin=True, ignoreUnreadable=False,
-                   allowQP=False):
-    """Generate one Component at a time from a stream.
+                   findBegin=True, ignoreUnreadable=False, allowQP=False):
+    """
+    Generate one Component at a time from a stream.
 
     >>> from six import StringIO
     >>> f = StringIO(testVCalendar)
@@ -1089,14 +1089,17 @@ def readComponents(streamOrString, validate=False, transform=True,
                             behavior = getBehavior(component.name)
                             if behavior:
                                 component.setBehavior(behavior)
-                        if validate: component.validate(raiseException=True)
-                        if transform: component.transformChildrenToNative()
+                        if validate:
+                            component.validate(raiseException=True)
+                        if transform:
+                            component.transformChildrenToNative()
                         yield component #EXIT POINT
                     else: stack.modifyTop(stack.pop())
                 else:
                     err = "%s component wasn't closed"
                     raise ParseError(err % stack.topName(), n)
-            else: stack.modifyTop(vline) #not a START or END line
+            else:
+                stack.modifyTop(vline) #not a START or END line
         if stack.top():
             if stack.topName() is None:
                 logger.warning("Top level component was never named")
@@ -1109,11 +1112,12 @@ def readComponents(streamOrString, validate=False, transform=True,
         raise
 
 
-def readOne(stream, validate=False, transform=True, findBegin=True,
-            ignoreUnreadable=False, allowQP=False):
-    """Return the first component from stream."""
-    return readComponents(stream, validate, transform, findBegin,
-                          ignoreUnreadable, allowQP).next()
+def readOne(stream, validate=False, transform=True, findBegin=True, ignoreUnreadable=False, allowQP=False):
+    """
+    Return the first component from stream.
+    """
+    return next(readComponents(stream, validate, transform, findBegin, ignoreUnreadable, allowQP))
+
 
 #--------------------------- version registry ----------------------------------
 __behaviorRegistry={}
