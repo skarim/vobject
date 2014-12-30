@@ -1102,7 +1102,8 @@ registerBehavior(VJournal)
 
 
 class VFreeBusy(VCalendarComponentBehavior):
-    """Free/busy state behavior.
+    """
+    Free/busy state behavior.
 
     >>> vfb = newFromBehavior('VFREEBUSY')
     >>> vfb.add('uid').value = 'test'
@@ -1125,7 +1126,7 @@ class VFreeBusy(VCalendarComponentBehavior):
                  request for free/busy time, describe a response to a request \
                  for free/busy time or describe a published set of busy time.'
     sortFirst = ('uid', 'dtstart', 'duration', 'dtend')
-    knownChildren = {'DTSTART':      (0, 1, None),#min, max, behaviorRegistry id
+    knownChildren = {'DTSTART':      (0, 1, None), #min, max, behaviorRegistry id
                      'CONTACT':      (0, 1, None),
                      'DTEND':        (0, 1, None),
                      'DURATION':     (0, 1, None),

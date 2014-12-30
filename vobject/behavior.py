@@ -135,7 +135,8 @@ class Behavior(object):
 
     @classmethod
     def serialize(cls, obj, buf, lineLength, validate=True):
-        """Set implicit parameters, do encoding, return unicode string.
+        """
+        Set implicit parameters, do encoding, return unicode string.
 
         If validate is True, raise VObjectError if the line doesn't validate
         after implicit parameters are generated.

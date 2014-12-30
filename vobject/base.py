@@ -144,7 +144,8 @@ class VBase(object):
 
 
     def transformFromNative(self):
-        """Return self transformed into a ContentLine or Component if needed.
+        """
+        Return self transformed into a ContentLine or Component if needed.
 
         May have side effects.  If it does, transformFromNative and
         transformToNative MUST have perfectly inverse side effects. Allowing
@@ -171,7 +172,7 @@ class VBase(object):
                     msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise NativeError(msg, lineNumber)
         else:
-            return self
+            return six.u(self)
 
     def transformChildrenToNative(self):
         """Recursively replace children with their native representation."""
