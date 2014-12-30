@@ -645,6 +645,7 @@ __test__ = { "Test readOne" :
     "Handling DATE without a VALUE=DATE" :
 
     """
+    >>> import datetime
     >>> cal = base.readOne(badDtStartTest)
     >>> cal.vevent.dtstart.value
     datetime.date(2002, 10, 28)
