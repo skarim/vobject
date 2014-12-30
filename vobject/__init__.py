@@ -60,6 +60,7 @@ VObject Overview
     >>> newrule = rrule.rruleset()
     >>> newrule.rrule(rrule.rrule(rrule.WEEKLY, count=2, dtstart=v.dtstart.value))
     >>> v.rruleset = newrule
+    >>> print(v.rruleset)
     >>> list(v.rruleset)
     [datetime.datetime(2004, 12, 15, 14, 0, tzinfo=tzutc()), datetime.datetime(2004, 12, 22, 14, 0, tzinfo=tzutc())]
     >>> v.add('uid').value = "randomuid@MYHOSTNAME"
@@ -76,8 +77,7 @@ VObject Overview
 
 """
 
-from . import base, icalendar, vcard
-from .base import readComponents, readOne, newFromBehavior
+from .base import newFromBehavior
 
 
 def iCalendar():
