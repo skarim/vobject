@@ -263,12 +263,14 @@ class ContentLine(VBase):
         self.singletonparams = []
         self.isNative = isNative
         self.lineNumber = lineNumber
-        self.value = value
 
         # determine if unicode or not.
         # python 3 doesn't like it being re-encoded.
-        if isinstance(value, six.string_types):
+        if isinstance(value, unicode):
+            self.value = value
+        else:
             self.value = six.u(value)
+
 
         def updateTable(x):
             if len(x) == 1:
@@ -856,7 +858,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
         val = fp.read(-1)
 
         #Shouldn't need this anymore...
-
+        """
         if len(val) > 0:
             if not findBegin:
                 val = val.decode('utf-8')
@@ -870,7 +872,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                         pass
                 else:
                     raise ParseError('Could not find BEGIN when trying to determine encoding')
-        """"""
+        """
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
         #val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
 
