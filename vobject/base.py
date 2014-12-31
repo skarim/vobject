@@ -282,8 +282,7 @@ class ContentLine(VBase):
                 paramlist = self.params.setdefault(six.u(x[0].upper()), [])
                 paramlist.extend([six.u(p) for p in x[1:]])
 
-        if params:
-            map(updateTable, params)
+        list(map(updateTable, params))
 
         qp = False
         if 'ENCODING' in self.params:
@@ -316,7 +315,7 @@ class ContentLine(VBase):
         self.value = copy.copy(copyit.value)
         self.encoded = self.encoded
         self.params = copy.copy(copyit.params)
-        for k,v in self.params.items():
+        for k, v in self.params.items():
             self.params[k] = copy.copy(v)
         self.singletonparams = copy.copy(copyit.singletonparams)
         self.lineNumber = copyit.lineNumber
@@ -1111,6 +1110,7 @@ def readComponents(streamOrString, validate=False, transform=True,
                 if len(stack) == 0:
                     err = "Attempted to end the %s component but it was never opened" % vline.value
                     raise ParseError(err, n)
+
                 if vline.value.upper() == stack.topName(): # START matches END
                     if len(stack) == 1:
                         component = stack.pop()
