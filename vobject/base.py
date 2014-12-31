@@ -1055,15 +1055,6 @@ def readComponents(streamOrString, validate=False, transform=True,
                    findBegin=True, ignoreUnreadable=False, allowQP=False):
     """
     Generate one Component at a time from a stream.
-
-    >>> from six import StringIO
-    >>> f = StringIO(testVCalendar)
-    >>> cal = next(readComponents(f))
-    >>> cal
-    <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>
-    >>> cal.vevent.summary
-    <SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>
-
     """
     if isinstance(streamOrString, basestring):
         stream = six.StringIO(streamOrString)

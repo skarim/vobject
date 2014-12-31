@@ -4,4 +4,5 @@ python:
   - "3.4"
 install: pip install -e .
 script:
+    - python vobject.tests.py
     - python test_vobject.py additional_tests
