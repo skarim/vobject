@@ -1449,11 +1449,13 @@ registerBehavior(Trigger)
 
 
 class PeriodBehavior(behavior.Behavior):
-    """A list of (date-time, timedelta) tuples.
+    """
+    A list of (date-time, timedelta) tuples.
 
     >>> line = ContentLine('test', [], '', isNative=True)
     >>> line.behavior = PeriodBehavior
     >>> line.value = [(datetime.datetime(2006, 2, 16, 10), twoHours)]
+    >>> print line.transformFromNative()
     >>> line.transformFromNative().value
     '20060216T100000/PT2H'
     >>> line.transformToNative().value
@@ -1466,7 +1468,9 @@ class PeriodBehavior(behavior.Behavior):
 
     @staticmethod
     def transformToNative(obj):
-        """Convert comma separated periods into tuples."""
+        """
+        Convert comma separated periods into tuples.
+        """
         if obj.isNative:
             return obj
         obj.isNative = True

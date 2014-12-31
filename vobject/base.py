@@ -162,7 +162,7 @@ class VBase(object):
                 return self.behavior.transformFromNative(self)
             except Exception as e:
                 # wrap errors in transformation in a NativeError
-                lineNumber = str(getattr(self, 'lineNumber', None))
+                lineNumber = getattr(self, 'lineNumber', None)
                 if isinstance(e, NativeError):
                     if lineNumber is not None:
                         e.lineNumber = lineNumber
@@ -210,8 +210,10 @@ def toVName(name, stripNum = 0, upper = False):
         name = name[:-stripNum]
     return name.replace('_', '-')
 
+
 class ContentLine(VBase):
-    """Holds one content line for formats like vCard and vCalendar.
+    """
+    Holds one content line for formats like vCard and vCalendar.
 
     For example::
       <SUMMARY{u'param1' : [u'val1'], u'param2' : [u'val2']}Bastille Day Party>
@@ -238,13 +240,17 @@ class ContentLine(VBase):
     def __init__(self, name, params, value, group=None,
                  encoded=False, isNative=False,
                  lineNumber = None, *args, **kwds):
-        """Take output from parseLine, convert params list to dictionary."""
-        # group is used as a positional argument to match parseLine's return
+        """
+        Take output from parseLine, convert params list to dictionary.
+
+        Group is used as a positional argument to match parseLine's return
+
+        """
         super(ContentLine, self).__init__(group, *args, **kwds)
-        self.name        = name.upper()
-        self.value       = value
-        self.encoded     = encoded
-        self.params      = {}
+        self.name = name.upper()
+        self.value = value
+        self.encoded = encoded
+        self.params = {}
         self.singletonparams = []
         self.isNative = isNative
         self.lineNumber = lineNumber
