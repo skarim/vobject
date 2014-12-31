@@ -1,8 +1,5 @@
 import unittest
 
-from six import StringIO
-from types import GeneratorType
-
 from vobject.base import readComponents
 
 

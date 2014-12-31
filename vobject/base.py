@@ -252,7 +252,7 @@ class ContentLine(VBase):
         """
         super(ContentLine, self).__init__(group, *args, **kwds)
         self.name = name.upper()
-        self.value = value
+        self.value = six.u(value)
         self.encoded = encoded
         self.params = {}
         self.singletonparams = []
