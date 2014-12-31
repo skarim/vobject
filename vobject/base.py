@@ -247,9 +247,8 @@ class ContentLine(VBase):
     @ivar lineNumber:
         An optional line number associated with the contentline.
     """
-    def __init__(self, name, params, value, group=None,
-                 encoded=False, isNative=False,
-                 lineNumber = None, *args, **kwds):
+    def __init__(self, name, params, value, group=None, encoded=False,
+            isNative=False, lineNumber = None, *args, **kwds):
         """
         Take output from parseLine, convert params list to dictionary.
 
@@ -270,6 +269,9 @@ class ContentLine(VBase):
             self.value = six.u(value)
         except Exception:
             self.value = value
+
+        print('params:')
+        print(params)
 
         def updateTable(x):
             print('updating table with x:')
@@ -635,16 +637,12 @@ class Component(VBase):
 
         """
         for childArray in (self.contents[k] for k in self.sortChildKeys()):
-            print('printing childarray')
-            print(childArray)
             for child in childArray:
                 child = child.transformToNative()
                 child.transformChildrenToNative()
 
     def transformChildrenFromNative(self, clearBehavior=True):
         """Recursively transform native children to vanilla representations."""
-        print('self.contents.values()')
-        print(self.contents.values())
         for childArray in self.contents.values():
             for child in childArray:
                 child = child.transformFromNative()
