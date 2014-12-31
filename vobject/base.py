@@ -261,12 +261,7 @@ class ContentLine(VBase):
         self.lineNumber = lineNumber
         self.value = value
 
-        print('params:')
-        print(params)
-
         def updateTable(x):
-            print('updating table with x:')
-            print(x)
             if len(x) == 1:
                 self.singletonparams += x
             else:

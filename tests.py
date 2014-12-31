@@ -1,6 +1,6 @@
 import unittest
 
-from vobject.base import readComponents, parseLine
+from vobject.base import readComponents, parseLine, ParseError
 
 
 def get_test_file(path):
