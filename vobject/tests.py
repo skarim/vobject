@@ -3,7 +3,7 @@ import unittest
 from pkg_resources import resource_stream
 from six import StringIO
 
-from .base import readComponents
+from vobject.base import readComponents
 
 
 def get_stream(path):
