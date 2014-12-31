@@ -1,29 +1,29 @@
 import unittest
 
-from pkg_resources import resource_stream
 from six import StringIO
 
 from vobject.base import readComponents
 
 
-def get_stream(path):
+def get_test_file(path):
     """
-    Helper function to open test files.
+    Helper function to open and read test files.
     """
-    try:
-        return resource_stream(__name__, 'test_files/' + path)
-    except Exception:
-        return resource_stream(__name__, path)
+    filepath = "{}test_files/{}".format(__name__, path)
+    f = open(filepath, 'r').read()
+    return f
 
 
 class TestVobject(unittest.TestCase):
 
     def setUp(self):
-        self.simple_test_cal = get_stream("simple_test.ics")
+
+        self.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
-        f = StringIO(self.simple_test_cal)
-        cal = next(readComponents(f))
+        print self.simple_test_cal
+        #f = StringIO(self.simple_test_cal)
+        cal = next(readComponents(self.simple_test_cal))
 
         self.assertEqual(cal, "<VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>")
         self.assertEqual(cal.vevent.summary, "<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>")
