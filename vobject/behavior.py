@@ -115,7 +115,8 @@ class Behavior(object):
 
     @classmethod
     def transformToNative(cls, obj):
-        """Turn a ContentLine or Component into a Python-native representation.
+        """
+        Turn a ContentLine or Component into a Python-native representation.
 
         If appropriate, turn dates or datetime strings into Python objects.
         Components containing VTIMEZONEs turn into VtimezoneComponents.
@@ -125,7 +126,9 @@ class Behavior(object):
 
     @classmethod
     def transformFromNative(cls, obj):
-        """Inverse of transformToNative."""
+        """
+        Inverse of transformToNative.
+        """
         raise base.NativeError("No transformFromNative defined")
 
     @classmethod
@@ -156,7 +159,8 @@ class Behavior(object):
             undoTransform = False
 
         out = base.defaultSerialize(transformed, buf, lineLength)
-        if undoTransform: obj.transformToNative()
+        if undoTransform:
+            obj.transformToNative()
         return out
 
     @classmethod

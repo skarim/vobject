@@ -832,7 +832,9 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
 
     """
     if not allowQP:
-        bytes = fp.read(-1)
+        val = fp.read(-1)
+        """
+        Shouldn't need this anymore...
         if len(bytes) > 0:
             if type(bytes[0]) == unicode:
                 val = bytes
@@ -850,6 +852,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     raise ParseError('Could not find BEGIN when trying to determine encoding')
         else:
             val = bytes
+        """
 
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
         #val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
@@ -862,7 +865,7 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
             lineNumber += n
 
     else:
-        quotedPrintable=False
+        quotedPrintable = False
         newbuffer = six.StringIO
         logicalLine = newbuffer()
         lineNumber = 0
@@ -879,13 +882,13 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     yield logicalLine.getvalue(), lineStartNumber
                 lineStartNumber = lineNumber
                 logicalLine = newbuffer()
-                quotedPrintable=False
+                quotedPrintable = False
                 continue
 
             if quotedPrintable and allowQP:
                 logicalLine.write('\n')
                 logicalLine.write(line)
-                quotedPrintable=False
+                quotedPrintable = False
             elif line[0] in SPACEORTAB:
                 logicalLine.write(line[1:])
             elif logicalLine.tell() > 0:
@@ -913,7 +916,9 @@ def textLineToContentLine(text, n=None):
 
 
 def dquoteEscape(param):
-    """Return param, or "param" if ',' or ';' or ':' is in param."""
+    """
+    Return param, or "param" if ',' or ';' or ':' is in param.
+    """
     if param.find('"') >= 0:
         raise VObjectError("Double quotes aren't allowed in parameter values.")
     for char in ',;:':
@@ -922,10 +927,11 @@ def dquoteEscape(param):
     return param
 
 def foldOneLine(outbuf, input, lineLength = 75):
-    # Folding line procedure that ensures multi-byte utf-8 sequences are not broken
-    # across lines
+    """
+    Folding line procedure that ensures multi-byte utf-8 sequences are not broken across lines
 
-    # To-do: This all seems odd. Is it still needed, especially in python3?
+    TO-DO: This all seems odd. Is it still needed, especially in python3?
+    """
 
     if len(input) < lineLength:
         # Optimize for unfolded line case
