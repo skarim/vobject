@@ -9,7 +9,7 @@ def get_test_file(path):
     """
     Helper function to open and read test files.
     """
-    filepath = "%stest_files/%s" % (__name__, path)
+    filepath = "{}test_files/{}".format(__name__, path)
     f = open(filepath, 'r').read()
     return f
 
