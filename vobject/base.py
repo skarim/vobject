@@ -385,10 +385,9 @@ class ContentLine(VBase):
         pre = ' ' * level * tabwidth
         print(pre, self.name + ":", self.valueRepr())
         if self.params:
-            lineKeys= self.params.keys()
-            print(pre, "params for ", self.name +':')
-            for aKey in lineKeys:
-                print(pre + ' ' * tabwidth, aKey, self.params[aKey])
+            print(pre, "params for ", self.name + ':')
+            for k in self.params.keys():
+                print(pre + ' ' * tabwidth, k, self.params[k])
 
 
 class Component(VBase):
@@ -622,9 +621,9 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return "<%s| [%s]>" % (self.name, ''.join(str(c) for c in self.getSortedChildren()))
+            return "<%s| %s>" % (self.name, self.getSortedChildren())
         else:
-            return u'<*unnamed*| [{}]>'.format(self.getSortedChildren())
+            return u'<*unnamed*| {}>'.format(self.getSortedChildren())
 
     def __repr__(self):
         return self.__str__()
@@ -642,20 +641,25 @@ class VObjectError(Exception):
         self.msg = msg
         if lineNumber is not None:
             self.lineNumber = lineNumber
+
     def __str__(self):
         if hasattr(self, 'lineNumber'):
             return "At line %s: %s" % (self.lineNumber, self.msg)
         else:
             return repr(self.msg)
 
+
 class ParseError(VObjectError):
     pass
+
 
 class ValidateError(VObjectError):
     pass
 
+
 class NativeError(VObjectError):
     pass
+
 
 #-------------------------- Parsing functions ----------------------------------
 
