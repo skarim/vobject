@@ -8,8 +8,10 @@ def get_test_file(path):
     Helper function to open and read test files.
     """
     filepath = "test_files/{}".format(path)
-    f = open(filepath, 'r').read()
-    return f
+    f = open(filepath, 'r')
+    text = f.read()
+    f.close()
+    return text
 
 
 class TestVobject(unittest.TestCase):

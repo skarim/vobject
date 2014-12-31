@@ -536,7 +536,9 @@ class Component(VBase):
             raise AttributeError(name)
 
     def getChildValue(self, childName, default = None, childNumber = 0):
-        """Return a child's value (the first, by default), or None."""
+        """
+        Return a child's value (the first, by default), or None.
+        """
         child = self.contents.get(toVName(childName))
         if child is None:
             return default
@@ -618,9 +620,14 @@ class Component(VBase):
             self.setBehavior(v)
 
     def transformChildrenToNative(self):
-        """Recursively replace children with their native representation."""
-        #sort to get dependency order right, like vtimezone before vevent
+        """
+        Recursively replace children with their native representation.
+
+        Sort to get dependency order right, like vtimezone before vevent.
+
+        """
         for childArray in (self.contents[k] for k in self.sortChildKeys()):
+            print(childArray)
             for child in childArray:
                 child = child.transformToNative()
                 child.transformChildrenToNative()
@@ -906,9 +913,8 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                 logicalLine = newbuffer()
                 logicalLine.write(line)
 
-            # hack to deal with the fact that vCard 2.1 allows parameters to be
-            # encoded without a parameter name.  False positives are unlikely, but
-            # possible.
+            # vCard 2.1 allows parameters to be encoded without a parameter name.
+            # False positives are unlikely, but possible.
             val = logicalLine.getvalue()
             if val[-1]=='=' and val.lower().find('quoted-printable') >= 0:
                 quotedPrintable=True
@@ -1048,7 +1054,7 @@ class Stack:
         else:
             new = Component()
             self.push(new)
-            new.add(item) #add sets behavior for item and children
+            new.add(item) # add sets behavior for item and children
 
     def push(self, obj):
         self.stack.append(obj)
