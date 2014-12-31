@@ -262,13 +262,7 @@ class ContentLine(VBase):
         self.singletonparams = []
         self.isNative = isNative
         self.lineNumber = lineNumber
-
-        # if not unicode, attempt make it so
-        # If it's already unicode, attempting to re-encode will throw an error.
-        try:
-            self.value = six.u(value)
-        except Exception:
-            self.value = value
+        self.value = value
 
         print('params:')
         print(params)
@@ -279,8 +273,8 @@ class ContentLine(VBase):
             if len(x) == 1:
                 self.singletonparams += x
             else:
-                paramlist = self.params.setdefault(six.u(x[0].upper()), [])
-                paramlist.extend([six.u(p) for p in x[1:]])
+                paramlist = self.params.setdefault(x[0].upper(), [])
+                paramlist.extend(x[1:])
 
         list(map(updateTable, params))
 
