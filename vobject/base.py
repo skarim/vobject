@@ -849,8 +849,8 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
     """
     if not allowQP:
         val = fp.read(-1)
-        """
-        Shouldn't need this anymore...
+
+        #Shouldn't need this anymore...
         if len(bytes) > 0:
             if type(bytes[0]) == unicode:
                 val = bytes
@@ -868,7 +868,6 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
                     raise ParseError('Could not find BEGIN when trying to determine encoding')
         else:
             val = bytes
-        """
 
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
         #val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
