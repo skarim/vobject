@@ -88,7 +88,8 @@ class VBase(object):
         if cascade: self.transformChildrenFromNative()
 
     def autoBehavior(self, cascade=False):
-        """Set behavior if name is in self.parentBehavior.knownChildren.
+        """
+        Set behavior if name is in self.parentBehavior.knownChildren.
 
         If cascade is True, unset behavior and parentBehavior for all
         descendants, then recalculate behavior and parentBehavior.
@@ -109,15 +110,18 @@ class VBase(object):
                     self.behavior.decode(self)
 
     def setBehavior(self, behavior, cascade=True):
-        """Set behavior. If cascade is True, autoBehavior all descendants."""
-        self.behavior=behavior
+        """
+        Set behavior. If cascade is True, autoBehavior all descendants.
+        """
+        self.behavior = behavior
         if cascade:
             for obj in self.getChildren():
-                obj.parentBehavior=behavior
+                obj.parentBehavior = behavior
                 obj.autoBehavior(True)
 
     def transformToNative(self):
-        """Transform this object into a custom VBase subclass.
+        """
+        Transform this object into a custom VBase subclass.
 
         transformToNative should always return a representation of this object.
         It may do so by modifying self in place then returning self, or by
@@ -131,7 +135,8 @@ class VBase(object):
                 return self.behavior.transformToNative(self)
             except Exception as e:
                 # wrap errors in transformation in a ParseError
-                lineNumber = str(getattr(self, 'lineNumber', None))
+                lineNumber = getattr(self, 'lineNumber', None)
+
                 if isinstance(e, ParseError):
                     if lineNumber is not None:
                         e.lineNumber = lineNumber
@@ -141,7 +146,6 @@ class VBase(object):
                     msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise ParseError(msg, lineNumber)
                     #raise ParseError, new_error, sys.exc_info()[2])
-
 
     def transformFromNative(self):
         """
