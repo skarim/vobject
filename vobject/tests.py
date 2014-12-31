@@ -21,8 +21,9 @@ class TestVobject(unittest.TestCase):
         self.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
-        f = StringIO(self.simple_test_cal)
-        cal = next(readComponents(f))
+        print self.simple_test_cal
+        #f = StringIO(self.simple_test_cal)
+        cal = next(readComponents(self.simple_test_cal))
 
         self.assertEqual(cal, "<VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>")
         self.assertEqual(cal.vevent.summary, "<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>")
