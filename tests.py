@@ -48,7 +48,7 @@ class TestVobject(unittest.TestCase):
             parseLine('item1.ADR;type=HOME;type=pref:;;Reeperbahn 116;Hamburg;;20359;'),
             ('ADR', [['type', 'HOME'], ['type', 'pref']], ';;Reeperbahn 116;Hamburg;;20359;', 'item1')
         )
-        self.assertRaises(ParseError, parseLine(":"))
+        self.assertRaises(ParseError, parseLine, ":")
 
 
     """def test_choice(self):
