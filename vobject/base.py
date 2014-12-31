@@ -627,6 +627,7 @@ class Component(VBase):
 
         """
         for childArray in (self.contents[k] for k in self.sortChildKeys()):
+            print('printing childarray')
             print(childArray)
             for child in childArray:
                 child = child.transformToNative()
@@ -635,6 +636,8 @@ class Component(VBase):
     def transformChildrenFromNative(self, clearBehavior=True):
         """Recursively transform native children to vanilla representations."""
         for childArray in self.contents.values():
+            print('self.contents.values()')
+            print(self.contents.values())
             for child in childArray:
                 child = child.transformFromNative()
                 child.transformChildrenFromNative(clearBehavior)
