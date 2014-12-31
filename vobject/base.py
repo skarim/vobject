@@ -15,6 +15,7 @@ try:
 except NameError:
     basestring = (str,bytes)
 
+
 #------------------------------------ Logging ----------------------------------
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
@@ -620,19 +621,19 @@ class Component(VBase):
         """Recursively replace children with their native representation."""
         #sort to get dependency order right, like vtimezone before vevent
         for childArray in (self.contents[k] for k in self.sortChildKeys()):
-            for i in xrange(len(childArray)):
-                childArray[i]=childArray[i].transformToNative()
-                childArray[i].transformChildrenToNative()
+            for child in childArray:
+                child = child.transformToNative()
+                child.transformChildrenToNative()
 
     def transformChildrenFromNative(self, clearBehavior=True):
         """Recursively transform native children to vanilla representations."""
         for childArray in self.contents.values():
-            for i in xrange(len(childArray)):
-                childArray[i]=childArray[i].transformFromNative()
-                childArray[i].transformChildrenFromNative(clearBehavior)
+            for child in childArray:
+                child = child.transformFromNative()
+                child.transformChildrenFromNative(clearBehavior)
                 if clearBehavior:
-                    childArray[i].behavior = None
-                    childArray[i].parentBehavior = None
+                    child.behavior = None
+                    child.parentBehavior = None
 
     def __str__(self):
         if self.name:
