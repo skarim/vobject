@@ -1,6 +1,7 @@
 import unittest
 
 from six import StringIO
+from types import GeneratorType
 
 from vobject.base import readComponents
 
@@ -21,14 +22,10 @@ class TestVobject(unittest.TestCase):
         self.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
-        cal = readComponents(self.simple_test_cal)
-        print type(cal)
-        newcal = next(cal)
-        print type(newcal)
-        self.assertEqual(type(cal), 'generator')
+        cal = next(readComponents(self.simple_test_cal))
 
-        #self.assertEqual(cal, <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>")
-        self.assertEqual(cal.vevent.summary, "<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>")
+        self.assertEqual(str(cal), "<VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>")
+        self.assertEqual(str(cal.vevent.summary), "<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>")
 
 
     """def test_choice(self):
