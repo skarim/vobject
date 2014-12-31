@@ -851,23 +851,19 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
         val = fp.read(-1)
 
         #Shouldn't need this anymore...
-        if len(bytes) > 0:
-            if type(bytes[0]) == unicode:
-                val = bytes
-            elif not findBegin:
-                val = bytes.decode('utf-8')
+        if len(val) > 0:
+            if not findBegin:
+                val = val.decode('utf-8')
             else:
                 for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE', 'iso-8859-1':
                     try:
-                        val = bytes.decode(encoding)
+                        val = val.decode(encoding)
                         if begin_re.search(val) is not None:
                             break
                     except UnicodeDecodeError:
                         pass
                 else:
                     raise ParseError('Could not find BEGIN when trying to determine encoding')
-        else:
-            val = bytes
 
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
         #val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
