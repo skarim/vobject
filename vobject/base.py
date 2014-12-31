@@ -275,7 +275,7 @@ class ContentLine(VBase):
             if len(x) == 1:
                 self.singletonparams += x
             else:
-                paramlist = self.params.setdefault(x[0].upper(), [])
+                paramlist = self.params.setdefault(six.u(x[0].upper()), [])
                 paramlist.extend(x[1:])
         map(updateTable, params)
         qp = False
@@ -289,13 +289,13 @@ class ContentLine(VBase):
             qp = True
             self.singletonparams.remove('QUOTED-PRINTABLE')
         if qp:
-            self.value = six.u(self.value).decode('quoted-printable')
+            self.value = self.value.decode('quoted-printable')
 
         # self.value should be unicode for iCalendar, but if quoted-printable
         # is used, or if the quoted-printable state machine is used, text may be
         # encoded
-        if type(self.value) is str:
-            self.value = six.u(self.value)
+        #if type(self.value) is str:
+        #    self.value = six.u(self.value)
 
     @classmethod
     def duplicate(clz, copyit):
