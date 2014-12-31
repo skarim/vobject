@@ -22,9 +22,13 @@ class TestVobject(unittest.TestCase):
 
     def test_readComponents(self):
         cal = readComponents(self.simple_test_cal)
+        print type(cal)
+        newcal = next(cal)
+        print type(newcal)
+        self.assertEqual(type(cal), 'generator')
 
-        self.assertEqual(str(cal), "<VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>")
-        self.assertEqual(str(cal.vevent.summary), "<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>")
+        #self.assertEqual(cal, <VCALENDAR| [<VEVENT| [<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>]>]>")
+        self.assertEqual(cal.vevent.summary, "<SUMMARY{u'BLAH': [u'hi!']}Bastille Day Party>")
 
 
     """def test_choice(self):
