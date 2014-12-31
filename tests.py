@@ -1,6 +1,6 @@
 import unittest
 
-from vobject.base import readComponents
+from vobject.base import readComponents, parseLine
 
 
 def get_test_file(path):
@@ -25,6 +25,31 @@ class TestVobject(unittest.TestCase):
 
         self.assertEqual(str(cal), "<VCALENDAR| [<VEVENT| [<SUMMARY{'BLAH': ['hi!']}Bastille Day Party>]>]>")
         self.assertEqual(str(cal.vevent.summary), "<SUMMARY{'BLAH': ['hi!']}Bastille Day Party>")
+
+    def test_parseLine(self):
+        self.assertEqual(parseLine("BLAH:"), ('BLAH', [], '', None))
+        self.assertEqual(
+            parseLine("RDATE:VALUE=DATE:19970304,19970504,19970704,19970904"),
+            ('RDATE', [], 'VALUE=DATE:19970304,19970504,19970704,19970904', None)
+        )
+        self.assertEqual(
+            parseLine('DESCRIPTION;ALTREP="http://www.wiz.org":The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA'),
+            ('DESCRIPTION', [['ALTREP', 'http://www.wiz.org']], 'The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA', None)
+        )
+        self.assertEqual(
+            parseLine("EMAIL;PREF;INTERNET:john@nowhere.com"),
+            ('EMAIL', [['PREF'], ['INTERNET']], 'john@nowhere.com', None)
+        )
+        self.assertEqual(
+            parseLine('EMAIL;TYPE="blah",hah;INTERNET="DIGI",DERIDOO:john@nowhere.com'),
+            ('EMAIL', [['TYPE', 'blah', 'hah'], ['INTERNET', 'DIGI', 'DERIDOO']], 'john@nowhere.com', None)
+        )
+        self.assertEqual(
+            parseLine('item1.ADR;type=HOME;type=pref:;;Reeperbahn 116;Hamburg;;20359;'),
+            ('ADR', [['type', 'HOME'], ['type', 'pref']], ';;Reeperbahn 116;Hamburg;;20359;', 'item1')
+        )
+        self.assertRaises(ParseError, parseLine(":"))
+
 
     """def test_choice(self):
         element = random.choice(self.seq)

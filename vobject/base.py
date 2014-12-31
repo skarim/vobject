@@ -6,7 +6,6 @@ import copy
 import re
 import sys
 import logging
-#import codecs
 import six
 
 # Python 3 no longer has a basestring type, so....
@@ -34,17 +33,6 @@ SPACE  = ' '
 TAB    = '\t'
 SPACEORTAB = SPACE + TAB
 
-#-------------------------------- Useful modules -------------------------------
-#   use doctest, it kills two birds with one stone and docstrings often become
-#                more readable to boot (see parseLine's docstring).
-#   use logging, then when debugging we can just set our verbosity.
-#   use epydoc syntax for documenting code, please document every class and non-
-#                trivial method (see http://epydoc.sourceforge.net/epytext.html
-#                and http://epydoc.sourceforge.net/fields.html).  Also, please
-#                follow http://www.python.org/peps/pep-0257.html for docstrings.
-#-------------------------------------------------------------------------------
-
-
 
 #--------------------------------- Main classes --------------------------------
 
@@ -67,8 +55,8 @@ class VBase(object):
     """
     def __init__(self, group=None, *args, **kwds):
         super(VBase, self).__init__(*args, **kwds)
-        self.group      = group
-        self.behavior   = None
+        self.group = group
+        self.behavior = None
         self.parentBehavior = None
         self.isNative = False
 
@@ -79,19 +67,26 @@ class VBase(object):
         self.isNative = copyit.isNative
 
     def validate(self, *args, **kwds):
-        """Call the behavior's validate method, or return True."""
+        """
+        Call the behavior's validate method, or return True.
+        """
         if self.behavior:
             return self.behavior.validate(self, *args, **kwds)
-        else: return True
+        return True
 
     def getChildren(self):
-        """Return an iterable containing the contents of the object."""
+        """
+        Return an iterable containing the contents of the object.
+        """
         return []
 
     def clearBehavior(self, cascade=True):
-        """Set behavior to None. Do for all descendants if cascading."""
+        """
+        Set behavior to None. Do for all descendants if cascading.
+        """
         self.behavior=None
-        if cascade: self.transformChildrenFromNative()
+        if cascade:
+            self.transformChildrenFromNative()
 
     def autoBehavior(self, cascade=False):
         """
@@ -151,7 +146,6 @@ class VBase(object):
                     msg = "In transformToNative, unhandled exception on line %s: %s: %s"
                     msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise ParseError(msg, lineNumber)
-                    #raise ParseError, new_error, sys.exc_info()[2])
 
     def transformFromNative(self):
         """
@@ -193,7 +187,8 @@ class VBase(object):
         pass
 
     def serialize(self, buf=None, lineLength=75, validate=True, behavior=None):
-        """Serialize to buf if it exists, otherwise return a string.
+        """
+        Serialize to buf if it exists, otherwise return a string.
 
         Use self.behavior.serialize if behavior exists.
 
@@ -202,17 +197,19 @@ class VBase(object):
             behavior = self.behavior
 
         if behavior:
-            if DEBUG: logger.debug("serializing %s with behavior" % self.name)
+            if DEBUG:
+                logger.debug("serializing %s with behavior" % self.name)
             return behavior.serialize(self, buf, lineLength, validate)
         else:
-            if DEBUG: logger.debug("serializing %s without behavior" % self.name)
+            if DEBUG:
+                logger.debug("serializing %s without behavior" % self.name)
             return defaultSerialize(self, buf, lineLength)
 
 
 def toVName(name, stripNum = 0, upper = False):
     """
-    Turn a Python name into an iCalendar style name, optionally uppercase and
-    with characters stripped off.
+    Turn a Python name into an iCalendar style name,
+    optionally uppercase and with characters stripped off.
     """
     if upper:
         name = name.upper()
@@ -291,12 +288,6 @@ class ContentLine(VBase):
         if qp:
             self.value = self.value.decode('quoted-printable')
 
-        # self.value should be unicode for iCalendar, but if quoted-printable
-        # is used, or if the quoted-printable state machine is used, text may be
-        # encoded
-        #if type(self.value) is str:
-        #    self.value = six.u(self.value)
-
     @classmethod
     def duplicate(clz, copyit):
         newcopy = clz('', {}, '')
@@ -320,19 +311,6 @@ class ContentLine(VBase):
         except Exception:
             return False
 
-    def _getAttributeNames(self):
-        """Return a list of attributes of the object.
-
-           Python 2.6 will add __dir__ to customize what attributes are returned
-           by dir, for now copy PyCrust so that IPython can accurately do
-           completion.
-
-        """
-        keys = self.params.keys()
-        params = [param + '_param' for param in keys]
-        params.extend(param + '_paramlist' for param in keys)
-        return params
-
     def __getattr__(self, name):
         """
         Make params accessible via self.foo_param or self.foo_paramlist.
@@ -352,7 +330,8 @@ class ContentLine(VBase):
             raise AttributeError(name)
 
     def __setattr__(self, name, value):
-        """Make params accessible via self.foo_param or self.foo_paramlist.
+        """
+        Make params accessible via self.foo_param or self.foo_paramlist.
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
@@ -400,7 +379,6 @@ class ContentLine(VBase):
         return "<%s%s%s>" % (self.name, self.params, self.valueRepr())
 
     def __repr__(self):
-        #return self.__str__().replace('\n', '\\n')
         return self.__str__()
 
     def prettyPrint(self, level = 0, tabwidth=3):
@@ -413,7 +391,8 @@ class ContentLine(VBase):
 
 
 class Component(VBase):
-    """A complex property that can contain multiple ContentLines.
+    """
+    A complex property that can contain multiple ContentLines.
 
     For our purposes, a component must start with a BEGIN:xxxx line and end with
     END:xxxx, or have a PROFILE:xxx line if a top-level component.
@@ -464,30 +443,21 @@ class Component(VBase):
         self.useBegin = copyit.useBegin
 
     def setProfile(self, name):
-        """Assign a PROFILE to this unnamed component.
+        """
+        Assign a PROFILE to this unnamed component.
 
         Used by vCard, not by vCalendar.
 
         """
         if self.name or self.useBegin:
-            if self.name == name: return
+            if self.name == name:
+                return
             raise VObjectError("This component already has a PROFILE or uses BEGIN.")
         self.name = name.upper()
 
-    def _getAttributeNames(self):
-        """Return a list of attributes of the object.
-
-           Python 2.6 will add __dir__ to customize what attributes are returned
-           by dir, for now copy PyCrust so that IPython can accurately do
-           completion.
-
-        """
-        names = self.contents.keys()
-        names.extend(name + '_list' for name in self.contents.keys())
-        return names
-
     def __getattr__(self, name):
-        """For convenience, make self.contents directly accessible.
+        """
+        For convenience, make self.contents directly accessible.
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
@@ -507,7 +477,8 @@ class Component(VBase):
 
     normal_attributes = ['contents','name','behavior','parentBehavior','group']
     def __setattr__(self, name, value):
-        """For convenience, make self.contents directly accessible.
+        """
+        For convenience, make self.contents directly accessible.
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
@@ -552,13 +523,13 @@ class Component(VBase):
             return child[childNumber].value
 
     def add(self, objOrName, group = None):
-        """Add objOrName to contents, set behavior if it can be inferred.
+        """
+        Add objOrName to contents, set behavior if it can be inferred.
 
         If objOrName is a string, create an empty component or line based on
         behavior. If no behavior is found for the object, add a ContentLine.
 
-        group is an optional prefix to the name of the object (see
-        RFC 2425).
+        group is an optional prefix to the name of the object (see RFC 2425).
         """
         if isinstance(objOrName, VBase):
             obj = objOrName
@@ -638,7 +609,9 @@ class Component(VBase):
                 child.transformChildrenToNative()
 
     def transformChildrenFromNative(self, clearBehavior=True):
-        """Recursively transform native children to vanilla representations."""
+        """
+        Recursively transform native children to vanilla representations.
+        """
         for childArray in self.contents.values():
             for child in childArray:
                 child = child.transformFromNative()
@@ -689,9 +662,7 @@ class NativeError(VObjectError):
     pass
 
 
-#-------------------------- Parsing functions ----------------------------------
-
-# parseLine regular expressions
+#--------- Parsing functions and parseLine regular expressions ------------------
 
 patterns = {}
 
@@ -774,25 +745,6 @@ def parseParams(string):
 
 
 def parseLine(line, lineNumber = None):
-    """
-    >>> parseLine("BLAH:")
-    ('BLAH', [], '', None)
-    >>> parseLine("RDATE:VALUE=DATE:19970304,19970504,19970704,19970904")
-    ('RDATE', [], 'VALUE=DATE:19970304,19970504,19970704,19970904', None)
-    >>> parseLine('DESCRIPTION;ALTREP="http://www.wiz.org":The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA')
-    ('DESCRIPTION', [['ALTREP', 'http://www.wiz.org']], 'The Fall 98 Wild Wizards Conference - - Las Vegas, NV, USA', None)
-    >>> parseLine("EMAIL;PREF;INTERNET:john@nowhere.com")
-    ('EMAIL', [['PREF'], ['INTERNET']], 'john@nowhere.com', None)
-    >>> parseLine('EMAIL;TYPE="blah",hah;INTERNET="DIGI",DERIDOO:john@nowhere.com')
-    ('EMAIL', [['TYPE', 'blah', 'hah'], ['INTERNET', 'DIGI', 'DERIDOO']], 'john@nowhere.com', None)
-    >>> parseLine('item1.ADR;type=HOME;type=pref:;;Reeperbahn 116;Hamburg;;20359;')
-    ('ADR', [['type', 'HOME'], ['type', 'pref']], ';;Reeperbahn 116;Hamburg;;20359;', 'item1')
-    >>> parseLine(":")
-    Traceback (most recent call last):
-    ...
-    ParseError: 'Failed to parse line: :'
-    """
-
     match = line_re.match(line)
     if match is None:
         raise ParseError("Failed to parse line: %s" % line, lineNumber)
