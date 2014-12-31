@@ -264,13 +264,12 @@ class ContentLine(VBase):
         self.isNative = isNative
         self.lineNumber = lineNumber
 
-        # determine if unicode or not.
-        # python 3 doesn't like it being re-encoded.
-        if isinstance(value, unicode):
-            self.value = value
-        else:
+        # if not unicode, attempt make it so
+        # If it's already unicode, attempting to re-encode will throw an error.
+        try:
             self.value = six.u(value)
-
+        except Exception:
+            self.value = value
 
         def updateTable(x):
             if len(x) == 1:
