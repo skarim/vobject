@@ -45,7 +45,7 @@ class TestVobject(unittest.TestCase):
         Line 2 is a new line, it does not start with whitespace.
         """
         f = six.StringIO(input_text)
-        self.assertEqual(enumerate(getLogicalLines(f)), desired_output)
+        self.assertEqual(getLogicalLines(f), desired_output)
 
 
 
