@@ -1,6 +1,6 @@
 import unittest
 
-from vobject.base import readComponents, parseLine, ParseError
+from vobject.base import readComponents, parseLine, parseParams, ParseError
 
 
 def get_test_file(path):
@@ -49,6 +49,16 @@ class TestVobject(unittest.TestCase):
             ('ADR', [['type', 'HOME'], ['type', 'pref']], ';;Reeperbahn 116;Hamburg;;20359;', 'item1')
         )
         self.assertRaises(ParseError, parseLine, ":")
+
+    def test_parseParams(self):
+        self.assertEqual(
+            parseParams(';ALTREP="http://www.wiz.org"'),
+            [['ALTREP', 'http://www.wiz.org']]
+        )
+        self.assertEqual(
+            parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
+            [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
+        )
 
 
     """def test_choice(self):
