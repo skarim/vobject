@@ -647,6 +647,7 @@ __test__ = { "Test readOne" :
     """
     >>> import datetime
     >>> cal = base.readOne(badDtStartTest)
+    >>> print(cal.vevent.dtstart)
     >>> cal.vevent.dtstart.value
     datetime.date(2002, 10, 28)
     """,

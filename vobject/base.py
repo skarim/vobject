@@ -1073,27 +1073,26 @@ def readComponents(streamOrString, validate=False, transform=True,
                         msg = "Skipped line %(lineNumber)s, message: %(msg)s"
                     else:
                         msg = "Skipped a line, message: %(msg)s"
-                    logger.error(msg % {'lineNumber' : e.lineNumber,
-                                        'msg' : e.message})
+                    logger.error(msg % {'lineNumber' : e.lineNumber, 'msg' : e.message})
                     continue
             else:
                 vline = textLineToContentLine(line, n)
-            if   vline.name == "VERSION":
+            if vline.name == "VERSION":
                 versionLine = vline
                 stack.modifyTop(vline)
             elif vline.name == "BEGIN":
                 stack.push(Component(vline.value, group=vline.group))
             elif vline.name == "PROFILE":
-                if not stack.top(): stack.push(Component())
+                if not stack.top():
+                    stack.push(Component())
                 stack.top().setProfile(vline.value)
             elif vline.name == "END":
                 if len(stack) == 0:
-                    err = "Attempted to end the %s component, \
-                           but it was never opened" % vline.value
+                    err = "Attempted to end the %s component but it was never opened" % vline.value
                     raise ParseError(err, n)
-                if vline.value.upper() == stack.topName(): #START matches END
+                if vline.value.upper() == stack.topName(): # START matches END
                     if len(stack) == 1:
-                        component=stack.pop()
+                        component = stack.pop()
                         if versionLine is not None:
                             component.setBehaviorFromVersionLine(versionLine)
                         else:
@@ -1104,13 +1103,14 @@ def readComponents(streamOrString, validate=False, transform=True,
                             component.validate(raiseException=True)
                         if transform:
                             component.transformChildrenToNative()
-                        yield component #EXIT POINT
-                    else: stack.modifyTop(stack.pop())
+                        yield component # EXIT POINT
+                    else:
+                        stack.modifyTop(stack.pop())
                 else:
                     err = "%s component wasn't closed"
                     raise ParseError(err % stack.topName(), n)
             else:
-                stack.modifyTop(vline) #not a START or END line
+                stack.modifyTop(vline) # not a START or END line
         if stack.top():
             if stack.topName() is None:
                 logger.warning("Top level component was never named")
