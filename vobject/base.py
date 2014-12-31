@@ -1009,7 +1009,7 @@ def defaultSerialize(obj, buf, lineLength):
         for key in keys:
             paramvals = obj.params[key]
             s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
-        s.write(':' + obj.value)
+        s.write(':' + six.u(obj.value))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
