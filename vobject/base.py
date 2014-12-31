@@ -258,12 +258,19 @@ class ContentLine(VBase):
         """
         super(ContentLine, self).__init__(group, *args, **kwds)
         self.name = name.upper()
-        self.value = value
         self.encoded = encoded
         self.params = {}
         self.singletonparams = []
         self.isNative = isNative
         self.lineNumber = lineNumber
+
+        # determine if unicode or not.
+        # python 3 doesn't like it being re-encoded.
+        if isinstance(value, unicode):
+            self.value = value
+        else:
+            self.value = six.u(value)
+
 
         def updateTable(x):
             if len(x) == 1:
