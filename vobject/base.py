@@ -270,18 +270,15 @@ class ContentLine(VBase):
         except Exception:
             self.value = value
 
-        print('params:')
-        print(params)
-
-        def updateTable(x):
-            print('updating table with x:')
-            print(x)
-            if len(x) == 1:
-                self.singletonparams += x
+        if params:
+            if len(params) == 1:
+                self.singletonparams += params
             else:
-                paramlist = self.params.setdefault(six.u(x[0].upper()), [])
-                paramlist.extend([six.u(p) for p in x[1:]])
-        map(updateTable, params)
+                paramlist = self.params.setdefault(six.u(params[0].upper()), [])
+                paramlist.extend([six.u(p) for p in params[1:]])
+
+        #map(updateTable, params)
+
         qp = False
         if 'ENCODING' in self.params:
             if 'QUOTED-PRINTABLE' in self.params['ENCODING']:
