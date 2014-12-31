@@ -635,9 +635,9 @@ class Component(VBase):
 
     def transformChildrenFromNative(self, clearBehavior=True):
         """Recursively transform native children to vanilla representations."""
+        print('self.contents.values()')
+        print(self.contents.values())
         for childArray in self.contents.values():
-            print('self.contents.values()')
-            print(self.contents.values())
             for child in childArray:
                 child = child.transformFromNative()
                 child.transformChildrenFromNative(clearBehavior)
