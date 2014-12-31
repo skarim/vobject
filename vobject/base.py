@@ -9,6 +9,11 @@ import logging
 #import codecs
 import six
 
+# Python 3 no longer has a basestring type, so....
+try:
+    basestring = basestring
+except NameError:
+    basestring = (str,bytes)
 
 #------------------------------------ Logging ----------------------------------
 logger = logging.getLogger(__name__)
