@@ -37,15 +37,14 @@ class TestVobject(unittest.TestCase):
         Line 2 is a new line, it does not start with whitespace.
         """
 
-        desired_output = """
-        Line 0 text, Line 0 continued.
+        desired_output = """Line 0 text, Line 0 continued.
         Line 1;encoding=quoted-printable:this is an evil=
          evil=
          format.
         Line 2 is a new line, it does not start with whitespace.
         """
         f = six.StringIO(input_text)
-        self.assertEqual('\n'.join(getLogicalLines(f)), desired_output)
+        self.assertEqual('\n'.join(enumerate(getLogicalLines(f))), desired_output)
 
 
 
