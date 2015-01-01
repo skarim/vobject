@@ -368,7 +368,7 @@ class RecurringComponent(Component):
                 if rruleset is None:
                     rruleset = rrule.rruleset()
                 if addfunc is None:
-                    addfunc=getattr(rruleset, name)
+                    addfunc = getattr(rruleset, name)
 
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
@@ -611,7 +611,9 @@ class RecurringBehavior(VCalendarComponentBehavior):
 
     @staticmethod
     def transformToNative(obj):
-        """Turn a recurring Component into a RecurringComponent."""
+        """
+        Turn a recurring Component into a RecurringComponent.
+        """
         if not obj.isNative:
             object.__setattr__(obj, '__class__', RecurringComponent)
             obj.isNative = True
@@ -626,7 +628,8 @@ class RecurringBehavior(VCalendarComponentBehavior):
 
     @staticmethod
     def generateImplicitParameters(obj):
-        """Generate a UID if one does not exist.
+        """
+        Generate a UID if one does not exist.
 
         This is just a dummy implementation, for now.
 

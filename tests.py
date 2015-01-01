@@ -1,8 +1,7 @@
-import six
 import datetime
 import unittest
 
-from vobject.base import getLogicalLines, readComponents, parseLine, parseParams, ParseError
+from vobject.base import readComponents, parseLine, parseParams, ParseError
 from vobject.icalendar import RecurringComponent
 
 def get_test_file(path):
@@ -19,7 +18,6 @@ def get_test_file(path):
 class TestVobject(unittest.TestCase):
 
     def setUp(self):
-
         self.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
@@ -62,8 +60,15 @@ class TestVobject(unittest.TestCase):
             [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
         )
 
+class TestRecurringComponent(unittest.TestCase):
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')
+
+        # init
+        self.assertTrue(vevent.isNative)
+
+        print(vevent.rruleset)
+
         vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
         vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
 
