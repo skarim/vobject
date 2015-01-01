@@ -82,6 +82,8 @@ class TestVobject(unittest.TestCase):
         # to datetime.datetime value with time 0 and no timezone.
         vevent.dtstart.value = datetime.date(2005,3,18)
 
+        print(list(vevent))
+
         self.assertEqual(
             list(vevent.rruleset),
             [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
