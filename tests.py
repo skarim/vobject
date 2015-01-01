@@ -45,7 +45,7 @@ class TestVobject(unittest.TestCase):
         f = six.StringIO(input_text)
         output_text = ''
         for k, v in enumerate(getLogicalLines(f)):
-            output_text += v
+            output_text += str(v)
 
         self.assertEqual(output_text, desired_output)
 
