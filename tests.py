@@ -1,8 +1,9 @@
 import six
+import datetime
 import unittest
 
 from vobject.base import getLogicalLines, readComponents, parseLine, parseParams, ParseError
-
+from vobject.icalendar import RecurringComponent
 
 def get_test_file(path):
     """
@@ -26,30 +27,6 @@ class TestVobject(unittest.TestCase):
 
         self.assertEqual(str(cal), "<VCALENDAR| [<VEVENT| [<SUMMARY{'BLAH': ['hi!']}Bastille Day Party>]>]>")
         self.assertEqual(str(cal.vevent.summary), "<SUMMARY{'BLAH': ['hi!']}Bastille Day Party>")
-
-    def test_logicalLines(self):
-        input_text = """Line 0 text
-         , Line 0 continued.
-        Line 1;encoding=quoted-printable:this is an evil=
-         evil=
-         format.
-        Line 2 is a new line, it does not start with whitespace.
-        """
-
-        desired_output = """Line 0 text, Line 0 continued.
-        Line 1;encoding=quoted-printable:this is an evil=
-         evil=
-         format.
-        Line 2 is a new line, it does not start with whitespace.
-        """
-        f = six.StringIO(input_text)
-        output_text = ''
-        for k, v in enumerate(getLogicalLines(f)):
-            output_text += str(v)
-
-        self.assertEqual(output_text, desired_output)
-
-
 
     def test_parseLine(self):
         self.assertEqual(parseLine("BLAH:"), ('BLAH', [], '', None))
@@ -83,6 +60,35 @@ class TestVobject(unittest.TestCase):
         self.assertEqual(
             parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
             [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
+        )
+
+    def test_recurring_component(self):
+        vevent = RecurringComponent(name='VEVENT')
+        vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
+        vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
+
+        # When creating rrule's programmatically it should be kept in
+        # mind that count doesn't necessarily mean what the spec says.
+        self.assertEqual(
+            list(vevent.rruleset),
+            [datetime.datetime(2005, 1, 20, 9, 0), datetime.datetime(2005, 2, 1, 9, 0)]
+        )
+        self.assertEqual(
+            list(vevent.getrruleset(addRDate=True)),
+            [datetime.datetime(2005, 1, 19, 9, 0), datetime.datetime(2005, 1, 20, 9, 0)]
+        )
+
+        # Also note that dateutil will expand all-day events (datetime.date values)
+        # to datetime.datetime value with time 0 and no timezone.
+        vevent.dtstart.value = datetime.date(2005,3,18)
+
+        self.assertEqual(
+            list(vevent.rruleset),
+            [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
+        )
+        self.assertEqual(
+            list(vevent.getrruleset(True)),
+            [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
         )
 
 

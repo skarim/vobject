@@ -326,7 +326,8 @@ class TimezoneComponent(Component):
 
 
 class RecurringComponent(Component):
-    """A vCalendar component like VEVENT or VTODO which may recur.
+    """
+    A vCalendar component like VEVENT or VTODO which may recur.
 
     Any recurring component can have one or multiple RRULE, RDATE,
     EXRULE, or EXDATE lines, and one or zero DTSTART lines.  It can also have a
@@ -339,28 +340,6 @@ class RecurringComponent(Component):
     adjusting count down by one if an rrule has a count and dtstart isn't in its
     result set, but by default, the rruleset property doesn't do this work
     around, to access it getrruleset must be called with addRDate set True.
-
-    >>> import datetime
-    >>> vevent = RecurringComponent(name='VEVENT')
-    >>> vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
-    >>> vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
-
-    When creating rrule's programmatically it should be kept in
-    mind that count doesn't necessarily mean what rfc2445 says.
-
-    >>> list(vevent.rruleset)
-    [datetime.datetime(2005, 1, 20, 9, 0), datetime.datetime(2005, 2, 1, 9, 0)]
-    >>> list(vevent.getrruleset(addRDate=True))
-    [datetime.datetime(2005, 1, 19, 9, 0), datetime.datetime(2005, 1, 20, 9, 0)]
-
-    Also note that dateutil will expand all-day events (datetime.date values) to
-    datetime.datetime value with time 0 and no timezone.
-
-    >>> vevent.dtstart.value = datetime.date(2005,3,18)
-    >>> list(vevent.rruleset)
-    [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
-    >>> list(vevent.getrruleset(True))
-    [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
 
     @ivar rruleset:
         A U{rruleset<https://moin.conectiva.com.br/DateUtil>}.
@@ -625,7 +604,9 @@ class VCalendarComponentBehavior(behavior.Behavior):
 
 
 class RecurringBehavior(VCalendarComponentBehavior):
-    """Parent Behavior for components which should be RecurringComponents."""
+    """
+    Parent Behavior for components which should be RecurringComponents.
+    """
     hasNative = True
 
     @staticmethod

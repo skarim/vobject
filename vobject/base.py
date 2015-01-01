@@ -756,6 +756,14 @@ patterns['wraporend'] = r'(%(wrap)s | %(lineend)s )' % patterns
 wrap_re          = re.compile(patterns['wraporend'],    re.VERBOSE)
 logical_lines_re = re.compile(patterns['logicallines'], re.VERBOSE)
 
+testLines="""
+Line 0 text
+ , Line 0 continued.
+Line 1;encoding=quoted-printable:this is an evil=
+ evil=
+ format.
+Line 2 is a new line, it does not start with whitespace.
+"""
 
 def getLogicalLines(fp, allowQP=True, findBegin=False):
     """
@@ -768,11 +776,17 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
 
     Quoted-printable data will be decoded in the Behavior decoding phase.
 
+    # We're leaving this test in for awhile, because the unittest was ugly and dumb.
     >>> from six import StringIO
     >>> f=StringIO(testLines)
     >>> for n, l in enumerate(getLogicalLines(f)):
     ...     print("Line %s: %s" % (n, l[0]))
     ...
+    Line 0: Line 0 text, Line 0 continued.
+    Line 1: Line 1;encoding=quoted-printable:this is an evil=
+     evil=
+     format.
+    Line 2: Line 2 is a new line, it does not start with whitespace.
 
     """
     if not allowQP:
