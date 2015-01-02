@@ -1555,15 +1555,7 @@ def dateTimeToString(dateTime, convertToUTC=False):
     if dateTime.tzinfo and convertToUTC:
         dateTime = dateTime.astimezone(utc)
 
-    print('utc: ', utc)
-    print('dateTime.tzinfo: ', dateTime.tzinfo)
-
-    print('so....', tzinfo_eq(dateTime.tzinfo, utc))
-
-    if tzinfo_eq(dateTime.tzinfo, utc):
-        utcString = "Z"
-    else:
-        utcString = ""
+    print('utc and tzinfo equal out', tzinfo_eq(dateTime.tzinfo, utc))
 
     datestr = "{}{}{}T{}{}{}".format(
         numToDigits( dateTime.year,  4 ),
@@ -1572,8 +1564,11 @@ def dateTimeToString(dateTime, convertToUTC=False):
         numToDigits( dateTime.hour,  2 ),
         numToDigits( dateTime.minute,  2 ),
         numToDigits( dateTime.second,  2 ),
-        utcString
     )
+
+    if tzinfo_eq(dateTime.tzinfo, utc):
+        datestr += "Z"
+
     print('DATETIMETOSTRING!!!!', datestr)
 
     return datestr
