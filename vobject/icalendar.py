@@ -371,6 +371,7 @@ class RecurringComponent(Component):
                     rruleset = rrule.rruleset()
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
+                print('rruleset, addfunc', rruleset, addfunc)
 
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
@@ -456,7 +457,8 @@ class RecurringComponent(Component):
                             added = False
                         if added and rruleset._rrule[-1]._count != None:
                             rruleset._rrule[-1]._count -= 1
-        print('rruleset: ', rruleset)
+        print('rruleset items: ', rruleset())
+
         return rruleset
 
     def setrruleset(self, rruleset):
