@@ -349,7 +349,8 @@ class RecurringComponent(Component):
         self.isNative=True
 
     def getrruleset(self, addRDate = False):
-        """Get an rruleset created from self.
+        """
+        Get an rruleset created from self.
 
         If addRDate is True, add an RDATE for dtstart if it's not included in
         an RRULE, and count is decremented if it exists.
@@ -361,6 +362,7 @@ class RecurringComponent(Component):
 
         """
         rruleset = None
+        print('DATESANDRULES: ' DATESANDRULES)
         for name in DATESANDRULES:
             addfunc = None
             for line in self.contents.get(name, ()):

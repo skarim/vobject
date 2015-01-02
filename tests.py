@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import datetime
 import unittest
 
@@ -60,6 +62,7 @@ class TestVobject(unittest.TestCase):
             [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
         )
 
+
 class TestRecurringComponent(unittest.TestCase):
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')
@@ -67,7 +70,7 @@ class TestRecurringComponent(unittest.TestCase):
         # init
         self.assertTrue(vevent.isNative)
 
-        print(vevent.rruleset)
+        print('vevent.rruleset: ', vevent.rruleset)
 
         vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
         vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
