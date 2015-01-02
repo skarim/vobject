@@ -197,9 +197,9 @@ class VBase(object):
             behavior = self.behavior
 
         if behavior:
-            print("serializing %s with behavior" % self.name)
+            print("serializing %s with behavior" % (self.name, behavior))
             if DEBUG:
-                logger.debug("serializing %s with behavior" % self.name)
+                logger.debug("serializing %s with behavior %s" % (self.name, behavior))
             return behavior.serialize(self, buf, lineLength, validate)
         else:
             print("serializing %s without behavior" % self.name)
@@ -948,7 +948,6 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.useBegin:
             foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name), lineLength)
         for child in obj.getSortedChildren():
-            print('child', str(child))
             # validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
             print('child serialized', str(child))

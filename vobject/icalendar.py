@@ -678,6 +678,7 @@ class DateTimeBehavior(behavior.Behavior):
     @classmethod
     def transformFromNative(cls, obj):
         """Replace the datetime in obj.value with an ISO 8601 string."""
+        print('transforming from native')
         if obj.isNative:
             obj.isNative = False
             tzid = TimezoneComponent.registerTzinfo(obj.value.tzinfo)
