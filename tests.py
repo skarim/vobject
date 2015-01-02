@@ -3,6 +3,8 @@ from __future__ import print_function
 import datetime
 import unittest
 
+from dateutil import tz
+
 from vobject.base import newFromBehavior, parseLine, parseParams, ParseError, readComponents
 from vobject.icalendar import RecurringComponent, utc, timedeltaToString
 
@@ -80,16 +82,17 @@ class testIcalendar(unittest.TestCase):
         )
 
     def test_freeBusy(self):
-        free_busy_test_cal = get_test_file("freebusy.ics")
+        test_cal = get_test_file("freebusy.ics")
+
         vfb = newFromBehavior('VFREEBUSY')
         vfb.add('uid').value = 'test'
-        vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
+        vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=tz.tzutc())
         vfb.add('dtend').value   = vfb.dtstart.value + twoHours
         vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
         vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
         self.assertEqual(
             vfb.serialize(),
-            free_busy_test_cal
+            test_cal
         )
 
     def test_availablity(self):
