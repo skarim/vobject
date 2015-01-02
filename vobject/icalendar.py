@@ -1401,17 +1401,6 @@ class PeriodBehavior(behavior.Behavior):
     """
     A list of (date-time, timedelta) tuples.
 
-    >>> line = ContentLine('test', [], '', isNative=True)
-    >>> line.behavior = PeriodBehavior
-    >>> line.value = [(datetime.datetime(2006, 2, 16, 10), twoHours)]
-    >>> print line.transformFromNative()
-    >>> line.transformFromNative().value
-    '20060216T100000/PT2H'
-    >>> line.transformToNative().value
-    [(datetime.datetime(2006, 2, 16, 10, 0), datetime.timedelta(0, 7200))]
-    >>> line.value.append((datetime.datetime(2006, 5, 16, 10), twoHours))
-    >>> print(line.serialize().strip())
-    TEST:20060216T100000/PT2H,20060516T100000/PT2H
     """
     hasNative = True
 

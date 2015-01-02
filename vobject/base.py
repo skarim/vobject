@@ -255,8 +255,6 @@ class ContentLine(VBase):
         """
         super(ContentLine, self).__init__(group, *args, **kwds)
 
-        print("ContentLine says value's type is... ", type(value))
-
         self.name = name.upper()
         self.encoded = encoded
         self.params = {}
