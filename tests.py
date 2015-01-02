@@ -3,8 +3,6 @@ from __future__ import print_function
 import datetime
 import unittest
 
-from dateutil import tz
-
 from vobject.base import newFromBehavior, parseLine, parseParams, ParseError, readComponents
 from vobject.icalendar import RecurringComponent, utc, timedeltaToString
 

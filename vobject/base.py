@@ -202,7 +202,6 @@ class VBase(object):
                 logger.debug("serializing %s with behavior %s" % (self.name, behavior))
             return behavior.serialize(self, buf, lineLength, validate)
         else:
-            print("serializing %s without behavior" % self.name)
             if DEBUG:
                 logger.debug("serializing %s without behavior" % self.name)
             return defaultSerialize(self, buf, lineLength)
@@ -255,6 +254,9 @@ class ContentLine(VBase):
 
         """
         super(ContentLine, self).__init__(group, *args, **kwds)
+
+        print("ContentLine says value's type is... ", type(value))
+
         self.name = name.upper()
         self.encoded = encoded
         self.params = {}
