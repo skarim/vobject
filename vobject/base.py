@@ -932,9 +932,13 @@ def foldOneLine(outbuf, input, lineLength = 75):
 
 
 def defaultSerialize(obj, buf, lineLength):
-    """Encode and fold obj and its children, write to buf or return a string."""
+    """
+    Encode and fold obj and its children, write to buf or return a string.
+    """
 
     outbuf = buf or six.StringIO()
+
+    print('obj:', str(obj))
 
     if isinstance(obj, Component):
         if obj.group is None:
@@ -971,13 +975,6 @@ def defaultSerialize(obj, buf, lineLength):
 
     return buf or outbuf.getvalue()
 
-
-testVCalendar="""
-BEGIN:VCALENDAR
-BEGIN:VEVENT
-SUMMARY;blah=hi!:Bastille Day Party
-END:VEVENT
-END:VCALENDAR"""
 
 class Stack:
     def __init__(self):
