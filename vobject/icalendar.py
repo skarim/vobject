@@ -373,6 +373,8 @@ class RecurringComponent(Component):
                     addfunc = getattr(rruleset, name)
                 print('rruleset, addfunc', rruleset, addfunc)
 
+                print('DATENAMES:', DATENAMES)
+
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
                         map(addfunc, line.value)
@@ -457,7 +459,7 @@ class RecurringComponent(Component):
                             added = False
                         if added and rruleset._rrule[-1]._count != None:
                             rruleset._rrule[-1]._count -= 1
-        print('rruleset items: ', rruleset())
+        print('rruleset appears to be None type here?: ', rruleset)
 
         return rruleset
 
