@@ -96,14 +96,13 @@ class testIcalendar(unittest.TestCase):
         test_cal = get_test_file("availablity.ics")
         vcal = newFromBehavior('VAVAILABILITY')
         vcal.add('uid').value = 'test'
+
         vcal.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
         vcal.add('dtstart').value = datetime.datetime(2006, 2, 16, 0, tzinfo=utc)
         vcal.add('dtend').value   = datetime.datetime(2006, 2, 17, 0, tzinfo=utc)
         vcal.add('busytype').value = "BUSY"
-        vcal.add('freebusy').value = [(vcal.dtstart.value, vcal.dtend.value)]
 
         print(vcal.serialize())
-
 
         av = newFromBehavior('AVAILABLE')
         av.add('uid').value = 'test1'
@@ -115,6 +114,13 @@ class testIcalendar(unittest.TestCase):
         vcal.add(av)
 
         print(vcal.serialize())
+
+        """
+
+        >>> ignore = vav.add(av)
+        >>> print(vav.serialize())
+        """
+
         self.assertEqual(
             vcal.serialize(),
             test_cal
