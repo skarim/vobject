@@ -77,6 +77,7 @@ class TestRecurringComponent(unittest.TestCase):
         vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
         vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
 
+        print('new rruleset: ', list(vevent.rruleset))
 
 
         # When creating rrule's programmatically it should be kept in
