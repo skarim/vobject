@@ -1534,9 +1534,9 @@ def timedeltaToString(delta):
         sign = delta.days / abs(delta.days)
     delta = abs(delta)
     days = delta.days
-    hours = delta.seconds / 3600
-    minutes = (delta.seconds % 3600) / 60
-    seconds = delta.seconds % 60
+    hours = int(delta.seconds / 3600)
+    minutes = int((delta.seconds % 3600) / 60)
+    seconds = int(delta.seconds % 60)
 
     output = ''
     if sign == -1:
