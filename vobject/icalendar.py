@@ -388,6 +388,7 @@ class RecurringComponent(Component):
                         # ignore RDATEs with PERIOD values for now
                         pass
                 elif name in RULENAMES:
+                    print('found name in RULENAMES:', name)
                     try:
                         dtstart = self.dtstart.value
                     except (AttributeError, KeyError):
@@ -571,7 +572,7 @@ class RecurringComponent(Component):
 
     rruleset = property(getrruleset, setrruleset)
 
-    print('ruleset is: ', list[rruleset])
+    print('ruleset is: ', rruleset())
 
     def __setattr__(self, name, value):
         """For convenience, make self.contents directly accessible."""
