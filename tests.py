@@ -90,6 +90,9 @@ class testIcalendar(unittest.TestCase):
         vfb.add('dtend').value   = vfb.dtstart.value + twoHours
         vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
         vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
+
+        print(vfb.serialize())
+
         self.assertEqual(
             vfb.serialize(),
             test_cal
