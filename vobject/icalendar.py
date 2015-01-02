@@ -1554,6 +1554,10 @@ def dateTimeToString(dateTime, convertToUTC=False):
     """
     if dateTime.tzinfo and convertToUTC:
         dateTime = dateTime.astimezone(utc)
+
+    print('utc: ', utc)
+    print('dateTime.tzinfo: ', dateTime.tzinfo)
+
     if tzinfo_eq(dateTime.tzinfo, utc):
         utcString = "Z"
     else:
@@ -1901,7 +1905,9 @@ def getTransition(transitionTo, year, tzinfo):
             return uncorrected + datetime.timedelta(hours=1)
 
 def tzinfo_eq(tzinfo1, tzinfo2, startYear = 2000, endYear=2020):
-    """Compare offsets and DST transitions from startYear to endYear."""
+    """
+    Compare offsets and DST transitions from startYear to endYear.
+    """
     if tzinfo1 == tzinfo2:
         return True
     elif tzinfo1 is None or tzinfo2 is None:
