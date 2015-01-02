@@ -373,8 +373,9 @@ class RecurringComponent(Component):
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
 
-                print('should be a ruleset object', rruleset)
+                #print('should be a ruleset object', rruleset)
                 print('datenames', DATENAMES)
+                print('and name is', name)
 
                 if name in DATENAMES:
                     print('found name in Datenames:', name)
@@ -569,6 +570,8 @@ class RecurringComponent(Component):
                     self.add(name).value = buf.getvalue()
 
     rruleset = property(getrruleset, setrruleset)
+
+    print('ruleset is:' rruleset)
 
     def __setattr__(self, name, value):
         """For convenience, make self.contents directly accessible."""
