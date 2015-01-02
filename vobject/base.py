@@ -947,8 +947,9 @@ def defaultSerialize(obj, buf, lineLength):
             foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name), lineLength)
         for child in obj.getSortedChildren():
             print('child', str(child))
-            #validate is recursive, we only need to validate once
+            # validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
+            print('child serialized', str(child))
         if obj.useBegin:
             foldOneLine(outbuf, "{0}END:{1}".format(groupString, obj.name), lineLength)
 
