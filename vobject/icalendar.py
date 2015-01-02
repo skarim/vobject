@@ -1256,8 +1256,7 @@ class VAvailability(VCalendarComponentBehavior):
     def validate(cls, obj, raiseException, *args):
         if 'dtend' in obj.contents and 'duration' in obj.contents:
             if raiseException:
-                m = "VAVAILABILITY components cannot contain both DTEND and DURATION\
-                     components"
+                m = "VAVAILABILITY components cannot contain both DTEND and DURATION components"
                 raise ValidateError(m)
             return False
         else:
@@ -1267,7 +1266,9 @@ registerBehavior(VAvailability)
 
 
 class Available(RecurringBehavior):
-    """Event behavior."""
+    """
+    Event behavior.
+    """
     name='AVAILABLE'
     sortFirst = ('uid', 'recurrence-id', 'dtstart', 'duration', 'dtend')
 

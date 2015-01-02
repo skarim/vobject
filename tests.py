@@ -102,6 +102,9 @@ class testIcalendar(unittest.TestCase):
         vcal.add('busytype').value = "BUSY"
         vcal.add('freebusy').value = [(vcal.dtstart.value, vcal.dtend.value)]
 
+        print(vcal.serialize())
+
+
         av = newFromBehavior('AVAILABLE')
         av.add('uid').value = 'test1'
         av.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
