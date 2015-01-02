@@ -1553,7 +1553,6 @@ def dateTimeToString(dateTime, convertToUTC=False):
     )
     if tzinfo_eq(dateTime.tzinfo, utc):
         datestr += "Z"
-    print('dateTimeToString', datestr)
     return datestr
 
 def deltaToOffset(delta):
