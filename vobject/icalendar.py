@@ -346,6 +346,7 @@ class RecurringComponent(Component):
     """
     def __init__(self, *args, **kwds):
         super(RecurringComponent, self).__init__(*args, **kwds)
+
         self.isNative=True
 
     def getrruleset(self, addRDate = False):
@@ -459,7 +460,10 @@ class RecurringComponent(Component):
                             added = False
                         if added and rruleset._rrule[-1]._count != None:
                             rruleset._rrule[-1]._count -= 1
-        print('rruleset appears to be None type here?: ', rruleset)
+
+        if rruleset:
+            print('rruleset appears to be real here?: ', rruleset())
+        print('rruleset is None')
 
         return rruleset
 
