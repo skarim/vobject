@@ -86,7 +86,7 @@ class testIcalendar(unittest.TestCase):
 
         vfb = newFromBehavior('VFREEBUSY')
         vfb.add('uid').value = 'test'
-        vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=tz.tzutc())
+        vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
         vfb.add('dtend').value   = vfb.dtstart.value + twoHours
         vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
         vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]

@@ -1552,7 +1552,6 @@ def dateTimeToString(dateTime, convertToUTC=False):
     """
     Ignore tzinfo unless convertToUTC.  Output string.
     """
-    print('DATETIMETOSTRING!!!!')
     if dateTime.tzinfo and convertToUTC:
         dateTime = dateTime.astimezone(utc)
     if tzinfo_eq(dateTime.tzinfo, utc):
@@ -1569,6 +1568,8 @@ def dateTimeToString(dateTime, convertToUTC=False):
         numToDigits( dateTime.second,  2 ),
         utcString
     )
+    print('DATETIMETOSTRING!!!!', datestr)
+
     return datestr
 
 def deltaToOffset(delta):
