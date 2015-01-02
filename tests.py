@@ -101,7 +101,7 @@ class testIcalendar(unittest.TestCase):
         vcal.add('dtend').value   = datetime.datetime(2006, 2, 17, 0, tzinfo=utc)
         vcal.add('busytype').value = "BUSY"
         vcal.add('freebusy').value = [(vcal.dtstart.value, vcal.dtend.value)]
-        print(vcal.serialize()
+        print(vcal.serialize())
         self.assertEqual(
             vcal.serialize(),
             test_cal
