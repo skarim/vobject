@@ -462,7 +462,7 @@ class RecurringComponent(Component):
                             rruleset._rrule[-1]._count -= 1
 
         if rruleset:
-            print('rruleset appears to be real here?: ', rruleset())
+            print('rruleset appears to be real here?: ', list(rruleset))
         print('rruleset is None')
 
         return rruleset
