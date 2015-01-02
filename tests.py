@@ -69,10 +69,11 @@ class TestRecurringComponent(unittest.TestCase):
 
         # init
         self.assertTrue(vevent.isNative)
+        # rruleset should be empty at this point. No rules have been passed.
+        self.assertTrue(vevent.rruleset, None)
 
-        print('vevent.rruleset: ', vevent.rruleset)
+        vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
 
-        #vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
         #vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
 
 
