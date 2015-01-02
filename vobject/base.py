@@ -938,8 +938,6 @@ def defaultSerialize(obj, buf, lineLength):
 
     outbuf = buf or six.StringIO()
 
-    print('obj', str(obj))
-
     if isinstance(obj, Component):
         if obj.group is None:
             groupString = ''
@@ -948,6 +946,7 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.useBegin:
             foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name), lineLength)
         for child in obj.getSortedChildren():
+            print('child', str(child))
             #validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
         if obj.useBegin:
