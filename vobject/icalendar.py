@@ -1643,7 +1643,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
 
     while True:
         try:
-            charIndex, char = charIterator.next()
+            charIndex, char = next(charIterator)
         except:
             char = "eof"
 
@@ -1720,7 +1720,7 @@ def stringToDurations(s, strict=False):
 
     while True:
         try:
-            charIndex, char = charIterator.next()
+            charIndex, char = next(charIterator)
         except:
             charIndex += 1
             char = "eof"
