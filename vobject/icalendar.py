@@ -1549,20 +1549,27 @@ def dateToString(date):
     return year + month + day
 
 def dateTimeToString(dateTime, convertToUTC=False):
-    """Ignore tzinfo unless convertToUTC.  Output string."""
+    """
+    Ignore tzinfo unless convertToUTC.  Output string.
+    """
+    print('DATETIMETOSTRING!!!!')
     if dateTime.tzinfo and convertToUTC:
         dateTime = dateTime.astimezone(utc)
-    if tzinfo_eq(dateTime.tzinfo, utc): utcString = "Z"
-    else: utcString = ""
+    if tzinfo_eq(dateTime.tzinfo, utc):
+        utcString = "Z"
+    else:
+        utcString = ""
 
-    year  = numToDigits( dateTime.year,  4 )
-    month = numToDigits( dateTime.month, 2 )
-    day   = numToDigits( dateTime.day,   2 )
-    hour  = numToDigits( dateTime.hour,  2 )
-    mins  = numToDigits( dateTime.minute,  2 )
-    secs  = numToDigits( dateTime.second,  2 )
-
-    return year + month + day + "T" + hour + mins + secs + utcString
+    datestr = "{}{}{}T{}{}{}".format(
+        numToDigits( dateTime.year,  4 ),
+        numToDigits( dateTime.month, 2 ),
+        numToDigits( dateTime.day,   2 ),
+        numToDigits( dateTime.hour,  2 ),
+        numToDigits( dateTime.minute,  2 ),
+        numToDigits( dateTime.second,  2 ),
+        utcString
+    )
+    return datestr
 
 def deltaToOffset(delta):
     absDelta = abs(delta)
