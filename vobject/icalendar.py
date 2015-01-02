@@ -391,6 +391,7 @@ class RecurringComponent(Component):
                     print('found name in RULENAMES:', name)
                     try:
                         dtstart = self.dtstart.value
+                        print('got dtstart OK')
                     except (AttributeError, KeyError):
                         # Special for VTODO - try DUE property instead
                         try:
@@ -398,14 +399,17 @@ class RecurringComponent(Component):
                                 dtstart = self.due.value
                             else:
                                 # if there's no dtstart, just return None
+                                print('failed to get dtstart with VTODO')
                                 return None
                         except (AttributeError, KeyError):
                             # if there's no due, just return None
+                            print('failed to find DUE at all.')
                             return None
 
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
                     value = str(line.value).replace('\\', '')
+                    print('value', value)
                     rule = rrule.rrule(value, dtstart=dtstart)
                     until = rule._until
                     if until is not None and isinstance(dtstart, datetime.datetime) and \
