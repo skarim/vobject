@@ -79,8 +79,6 @@ class testIcalendar(unittest.TestCase):
             'PT20M'
         )
 
-
-
     def test_freeBusy(self):
         free_busy_test_cal = get_test_file("freebusy.ics")
         vfb = newFromBehavior('VFREEBUSY')
@@ -89,10 +87,10 @@ class testIcalendar(unittest.TestCase):
         vfb.add('dtend').value   = vfb.dtstart.value + twoHours
         vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
         vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
-        #self.assertEqual(
-        #    vfb.serialize(),
-        #    free_busy_test_cal
-        #)
+        self.assertEqual(
+            vfb.serialize(),
+            free_busy_test_cal
+        )
 
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')

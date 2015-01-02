@@ -954,7 +954,8 @@ def defaultSerialize(obj, buf, lineLength):
 
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
-        if obj.behavior and not startedEncoded: obj.behavior.encode(obj)
+        if obj.behavior and not startedEncoded:
+            obj.behavior.encode(obj)
 
         #s = codecs.getwriter('utf-8')(six.StringIO()) #unfolded buffer
         s = six.StringIO()
@@ -964,9 +965,9 @@ def defaultSerialize(obj, buf, lineLength):
         s.write(obj.name.upper())
         keys = sorted(obj.params.keys())
         for key in keys:
-            paramvals = obj.params[key]
-            s.write(';' + key + '=' + ','.join(dquoteEscape(p) for p in paramvals))
-        s.write(':' + six.u(obj.value))
+            paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
+            s.write(";{}={}".format(key, paramstr))
+        s.write(":{}".format(obj.value))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
