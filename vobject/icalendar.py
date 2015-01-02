@@ -408,9 +408,9 @@ class RecurringComponent(Component):
                     value = str(line.value).replace('\\', '')
                     print('value', value)
                     rule = rrule.rrule(value, dtstart=dtstart)
-                    print('rule', rule)
+                    print('rule', list(rule))
                     until = rule._until
-                    print('until', until)
+
                     if until is not None and isinstance(dtstart, datetime.datetime) and \
                        (until.tzinfo != dtstart.tzinfo):
                         # dateutil converts the UNTIL date to a datetime,
@@ -446,6 +446,8 @@ class RecurringComponent(Component):
 
                     # add the rrule or exrule to the rruleset
                     addfunc(rule)
+
+                    print('should have some ruleset action now: ', list(rruleset))
 
                     if name == 'rrule' and addRDate:
                         try:
