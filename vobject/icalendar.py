@@ -373,9 +373,7 @@ class RecurringComponent(Component):
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
 
-                #print('should be a ruleset object', rruleset)
                 print('datenames', DATENAMES)
-                print('and name is', name)
 
                 if name in DATENAMES:
                     print('found name in Datenames:', name)
@@ -391,7 +389,6 @@ class RecurringComponent(Component):
                     print('found name in RULENAMES:', name)
                     try:
                         dtstart = self.dtstart.value
-                        print('got dtstart OK')
                     except (AttributeError, KeyError):
                         # Special for VTODO - try DUE property instead
                         try:
@@ -411,7 +408,9 @@ class RecurringComponent(Component):
                     value = str(line.value).replace('\\', '')
                     print('value', value)
                     rule = rrule.rrule(value, dtstart=dtstart)
+                    print('rule', rule)
                     until = rule._until
+                    print('until', until)
                     if until is not None and isinstance(dtstart, datetime.datetime) and \
                        (until.tzinfo != dtstart.tzinfo):
                         # dateutil converts the UNTIL date to a datetime,
