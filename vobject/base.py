@@ -938,8 +938,6 @@ def defaultSerialize(obj, buf, lineLength):
 
     outbuf = buf or six.StringIO()
 
-    print('obj:', str(obj))
-
     if isinstance(obj, Component):
         if obj.group is None:
             groupString = ''

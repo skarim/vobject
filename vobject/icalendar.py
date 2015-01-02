@@ -1536,11 +1536,9 @@ def timeToString(dateOrDateTime):
     Wraps dateToString and dateTimeToString, returning the results
     of either based on the type of the argument
     """
-    # Didn't use isinstance here as date and datetime sometimes evalutes as both
-    if (type(dateOrDateTime) == datetime.date):
-        return dateToString(dateOrDateTime)
-    elif(type(dateOrDateTime) == datetime.datetime):
+    if hasattr(dateOrDateTime, 'hour'):
         return dateTimeToString(dateOrDateTime)
+    return dateToString(dateOrDateTime)
 
 def dateToString(date):
     year  = numToDigits( date.year,  4 )
@@ -1565,6 +1563,7 @@ def dateTimeToString(dateTime, convertToUTC=False):
     )
     if tzinfo_eq(dateTime.tzinfo, utc):
         datestr += "Z"
+    print('dateTimeToString', datestr)
     return datestr
 
 def deltaToOffset(delta):
