@@ -1848,7 +1848,7 @@ def parseDtstart(contentline, allowSignatureMismatch=False):
                 raise
 
 def stringToPeriod(s, tzinfo=None):
-    values   = string.split(s, "/")
+    values = s.split("/")
     start = stringToDateTime(values[0], tzinfo)
     valEnd   = values[1]
     if isDuration(valEnd): #period-start = date-time "/" dur-value
