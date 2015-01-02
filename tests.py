@@ -70,7 +70,7 @@ class testIcalendar(unittest.TestCase):
     """
 
     def test_timedeltaToString(self):
-        print('twoHours', twoHours)
+        print('twoHours', timedeltaToString(twoHours))
 
 
     def test_freeBusy(self):
