@@ -197,10 +197,12 @@ class VBase(object):
             behavior = self.behavior
 
         if behavior:
+            print("serializing %s with behavior" % self.name)
             if DEBUG:
                 logger.debug("serializing %s with behavior" % self.name)
             return behavior.serialize(self, buf, lineLength, validate)
         else:
+            print("serializing %s without behavior" % self.name)
             if DEBUG:
                 logger.debug("serializing %s without behavior" % self.name)
             return defaultSerialize(self, buf, lineLength)
