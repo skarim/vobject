@@ -3,8 +3,10 @@ from __future__ import print_function
 import datetime
 import unittest
 
-from vobject.base import readComponents, parseLine, parseParams, ParseError
-from vobject.icalendar import RecurringComponent
+from vobject.base import newFromBehavior, parseLine, parseParams, ParseError, readComponents
+from vobject.icalendar import RecurringComponent, utc
+
+twoHours  = datetime.timedelta(hours=2)
 
 def get_test_file(path):
     """
@@ -61,6 +63,24 @@ class TestVobject(unittest.TestCase):
             parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
             [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
         )
+
+class TestFreeBusy(unittest.TestCase):
+    def setUp(self):
+        self.free_busy_test_cal = get_test_file("freebusy.ics")
+
+    def test_freeBusy(self):
+        vfb = newFromBehavior('VFREEBUSY')
+        vfb.add('uid').value = 'test'
+        vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
+        vfb.add('dtend').value   = vfb.dtstart.value + twoHours
+        vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
+        vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
+        self.assertEqual(
+            vfb.serialize(),
+            self.free_busy_test_cal
+        )
+
+
 
 
 class TestRecurringComponent(unittest.TestCase):

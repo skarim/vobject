@@ -459,11 +459,6 @@ class RecurringComponent(Component):
                             added = False
                         if added and rruleset._rrule[-1]._count != None:
                             rruleset._rrule[-1]._count -= 1
-
-        if rruleset:
-            print('rruleset appears to be real here?: ', list(rruleset))
-        print('rruleset is None')
-
         return rruleset
 
     def setrruleset(self, rruleset):
@@ -1098,22 +1093,6 @@ registerBehavior(VJournal)
 class VFreeBusy(VCalendarComponentBehavior):
     """
     Free/busy state behavior.
-
-    >>> vfb = newFromBehavior('VFREEBUSY')
-    >>> vfb.add('uid').value = 'test'
-    >>> vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
-    >>> vfb.add('dtend').value   = vfb.dtstart.value + twoHours
-    >>> vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
-    >>> vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
-    >>> print(vfb.serialize())
-    BEGIN:VFREEBUSY
-    UID:test
-    DTSTART:20060216T010000Z
-    DTEND:20060216T030000Z
-    FREEBUSY:20060216T010000Z/PT1H
-    FREEBUSY:20060216T010000Z/20060216T030000Z
-    END:VFREEBUSY
-
     """
     name='VFREEBUSY'
     description='A grouping of component properties that describe either a \
