@@ -74,18 +74,16 @@ class TestRecurringComponent(unittest.TestCase):
         # No rules have been passed or created.
         self.assertEqual(vevent.rruleset, None)
 
+        # Now add start and rule for recurring event
         vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
         vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
 
-        print('new rruleset: ', list(vevent.rruleset))
+        #print('new rruleset: ', list(vevent.rruleset))
 
-
-        # When creating rrule's programmatically it should be kept in
-        # mind that count doesn't necessarily mean what the spec says.
-        #self.assertEqual(
-        #    list(vevent.rruleset),
-        #    [datetime.datetime(2005, 1, 20, 9, 0), datetime.datetime(2005, 2, 1, 9, 0)]
-        #)
+        self.assertEqual(
+            list(vevent.rruleset),
+            [datetime.datetime(2005, 1, 20, 9, 0), datetime.datetime(2005, 2, 1, 9, 0)]
+        )
         #self.assertEqual(
         #    list(vevent.getrruleset(addRDate=True)),
         #    [datetime.datetime(2005, 1, 19, 9, 0), datetime.datetime(2005, 1, 20, 9, 0)]

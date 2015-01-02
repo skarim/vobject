@@ -366,17 +366,13 @@ class RecurringComponent(Component):
         for name in DATESANDRULES:
             addfunc = None
             for line in self.contents.get(name, ()):
-                print('self.contents.get name: ', self.contents.get(name, ()))
                 # don't bother creating a rruleset unless there's a rule
                 if rruleset is None:
                     rruleset = rrule.rruleset()
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
 
-                print('datenames', DATENAMES)
-
                 if name in DATENAMES:
-                    print('found name in Datenames:', name)
                     if type(line.value[0]) == datetime.datetime:
                         map(addfunc, line.value)
                     elif type(line.value[0]) == datetime.date:
@@ -386,7 +382,6 @@ class RecurringComponent(Component):
                         # ignore RDATEs with PERIOD values for now
                         pass
                 elif name in RULENAMES:
-                    print('found name in RULENAMES:', name)
                     try:
                         dtstart = self.dtstart.value
                     except (AttributeError, KeyError):
@@ -406,10 +401,7 @@ class RecurringComponent(Component):
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
                     value = str(line.value).replace('\\', '')
-                    print('value', value)
-                    print('dtstart', dtstart)
                     rule = rrule.rrulestr(value, dtstart=dtstart)
-                    print('rule', list(rule))
                     until = rule._until
 
                     if until is not None and isinstance(dtstart, datetime.datetime) and \
@@ -447,8 +439,6 @@ class RecurringComponent(Component):
 
                     # add the rrule or exrule to the rruleset
                     addfunc(rule)
-
-                    print('should have some ruleset action now: ', list(rruleset))
 
                     if name == 'rrule' and addRDate:
                         try:
