@@ -77,32 +77,26 @@ class TestRecurringComponent(unittest.TestCase):
         # Now add start and rule for recurring event
         vevent.add('dtstart').value = datetime.datetime(2005, 1, 19, 9)
         vevent.add('rrule').value =u"FREQ=WEEKLY;COUNT=2;INTERVAL=2;BYDAY=TU,TH"
-
-        #print('new rruleset: ', list(vevent.rruleset))
-
         self.assertEqual(
             list(vevent.rruleset),
             [datetime.datetime(2005, 1, 20, 9, 0), datetime.datetime(2005, 2, 1, 9, 0)]
         )
-        #self.assertEqual(
-        #    list(vevent.getrruleset(addRDate=True)),
-        #    [datetime.datetime(2005, 1, 19, 9, 0), datetime.datetime(2005, 1, 20, 9, 0)]
-        #)
+        self.assertEqual(
+            list(vevent.getrruleset(addRDate=True)),
+            [datetime.datetime(2005, 1, 19, 9, 0), datetime.datetime(2005, 1, 20, 9, 0)]
+        )
 
         # Also note that dateutil will expand all-day events (datetime.date values)
         # to datetime.datetime value with time 0 and no timezone.
-        #vevent.dtstart.value = datetime.date(2005,3,18)
-
-        #print(list(vevent))
-
-        #self.assertEqual(
-        #    list(vevent.rruleset),
-        #    [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
-        #)
-        #self.assertEqual(
-        #    list(vevent.getrruleset(True)),
-        #    [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
-        #)
+        vevent.dtstart.value = datetime.date(2005,3,18)
+        self.assertEqual(
+            list(vevent.rruleset),
+            [datetime.datetime(2005, 3, 29, 0, 0), datetime.datetime(2005, 3, 31, 0, 0)]
+        )
+        self.assertEqual(
+            list(vevent.getrruleset(True)),
+            [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
+        )
 
 
     """def test_choice(self):
