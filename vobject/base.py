@@ -930,10 +930,14 @@ def foldOneLine(outbuf, input, lineLength = 75):
         # fall back on py2 syntax
         outbuf.write("\r\n")
 
+
 def defaultSerialize(obj, buf, lineLength):
     """Encode and fold obj and its children, write to buf or return a string."""
 
     outbuf = buf or six.StringIO()
+    print('obj', obj)
+    print('buf', buf)
+    print('lineLength', lineLength)
 
     if isinstance(obj, Component):
         if obj.group is None:
