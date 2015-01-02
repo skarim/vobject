@@ -92,6 +92,33 @@ class testIcalendar(unittest.TestCase):
             free_busy_test_cal
         )
 
+    def test_availablity(self):
+        test_cal = get_test_file("availablity.ics")
+        vcal = newFromBehavior('VAVAILABILITY')
+        vcal.add('uid').value = 'test'
+        vcal.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
+        vcal.add('dtstart').value = datetime.datetime(2006, 2, 16, 0, tzinfo=utc)
+        vcal.add('dtend').value   = datetime.datetime(2006, 2, 17, 0, tzinfo=utc)
+        vcal.add('busytype').value = "BUSY"
+        vcal.add('freebusy').value = [(vcal.dtstart.value, vcal.dtend.value)]
+        print(vcal.serialize()
+        self.assertEqual(
+            vcal.serialize(),
+            test_cal
+        )
+
+
+    """
+    >>> av = newFromBehavior('AVAILABLE')
+    >>> av.add('uid').value = 'test1'
+    >>> av.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
+    >>> av.add('dtstart').value = datetime.datetime(2006, 2, 16, 9, tzinfo=utc)
+    >>> av.add('dtend').value   = datetime.datetime(2006, 2, 16, 12, tzinfo=utc)
+    >>> av.add('summary').value = "Available in the morning"
+    >>> ignore = vav.add(av)
+    >>> print(vav.serialize())
+    """
+
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')
 

@@ -1225,36 +1225,10 @@ registerBehavior(VAlarm)
 
 
 class VAvailability(VCalendarComponentBehavior):
-    """Availability state behavior.
+    """
+    Availability state behavior.
 
-    >>> vav = newFromBehavior('VAVAILABILITY')
-    >>> vav.add('uid').value = 'test'
-    >>> vav.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
-    >>> vav.add('dtstart').value = datetime.datetime(2006, 2, 16, 0, tzinfo=utc)
-    >>> vav.add('dtend').value   = datetime.datetime(2006, 2, 17, 0, tzinfo=utc)
-    >>> vav.add('busytype').value = "BUSY"
-    >>> av = newFromBehavior('AVAILABLE')
-    >>> av.add('uid').value = 'test1'
-    >>> av.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
-    >>> av.add('dtstart').value = datetime.datetime(2006, 2, 16, 9, tzinfo=utc)
-    >>> av.add('dtend').value   = datetime.datetime(2006, 2, 16, 12, tzinfo=utc)
-    >>> av.add('summary').value = "Available in the morning"
-    >>> ignore = vav.add(av)
-    >>> print(vav.serialize())
-    BEGIN:VAVAILABILITY
-    UID:test
-    DTSTART:20060216T000000Z
-    DTEND:20060217T000000Z
-    BEGIN:AVAILABLE
-    UID:test1
-    DTSTART:20060216T090000Z
-    DTEND:20060216T120000Z
-    DTSTAMP:20060215T000000Z
-    SUMMARY:Available in the morning
-    END:AVAILABLE
-    BUSYTYPE:BUSY
-    DTSTAMP:20060215T000000Z
-    END:VAVAILABILITY
+    Used to represent user's available time slots.
 
     """
     name='VAVAILABILITY'
@@ -1613,8 +1587,8 @@ def periodToString(period, convertToUTC=False):
 
 
 def isDuration(s):
-    s = string.upper(s)
-    return (string.find(s, "P") != -1) and (string.find(s, "P") < 2)
+    s = s.upper()
+    return (s.find("P") != -1) and (s.find("P") < 2)
 
 def stringToDate(s):
     year  = int( s[0:4] )
