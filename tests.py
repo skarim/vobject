@@ -70,7 +70,15 @@ class testIcalendar(unittest.TestCase):
     """
 
     def test_timedeltaToString(self):
-        print('twoHours', timedeltaToString(twoHours))
+        self.assertEqual(
+            timedeltaToString(twoHours),
+            'PT2H'
+        )
+        self.assertEqual(
+            timedeltaToString(datetime.timedelta(minutes=20)),
+            'PT20M'
+        )
+
 
 
     def test_freeBusy(self):
