@@ -1525,25 +1525,36 @@ def numToDigits(num, places):
         return s
 
 def timedeltaToString(delta):
-    """Convert timedelta to an rfc2445 DURATION."""
-    if delta.days == 0: sign = 1
-    else: sign = delta.days / abs(delta.days)
+    """
+    Convert timedelta to an ical DURATION.
+    """
+    if delta.days == 0:
+        sign = 1
+    else:
+        sign = delta.days / abs(delta.days)
     delta = abs(delta)
     days = delta.days
     hours = delta.seconds / 3600
     minutes = (delta.seconds % 3600) / 60
     seconds = delta.seconds % 60
-    out = ''
-    if sign == -1: out = '-'
-    out += 'P'
-    if days: out += six.u(days) + 'D'
-    if hours or minutes or seconds: out += 'T'
-    elif not days: #Deal with zero duration
-        out += 'T0S'
-    if hours: out += six.u(hours) + 'H'
-    if minutes: out += six.u(minutes) + 'M'
-    if seconds: out += six.u(seconds) + 'S'
-    return out
+
+    output = ''
+    if sign == -1:
+        output += '-'
+    output += 'P'
+    if days:
+        output += '{}D'.format(days)
+    if hours or minutes or seconds:
+        output += 'T'
+    elif not days: # Deal with zero duration
+        output += 'T0S'
+    if hours:
+        output += '{}H'.format(hours)
+    if minutes:
+        output += '{}M'.format(minutes)
+    if seconds:
+        output += '{}S'.format(seconds)
+    return output
 
 def timeToString(dateOrDateTime):
     """
