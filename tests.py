@@ -97,7 +97,7 @@ class testIcalendar(unittest.TestCase):
 
         self.assertEqual(
             line.serialize().strip(),
-            '20060216T100000/PT2H,20060516T100000/PT2H'
+            'TEST:20060216T100000/PT2H,20060516T100000/PT2H'
         )
 
 
