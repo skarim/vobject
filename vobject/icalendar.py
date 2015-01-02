@@ -373,7 +373,8 @@ class RecurringComponent(Component):
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
 
-                print('should be a ruleset:', rruleset())
+                print('should be a ruleset object', rruleset)
+                print('datenames', DATENAMES)
 
                 if name in DATENAMES:
                     print('found name in Datenames:', name)
