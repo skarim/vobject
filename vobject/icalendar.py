@@ -1558,6 +1558,8 @@ def dateTimeToString(dateTime, convertToUTC=False):
     print('utc: ', utc)
     print('dateTime.tzinfo: ', dateTime.tzinfo)
 
+    print('so....', tzinfo_eq(dateTime.tzinfo, utc))
+
     if tzinfo_eq(dateTime.tzinfo, utc):
         utcString = "Z"
     else:
