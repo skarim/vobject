@@ -362,11 +362,10 @@ class RecurringComponent(Component):
 
         """
         rruleset = None
-        print('DATESANDRULES: ', DATESANDRULES)
         for name in DATESANDRULES:
             addfunc = None
-            print('self.contents: ', self.contents)
             for line in self.contents.get(name, ()):
+                print('self.contents.get name: ', self.contents.get(name, ()))
                 # don't bother creating a rruleset unless there's a rule
                 if rruleset is None:
                     rruleset = rrule.rruleset()
@@ -457,6 +456,7 @@ class RecurringComponent(Component):
                             added = False
                         if added and rruleset._rrule[-1]._count != None:
                             rruleset._rrule[-1]._count -= 1
+        print('rruleset: ', rruleset)
         return rruleset
 
     def setrruleset(self, rruleset):
