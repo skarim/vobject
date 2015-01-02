@@ -407,7 +407,8 @@ class RecurringComponent(Component):
                     # so also remove any backslashes
                     value = str(line.value).replace('\\', '')
                     print('value', value)
-                    rule = rrule.rrule(value, dtstart=dtstart)
+                    print('dtstart', dtstart)
+                    rule = rrule.rrulestr(value, dtstart=dtstart)
                     print('rule', list(rule))
                     until = rule._until
 
