@@ -372,11 +372,9 @@ class RecurringComponent(Component):
                     rruleset = rrule.rruleset()
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
-                print('rruleset, addfunc', rruleset, addfunc)
-
-                print('DATENAMES:', DATENAMES)
 
                 if name in DATENAMES:
+                    print('found name in Datenames:', name)
                     if type(line.value[0]) == datetime.datetime:
                         map(addfunc, line.value)
                     elif type(line.value[0]) == datetime.date:
