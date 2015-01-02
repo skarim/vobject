@@ -571,7 +571,7 @@ class RecurringComponent(Component):
 
     rruleset = property(getrruleset, setrruleset)
 
-    print('ruleset is:', rruleset)
+    print('ruleset is: ', list[rruleset])
 
     def __setattr__(self, name, value):
         """For convenience, make self.contents directly accessible."""
