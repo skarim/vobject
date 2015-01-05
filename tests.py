@@ -104,11 +104,8 @@ class testGeneralFileParsing(unittest.TestCase):
             isinstance(c.vevent.dtend.value, datetime.datetime)
         )
         self.assertEqual(
-            str(c.vevent.dtstamp.value),
-            "2002-10-28 01:17:06+00:00"
-        )
-        self.assertTrue(
-            isinstance(c.vevent.dtstamp.value, datetime.datetime)
+            c.vevent.dtstamp.value,
+            datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=dateutil.tz.tzutc())
         )
         self.assertEqual(
             c.vevent.valarm.description.value,
