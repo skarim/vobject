@@ -91,11 +91,11 @@ class testGeneralFileParsing(unittest.TestCase):
         )
         self.assertEqual(
             c.vevent.dtstart.value,
-            datetime.datetime(2002, 10, 28, 14, 0)
+            datetime.datetime(2002, 10, 28, 14, 0, tzinfo=dateutil.tz.tzutc())
         )
         self.assertEqual(
             c.vevent.dtend.value,
-            datetime.datetime(2002, 10, 28, 15, 0)
+            datetime.datetime(2002, 10, 28, 15, 0, tzinfo=dateutil.tz.tzutc())
         )
         self.assertEqual(
             c.vevent.dtstamp.value,
