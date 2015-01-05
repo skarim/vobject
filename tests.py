@@ -90,8 +90,8 @@ class testGeneralFileParsing(unittest.TestCase):
             "<TRIGGER{}-1 day, 0:00:00>"
         )
         self.assertEqual(
-            c.vevent.dtstart.value,
-            datetime.datetime(2002, 10, 28, 14, 0, tzinfo=<tzicalvtz u'US/Pacific'>)
+            str(c.vevent.dtstart.value),
+            "datetime.datetime(2002, 10, 28, 14, 0, tzinfo=<tzicalvtz u'US/Pacific'>)"
         )
         self.assertEqual(
             c.vevent.dtend.value,
