@@ -91,7 +91,7 @@ class testGeneralFileParsing(unittest.TestCase):
         )
         self.assertEqual(
             str(c.vevent.dtstart.value),
-            "'2002-10-28 14:00:00-08:00'"
+            "2002-10-28 14:00:00-08:00"
         )
         self.assertEqual(
             type(c.vevent.dtstart.value),
