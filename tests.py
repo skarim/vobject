@@ -113,7 +113,14 @@ class testGeneralFileParsing(unittest.TestCase):
         #)
         self.assertEqual(
             c.vevent.valarm.description.value,
-            "Event reminder, with comma\nand line feed"
+            """Event reminder, with comma
+            and line feed"""
+        )
+        self.assertEqual(
+            c.vevent.valarm.description.serialize(),
+            """DESCRIPTION:Event reminder\\, with comma
+            and line feed
+            """
         )
 
 
