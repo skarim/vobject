@@ -143,7 +143,7 @@ class testIcalendar(unittest.TestCase):
             (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))
         )
         self.assertEqual(
-            stringToPeriod("19970101T180000Z/PT1H")
+            stringToPeriod("19970101T180000Z/PT1H"),
             (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 3600))
         )
 
