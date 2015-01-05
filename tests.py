@@ -113,13 +113,15 @@ class testGeneralFileParsing(unittest.TestCase):
             isinstance(c.vevent.dtstamp.value),
             "datetime.datetime"
         )
+        self.assertEqual(
+            c.vevent.valarm.description.value,
+            "Event reminder, with comma\nand line feed"
+        )
 
 
 
         """
-        >>> c.vevent.dtstamp.value
-        datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
-        >>> c.vevent.valarm.description.value
+        >>>
         u'Event reminder, with comma\nand line feed'
         >>> c.vevent.valarm.description.serialize()
         'DESCRIPTION:Event reminder\\, with comma\\nand line feed\r\n'
