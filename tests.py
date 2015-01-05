@@ -90,7 +90,8 @@ class testGeneralFileParsing(unittest.TestCase):
             "<TRIGGER{}-1 day, 0:00:00>"
         )
         # py3 is returning value as a string, not a datetime.
-        # need to figure out why
+        # ToDo: figure out why, because it kills this whole block of tests.
+        # The same bug also breaks test_freeBusy below.
         #self.assertEqual(
         #    str(c.vevent.dtstart.value),
         #    "2002-10-28"
@@ -103,7 +104,6 @@ class testGeneralFileParsing(unittest.TestCase):
         #    str(c.vevent.dtend.value),
         #    "2002-10-28"
         #)
-
         #self.assertTrue(
         #    isinstance(c.vevent.dtend.value, datetime.datetime)
         #)
@@ -114,7 +114,7 @@ class testGeneralFileParsing(unittest.TestCase):
 
         vevent = c.vevent.transformFromNative()
         self.assertEqual(
-            vevent.rrule,
+            str(vevent.rrule),
             "<RRULE{}FREQ=Weekly;COUNT=10>"
         )
 
@@ -254,18 +254,6 @@ class testIcalendar(unittest.TestCase):
             list(vevent.getrruleset(True)),
             [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
         )
-
-
-    """def test_choice(self):
-        element = random.choice(self.seq)
-        self.assertTrue(element in self.seq)
-
-    def test_sample(self):
-        with self.assertRaises(ValueError):
-            random.sample(self.seq, 20)
-        for element in random.sample(self.seq, 5):
-            self.assertTrue(element in self.seq)
-    """
 
 if __name__ == '__main__':
     unittest.main()
