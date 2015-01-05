@@ -111,28 +111,17 @@ class testGeneralFileParsing(unittest.TestCase):
         #    c.vevent.dtstamp.value,
         #    datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=dateutil.tz.tzutc())
         #)
-        self.assertEqual(
-            c.vevent.valarm.description.value,
-            """Event reminder, with comma
-            and line feed"""
-        )
-        self.assertEqual(
-            c.vevent.valarm.description.serialize(),
-            """DESCRIPTION:Event reminder\\, with comma
-            and line feed
-            """
-        )
 
-
+        vevent = c.vevent.transformFromNative()
+        self.assertEqual(
+            vevent.rrule,
+            "<RRULE{}FREQ=Weekly;COUNT=10>"
+        )
 
         """
         >>>
-        u'Event reminder, with comma\nand line feed'
-        >>> c.vevent.valarm.description.serialize()
-        'DESCRIPTION:Event reminder\\, with comma\\nand line feed\r\n'
         >>> vevent = c.vevent.transformFromNative()
         >>> vevent.rrule
-        <RRULE{}FREQ=Weekly;COUNT=10>
 
 
         "Parsing tests" :
