@@ -1,5 +1,12 @@
-"""Compare VTODOs and VEVENTs in two iCalendar sources."""
-from base import Component, getBehavior, newFromBehavior
+from __future__ import print_function
+
+from optparse import OptionParser
+
+from .base import Component, getBehavior, newFromBehavior, readOne
+
+"""
+Compare VTODOs and VEVENTs in two iCalendar sources.
+"""
 
 def getSortKey(component):
     def getUID(component):
@@ -165,28 +172,23 @@ def diff(left, right):
 
 def prettyDiff(leftObj, rightObj):
     for left, right in diff(leftObj, rightObj):
-        print "<<<<<<<<<<<<<<<"
+        print("<<<<<<<<<<<<<<<")
         if left is not None:
             left.prettyPrint()
-        print "==============="
+        print("===============")
         if right is not None:
             right.prettyPrint()
-        print ">>>>>>>>>>>>>>>"
+        print(">>>>>>>>>>>>>>>")
         print
 
-
-from optparse import OptionParser
-import icalendar, base
-import os
-import codecs
 
 def main():
     options, args = getOptions()
     if args:
         ignore_dtstamp = options.ignore
         ics_file1, ics_file2 = args
-        cal1 = base.readOne(file(ics_file1))
-        cal2 = base.readOne(file(ics_file2))
+        cal1 = readOne(file(ics_file1))
+        cal2 = readOne(file(ics_file2))
         deleteExtraneous(cal1, ignore_dtstamp=ignore_dtstamp)
         deleteExtraneous(cal2, ignore_dtstamp=ignore_dtstamp)
         prettyDiff(cal1, cal2)
@@ -205,9 +207,9 @@ def getOptions():
 
     (cmdline_options, args) = parser.parse_args()
     if len(args) < 2:
-        print "error: too few arguments given"
+        print("error: too few arguments given")
         print
-        print parser.format_help()
+        print(parser.format_help())
         return False, False
 
     return cmdline_options, args
@@ -216,4 +218,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print "Aborted"
+        print("Aborted")

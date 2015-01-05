@@ -33,12 +33,12 @@ SPACE  = ' '
 TAB    = '\t'
 SPACEORTAB = SPACE + TAB
 
-
 #--------------------------------- Main classes --------------------------------
 
 
 class VBase(object):
-    """Base class for ContentLine and Component.
+    """
+    Base class for ContentLine and Component.
 
     @ivar behavior:
         The Behavior class associated with this object, which controls
@@ -1143,7 +1143,3 @@ def backslashEscape(s):
     s = s.replace("\\","\\\\").replace(";","\;").replace(",","\,")
     return s.replace("\r\n", "\\n").replace("\n","\\n").replace("\r","\\n")
 
-#------------------- Testing and running functions -----------------------------
-if __name__ == '__main__':
-    import tests
-    tests._test()

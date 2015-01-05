@@ -3,7 +3,7 @@ from __future__ import print_function
 import datetime
 import unittest
 
-from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents
+from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents, readOne
 from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString
 
 twoHours  = datetime.timedelta(hours=2)
@@ -62,6 +62,23 @@ class TestVobject(unittest.TestCase):
         self.assertEqual(
             parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
             [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
+        )
+
+
+class testGeneralFileParsing(unittest.TestCase):
+    """
+    General tests for parsing ics files.
+    """
+    def test_silly_ics(self):
+        cal = get_test_file("silly_test.ics")
+        silly = readOne(cal, findBegin=False)
+        self.assertEqual(
+            str(silly),
+            "<SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>"
+        )
+        self.assertEqual(
+            str(silly.stuff),
+            "<STUFF{}foldedline>"
         )
 
 

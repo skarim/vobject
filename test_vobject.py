@@ -13,7 +13,7 @@ def additional_tests():
 
     flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE | doctest.ELLIPSIS
     suite = unittest.TestSuite()
-    for module in base, test_vobject, icalendar, vobject, vcard:
+    for module in test_vobject, icalendar, vobject, vcard:
         suite.addTest(doctest.DocTestSuite(module, optionflags=flags))
 
     suite.addTest(doctest.DocFileSuite(
@@ -26,15 +26,6 @@ if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
 
-
-testSilly="""
-sillyname:name
-profile:sillyprofile
-stuff:folded
- line
-""" + "morestuff;asinine:this line is not folded, \
-but in practice probably ought to be, as it is exceptionally long, \
-and moreover demonstratively stupid"
 
 icaltest=r"""BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
@@ -296,18 +287,6 @@ END:VTIMEZONE
 
 __test__ = { "Test readOne" :
     r"""
-    >>> import datetime
-    >>> from six import StringIO
-    >>> silly = base.readOne(testSilly, findBegin=False)
-    >>> silly
-    <SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>
-    >>> silly.stuff
-    <STUFF{}foldedline>
-    >>> original = silly.serialize()
-    >>> f3 = StringIO(original)
-    >>> silly2 = base.readOne(f3)
-    >>> silly2.serialize()==original
-    True
     >>> s3 = StringIO('cn:Babs Jensen\r\ncn:Barbara J Jensen\r\nsn:Jensen\r\nemail:babs@umich.edu\r\nphone:+1 313 747-4454\r\nx-id:1234567890\r\n')
     >>> ex1 = base.readOne(s3, findBegin=False)
     >>> ex1
