@@ -5,7 +5,8 @@ import dateutil
 import unittest
 
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents, readOne
-from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString, stringToTextValues
+from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString
+from vobject.icalendar import stringToTextValues, stringToPeriod
 
 twoHours  = datetime.timedelta(hours=2)
 
@@ -126,12 +127,9 @@ class testGeneralFileParsing(unittest.TestCase):
         "Parsing tests" :
 
         >>> parseRDate = icalendar.MultiDateBehavior.transformToNative
-        >>> icalendar.stringToTextValues('')
-        ['']
-        >>> icalendar.stringToTextValues('abcd,efgh')
 
-        >>> icalendar.stringToPeriod("19970101T180000Z/19970102T070000Z")
-        (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))
+
+        >>>
         >>> icalendar.stringToPeriod("19970101T180000Z/PT1H")
         (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 3600))
         >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))
@@ -155,6 +153,13 @@ class testIcalendar(unittest.TestCase):
             stringToTextValues('abcd,efgh'),
             ['abcd', 'efgh']
         )
+    def test_stringToPeriod(self):
+        self.assertEqual(
+            stringToPeriod("19970101T180000Z/19970102T070000Z"),
+            [(datetime.datetime(1997, 1, 1, 18, 0, tzinfo=dateutil.tz.tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=dateutil.tz.tzutc()))]
+        )
+
+
 
     def test_timedeltaToString(self):
         self.assertEqual(
