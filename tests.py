@@ -162,11 +162,11 @@ class testIcalendar(unittest.TestCase):
     def test_MultiDateBehavior(self):
         parseRDate = MultiDateBehavior.transformToNative
         self.assertEqual(
-            parseRDate(textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904")),
+            str(parseRDate(textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))),
             "<RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>"
         )
         self.assertEqual(
-            parseRDate(textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H")),
+            str(parseRDate(textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))),
             "<RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>"
         )
 
