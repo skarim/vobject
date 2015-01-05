@@ -7,8 +7,8 @@ import unittest
 from dateutil.tz import tzutc
 
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents, readOne
-from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString
-from vobject.icalendar import stringToTextValues, stringToPeriod
+from vobject.icalendar import MultiDateBehavior, PeriodBehavior, RecurringComponent, utc
+from vobject.icalendar import stringToTextValues, stringToPeriod, timedeltaToString
 
 twoHours  = datetime.timedelta(hours=2)
 
@@ -123,24 +123,6 @@ class testGeneralFileParsing(unittest.TestCase):
         )
 
 
-
-        """
-
-        "Parsing tests" :
-
-        >>> parseRDate = icalendar.MultiDateBehavior.transformToNative
-
-
-        >>>
-        >>> icalendar.stringToPeriod("19970101T180000Z/PT1H")
-        (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 3600))
-        >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))
-        <RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>
-        >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))
-        <RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>
-        """
-
-
 class testIcalendar(unittest.TestCase):
     """
     Tests for icalendar.py
@@ -160,8 +142,10 @@ class testIcalendar(unittest.TestCase):
             stringToPeriod("19970101T180000Z/19970102T070000Z"),
             (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))
         )
-
-
+        self.assertEqual(
+            stringToPeriod("19970101T180000Z/PT1H")
+            (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 3600))
+        )
 
     def test_timedeltaToString(self):
         self.assertEqual(
@@ -172,6 +156,20 @@ class testIcalendar(unittest.TestCase):
             timedeltaToString(datetime.timedelta(minutes=20)),
             'PT20M'
         )
+
+    def test_MultiDateBehavior(self):
+        parseRDate = MultiDateBehavior.transformToNative
+        self.assertEqual(
+            parseRDate(base.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904")),
+            "<RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>"
+        )
+        self.assertEqual(
+            parseRDate(base.textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H")),
+            "<RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>"
+        )
+
+
+
     def test_periodBehavior(self):
         line = ContentLine('test', [], '', isNative=True)
         line.behavior = PeriodBehavior
@@ -192,7 +190,6 @@ class testIcalendar(unittest.TestCase):
             line.serialize().strip(),
             'TEST:20060216T100000/PT2H,20060516T100000/PT2H'
         )
-
 
     def test_freeBusy(self):
         test_cal = get_test_file("freebusy.ics")
