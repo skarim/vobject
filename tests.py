@@ -5,7 +5,7 @@ import dateutil
 import unittest
 
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents, readOne
-from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString
+from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString, stringToTextValues
 
 twoHours  = datetime.timedelta(hours=2)
 
@@ -118,10 +118,9 @@ class testGeneralFileParsing(unittest.TestCase):
             "<RRULE{}FREQ=Weekly;COUNT=10>"
         )
 
+
+
         """
-        >>>
-        >>> vevent = c.vevent.transformFromNative()
-        >>> vevent.rrule
 
 
         "Parsing tests" :
@@ -130,7 +129,7 @@ class testGeneralFileParsing(unittest.TestCase):
         >>> icalendar.stringToTextValues('')
         ['']
         >>> icalendar.stringToTextValues('abcd,efgh')
-        ['abcd', 'efgh']
+
         >>> icalendar.stringToPeriod("19970101T180000Z/19970102T070000Z")
         (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))
         >>> icalendar.stringToPeriod("19970101T180000Z/PT1H")
@@ -146,6 +145,16 @@ class testIcalendar(unittest.TestCase):
     """
     Tests for icalendar.py
     """
+
+    def test_stringToTextValues(self):
+        self.assertEqual(
+            stringToTextValues(''),
+            ['']
+        )
+        self.assertEqual(
+            stringToTextValues('abcd,efgh'),
+            ['abcd', 'efgh']
+        )
 
     def test_timedeltaToString(self):
         self.assertEqual(
