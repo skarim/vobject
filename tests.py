@@ -94,7 +94,7 @@ class testGeneralFileParsing(unittest.TestCase):
             "2002-10-28 14:00:00-08:00"
         )
         self.assertEqual(
-            type(c.vevent.dtstart.value),
+            str(type(c.vevent.dtstart.value)),
             "datetime.datetime"
         )
         self.assertEqual(
@@ -102,7 +102,7 @@ class testGeneralFileParsing(unittest.TestCase):
             datetime.datetime(2002, 10, 28, 15, 0, tzinfo=dateutil.tz.tzutc())
         )
         self.assertEqual(
-            type(c.vevent.dtend.value),
+            str(type(c.vevent.dtend.value)),
             "datetime.datetime"
         )
         self.assertEqual(
