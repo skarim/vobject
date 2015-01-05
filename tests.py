@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import datetime
+import dateutil
 import unittest
 
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents, readOne
@@ -69,7 +70,7 @@ class testGeneralFileParsing(unittest.TestCase):
     """
     General tests for parsing ics files.
     """
-    def test_silly_ics(self):
+    def test_readOne(self):
         cal = get_test_file("silly_test.ics")
         silly = readOne(cal, findBegin=False)
         self.assertEqual(
@@ -80,6 +81,57 @@ class testGeneralFileParsing(unittest.TestCase):
             str(silly.stuff),
             "<STUFF{}foldedline>"
         )
+
+    def test_importing(self):
+        cal = get_test_file("standard_test.ics")
+        c = readOne(cal, validate=True)
+        self.assertEqual(
+            str(c.vevent.valarm.trigger),
+            "<TRIGGER{}-1 day, 0:00:00>"
+        )
+        self.assertEqual(
+            c.vevent.dtstart.value,
+            datetime.datetime(2002, 10, 28, 14, 0)
+        )
+        self.assertEqual(
+            c.vevent.dtend.value,
+            datetime.datetime(2002, 10, 28, 15, 0)
+        )
+        self.assertEqual(
+            c.vevent.dtstamp.value,
+            datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=dateutil.tz.tzutc())
+        )
+
+
+
+        """
+        >>> c.vevent.dtstamp.value
+        datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
+        >>> c.vevent.valarm.description.value
+        u'Event reminder, with comma\nand line feed'
+        >>> c.vevent.valarm.description.serialize()
+        'DESCRIPTION:Event reminder\\, with comma\\nand line feed\r\n'
+        >>> vevent = c.vevent.transformFromNative()
+        >>> vevent.rrule
+        <RRULE{}FREQ=Weekly;COUNT=10>
+
+
+        "Parsing tests" :
+
+        >>> parseRDate = icalendar.MultiDateBehavior.transformToNative
+        >>> icalendar.stringToTextValues('')
+        ['']
+        >>> icalendar.stringToTextValues('abcd,efgh')
+        ['abcd', 'efgh']
+        >>> icalendar.stringToPeriod("19970101T180000Z/19970102T070000Z")
+        (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))
+        >>> icalendar.stringToPeriod("19970101T180000Z/PT1H")
+        (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.timedelta(0, 3600))
+        >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))
+        <RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>
+        >>> parseRDate(base.textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))
+        <RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>
+        """
 
 
 class testIcalendar(unittest.TestCase):
