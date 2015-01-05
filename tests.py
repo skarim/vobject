@@ -4,11 +4,14 @@ import datetime
 import dateutil
 import unittest
 
+from dateutil.tz import tzutc
+
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, readComponents, readOne
 from vobject.icalendar import PeriodBehavior, RecurringComponent, utc, timedeltaToString
 from vobject.icalendar import stringToTextValues, stringToPeriod
 
 twoHours  = datetime.timedelta(hours=2)
+
 
 def get_test_file(path):
     """
@@ -110,7 +113,7 @@ class testGeneralFileParsing(unittest.TestCase):
         #)
         #self.assertEqual(
         #    c.vevent.dtstamp.value,
-        #    datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=dateutil.tz.tzutc())
+        #    datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
         #)
 
         vevent = c.vevent.transformFromNative()
@@ -122,7 +125,6 @@ class testGeneralFileParsing(unittest.TestCase):
 
 
         """
-
 
         "Parsing tests" :
 
@@ -156,7 +158,7 @@ class testIcalendar(unittest.TestCase):
     def test_stringToPeriod(self):
         self.assertEqual(
             stringToPeriod("19970101T180000Z/19970102T070000Z"),
-            [(datetime.datetime(1997, 1, 1, 18, 0, tzinfo=dateutil.tz.tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=dateutil.tz.tzutc()))]
+            [(datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()), datetime.datetime(1997, 1, 2, 7, 0, tzinfo=tzutc()))]
         )
 
 
