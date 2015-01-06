@@ -147,7 +147,6 @@ END:VEVENT
 END:VCALENDAR"""
 
 timezones = r"""
-
 BEGIN:VTIMEZONE
 TZID:US/Pacific
 BEGIN:STANDARD
@@ -288,44 +287,6 @@ __test__ = { "Test readOne" :
     >>> summary = vevent.summary.value
     >>> test = str(vevent.serialize()),
     """,
-
-    # make sure date valued UNTILs in rrules are in a reasonable timezone,
-    # and include that day (12/28 in this test)
-    "recurrence test" :
-    r"""
-    >>> from pkg_resources import resource_stream
-    >>> f = resource_stream(__name__, 'test_files/recurrence.ics')
-    >>> cal = base.readOne(f)
-    >>> dates = list(cal.vevent.rruleset)
-    >>> dates[0]
-    datetime.datetime(2006, 1, 26, 23, 0, tzinfo=tzutc())
-    >>> dates[1]
-    datetime.datetime(2006, 2, 23, 23, 0, tzinfo=tzutc())
-    >>> dates[-1]
-    datetime.datetime(2006, 12, 28, 23, 0, tzinfo=tzutc())
-    """,
-
-
-    "regular expression test" :
-    """
-    >>> import re
-    >>> re.findall(base.patterns['name'], '12foo-bar:yay')
-    ['12foo-bar', 'yay']
-    >>> re.findall(base.patterns['safe_char'], 'a;b"*,cd')
-    ['a', 'b', '*', 'c', 'd']
-    >>> re.findall(base.patterns['qsafe_char'], 'a;b"*,cd')
-    ['a', ';', 'b', '*', ',', 'c', 'd']
-    >>> re.findall(base.patterns['param_value'], '"quoted";not-quoted;start"after-illegal-quote', re.VERBOSE)
-    ['"quoted"', '', 'not-quoted', '', 'start', '', 'after-illegal-quote', '']
-    >>> match = base.line_re.match('TEST;ALTREP="http://www.wiz.org":value:;"')
-    >>> match.group('value')
-    'value:;"'
-    >>> match.group('name')
-    'TEST'
-    >>> match.group('params')
-    ';ALTREP="http://www.wiz.org"'
-    """,
-
     "VTIMEZONE creation test:" :
 
     """

@@ -2,10 +2,12 @@ from __future__ import print_function
 
 import datetime
 import dateutil
+import re
 import unittest
 
 from dateutil.tz import tzutc
 
+from vobject import base
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError
 from vobject.base import readComponents, readOne, textLineToContentLine
 
@@ -257,9 +259,39 @@ class testIcalendar(unittest.TestCase):
         #)
         # END PY3 PROBLEM!!!!!!!!!!!!!!
 
+    def test_regexes(self):
+        self.assertEqual(
+            re.findall(base.patterns['name'], '12foo-bar:yay'),
+            ['12foo-bar', 'yay']
+        )
+        self.assertEqual(
+            re.findall(base.patterns['safe_char'], 'a;b"*,cd'),
+            ['a', ';', 'b', '*', ',', 'c', 'd']
+        )
+        self.assertEqual(
+            re.findall(base.patterns['param_value'], '"quoted";not-quoted;start"after-illegal-quote', re.VERBOSE),
+            ['"quoted"', '', 'not-quoted', '', 'start', '', 'after-illegal-quote', '']
+        )
+        match = base.line_re.match('TEST;ALTREP="http://www.wiz.org":value:;"')
+        self.assertEqual(
+            match.group('value'),
+            'value:;"'
+        )
+        self.assertEqual(
+            match.group('name'),
+            'TEST'
+        )
+        self.assertEqual(
+            match.group('params'),
+            ';ALTREP="http://www.wiz.org"'
+        )
+
     def test_recurrence(self):
         # PY3 PROBLEM!!!!!!!!!!!!!!
         # strings mean vevent is not what is expected, and can't get a rruleset.
+
+        # Ensure date valued UNTILs in rrules are in a reasonable timezone,
+        # and include that day (12/28 in this test)
         """
         test_file = get_test_file("recurrence.ics")
         cal = readOne(test_file, findBegin=False)
