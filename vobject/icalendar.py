@@ -1467,10 +1467,10 @@ registerBehavior(MultiDateBehavior, 'EXDATE')
 textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
             'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
             'UID', 'ACTION', 'BUSYTYPE']
-map(lambda x: registerBehavior(TextBehavior, x), textList)
+list(map(lambda x: registerBehavior(TextBehavior, x), textList))
 
 multiTextList = ['CATEGORIES', 'RESOURCES']
-map(lambda x: registerBehavior(MultiTextBehavior, x), multiTextList)
+list(map(lambda x: registerBehavior(MultiTextBehavior, x), multiTextList))
 registerBehavior(SemicolonMultiTextBehavior, 'REQUEST-STATUS')
 
 
