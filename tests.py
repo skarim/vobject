@@ -12,7 +12,7 @@ from vobject import icalendar
 
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, VObjectError
-from vobject.base import readComponents, readOne, textLineToContentLine
+from vobject.base import readComponents, textLineToContentLine
 
 from vobject.icalendar import MultiDateBehavior, PeriodBehavior, RecurringComponent, utc
 from vobject.icalendar import parseDtstart, stringToTextValues, stringToPeriod, timedeltaToString
@@ -50,6 +50,17 @@ class TestCalendarSerializing(unittest.TestCase):
         #    test_cal
         #)
 
+    def test_unicode(self):
+        test_cal = get_test_file("utf8_test.ics")
+        vevent = base.readOne(test_cal).vevent
+        print("vevent.summary.value", vevent.summary.value)
+        """
+        >>> vevent.summary.value
+        u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
+        >>> summary = vevent.summary.value
+        >>> test = str(vevent.serialize()),
+        """
+
 class TestBehaviors(unittest.TestCase):
     def test_general_behavior(self):
         """
@@ -77,9 +88,6 @@ class TestBehaviors(unittest.TestCase):
         # test for ContentLine (not a component)
         non_component_behavior = base.getBehavior('RDATE')
         self.assertFalse(non_component_behavior.isComponent)
-        print('contentline?', non_component_behavior.__class__.__name__)
-        print('isinstance?', isinstance(non_component_behavior, icalendar.MultiDateBehavior))
-
 
     def test_MultiDateBehavior(self):
         parseRDate = MultiDateBehavior.transformToNative
@@ -158,7 +166,7 @@ class TestGeneralFileParsing(unittest.TestCase):
     """
     def test_readOne(self):
         cal = get_test_file("silly_test.ics")
-        silly = readOne(cal, findBegin=False)
+        silly = base.readOne(cal, findBegin=False)
         self.assertEqual(
             str(silly),
             "<SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>"
@@ -170,7 +178,7 @@ class TestGeneralFileParsing(unittest.TestCase):
 
     def test_importing(self):
         cal = get_test_file("standard_test.ics")
-        c = readOne(cal, validate=True)
+        c = base.readOne(cal, validate=True)
         self.assertEqual(
             str(c.vevent.valarm.trigger),
             "<TRIGGER{}-1 day, 0:00:00>"
@@ -208,13 +216,13 @@ class TestGeneralFileParsing(unittest.TestCase):
 
     def test_bad_stream(self):
         cal = get_test_file("badstream.ics")
-        self.assertRaises(ParseError, readOne, cal)
+        self.assertRaises(ParseError, base.readOne, cal)
 
     def test_bad_line(self):
         cal = get_test_file("badline.ics")
         #self.assertRaises(ParseError, readOne, cal)
 
-        newcal = readOne(cal, ignoreUnreadable=True)
+        newcal = base.readOne(cal, ignoreUnreadable=True)
         self.assertEqual(
             str(newcal.vevent.x_bad_underscore),
             '<X-BAD-UNDERSCORE{}TRUE>'
@@ -359,7 +367,7 @@ class TestIcalendar(unittest.TestCase):
         # and include that day (12/28 in this test)
         """
         test_file = get_test_file("recurrence.ics")
-        cal = readOne(test_file, findBegin=False)
+        cal = base.readOne(test_file, findBegin=False)
         dates = list(cal.vevent.getrruleset())
         self.assertEqual(
             dates[0],

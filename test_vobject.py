@@ -167,7 +167,6 @@ __test__ = { "Test readOne" :
     datetime.datetime(2002, 10, 28, 12, 0, tzinfo=tzutc())
     """,
 
-
     "VTIMEZONE creation test:" :
 
     """
