@@ -81,8 +81,10 @@ class TestVobject(unittest.TestCase):
             base.getBehavior("invalid_name"),
             None
         )
-        newbehavior = base.getBehavior('RDATE')
-        print('iscomponent?', newbehavior.isComponent)
+        # test for not components
+        non_component_behavior = base.getBehavior('RDATE')
+        self.assertFalse(non_component_behavior.isComponent)
+        print('contentline?', non_component_behavior.__class__.__name__)
 
         """
         #def getBehavior(name, id=None):
