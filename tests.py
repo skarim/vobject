@@ -68,7 +68,7 @@ class TestVobject(unittest.TestCase):
         )
         # test get_behavior
         behavior = base.getBehavior('VFREEBUSY')
-        print type(behavior)
+        print(type(behavior))
         self.assertTrue(
             isinstance(behavior, icalendar.VFreeBusy)
         )
