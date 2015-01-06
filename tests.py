@@ -46,10 +46,10 @@ class TestCalendarSerializing(unittest.TestCase):
         cal.vevent.add('uid').value = "Not very random UID"
 
         # has a date problem
-        #self.assertEqual(
-        #    cal.serialize(),
-        #    test_cal
-        #)
+        self.assertEqual(
+            cal.serialize(),
+            test_cal
+        )
 
     def test_unicode(self):
         test_cal = get_test_file("utf8_test.ics")
