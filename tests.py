@@ -125,8 +125,6 @@ class testGeneralFileParsing(unittest.TestCase):
         self.assertRaises(ParseError, readOne, cal)
 
         newcal = readOne(cal, ignoreUnreadable=True)
-        self.assertRaises(AttributeError, newcal.vevent, 'x_bad_slash')
-
         self.assertEqual(
             str(newcal.vevent.x_bad_underscore),
             '<X-BAD-UNDERSCORE{}TRUE>'
