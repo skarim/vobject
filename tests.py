@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 
 import datetime
@@ -56,7 +57,7 @@ class TestCalendarSerializing(unittest.TestCase):
 
         self.assertEqual(
             vevent.summary.value,
-            'こんにちはキティ'
+            'The title こんにちはキティ'
         )
 
 
