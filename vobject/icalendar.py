@@ -1309,7 +1309,6 @@ class Available(RecurringBehavior):
             return False
         else:
             return super(Available, cls).validate(obj, raiseException, *args)
-
 registerBehavior(Available)
 
 

@@ -54,6 +54,39 @@ class TestVobject(unittest.TestCase):
     def setUpClass(cls):
         cls.simple_test_cal = get_test_file("simple_test.ics")
 
+    def test_newFromBehavior(self):
+        """
+        Given a name, should return a valid ContentLine or Component.
+        """
+        #first, test get_behavior
+        def getBehavior(name, id=None):
+            """
+            Should return a matching behavior if it exists, or None.
+            """
+            print(base.__behaviorRegistry)
+            """
+            name=name.upper()
+            if name in __behaviorRegistry:
+                if id:
+                    for n, behavior in __behaviorRegistry[name]:
+                        if n==id:
+                            return behavior
+
+                return __behaviorRegistry[name][0][1]
+            return None
+
+            behavior = getBehavior(name, id)
+            if behavior is None:
+                raise VObjectError("No behavior found named %s" % name)
+            if behavior.isComponent:
+                obj = Component(name)
+            else:
+                obj = ContentLine(name, [], '')
+            obj.behavior = behavior
+            obj.isNative = False
+            return obj
+            """
+
     def test_readComponents(self):
         cal = next(readComponents(self.simple_test_cal))
 

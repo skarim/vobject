@@ -1125,7 +1125,9 @@ def getBehavior(name, id=None):
     return None
 
 def newFromBehavior(name, id=None):
-    """Given a name, return a behaviored ContentLine or Component."""
+    """
+    Given a name, return a behaviored ContentLine or Component.
+    """
     name = name.upper()
     behavior = getBehavior(name, id)
     if behavior is None:
