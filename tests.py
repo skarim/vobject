@@ -52,6 +52,7 @@ class TestCalendarSerializing(unittest.TestCase):
 
 
 class TestVobject(unittest.TestCase):
+    maxDiff = None
 
     @classmethod
     def setUpClass(cls):
