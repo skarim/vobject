@@ -260,8 +260,7 @@ class testIcalendar(unittest.TestCase):
     def test_recurrence(self):
         test_file = get_test_file("recurrence.ics")
         cal = readOne(test_file, findBegin=False)
-        print('cal.vevent', cal.vevent)
-        dates = list(cal.vevent.rruleset)
+        dates = list(cal.vevent.getrruleset())
         self.assertEqual(
             dates[0],
             datetime.datetime(2006, 1, 26, 23, 0, tzinfo=tzutc())
