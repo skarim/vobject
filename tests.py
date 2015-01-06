@@ -183,10 +183,7 @@ class TestGeneralFileParsing(unittest.TestCase):
             str(c.vevent.valarm.trigger),
             "<TRIGGER{}-1 day, 0:00:00>"
         )
-        # PY3 PROBLEM!!!!!!!!!!!!!!
-        # py3 is returning value as a string, not a datetime.
-        # ToDo: figure out why, because it kills this whole block of tests.
-        # The same bug also breaks test_freeBusy below.
+
         self.assertEqual(
             str(c.vevent.dtstart.value),
             "2002-10-28 14:00:00-08:00"
@@ -201,11 +198,10 @@ class TestGeneralFileParsing(unittest.TestCase):
         self.assertTrue(
             isinstance(c.vevent.dtend.value, datetime.datetime)
         )
-        #self.assertEqual(
-        #    c.vevent.dtstamp.value,
-        #    datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
-        #)
-        # END PY3 PROBLEM!!!!!!!!!!!!!!
+        self.assertEqual(
+            c.vevent.dtstamp.value,
+            datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
+        )
 
         vevent = c.vevent.transformFromNative()
         self.assertEqual(
