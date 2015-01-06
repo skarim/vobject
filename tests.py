@@ -28,9 +28,25 @@ def get_test_file(path):
     return text
 
 
+class TestCalendarSerializing(unittest.TestCase):
+    def test_scratchbuild(self):
+        "CreateCalendar 2.0 format from scratch"
+        test_cal = get_test_file("simple_2_0_test.ics")
+        cal = base.newFromBehavior('vcalendar', '2.0')
+        cal.add('vevent')
+        cal.vevent.add('dtstart').value = datetime.datetime(2006, 5, 9)
+        cal.vevent.add('description').value = "Test event"
+        cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=dateutil.tz.tzical().get('US/Pacific'))
+        cal.vevent.add('uid').value = "Not very random UID"
+        self.assertEqual(
+            cal.serialize(),
+            test_cal
+        )
+
+
 class TestVobject(unittest.TestCase):
 
-    def setUp(self):
+    def setupClass(self):
         self.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
@@ -64,7 +80,7 @@ class TestVobject(unittest.TestCase):
         self.assertRaises(ParseError, parseLine, ":")
 
 
-class testGeneralFileParsing(unittest.TestCase):
+class TestGeneralFileParsing(unittest.TestCase):
     """
     General tests for parsing ics files.
     """
@@ -144,7 +160,7 @@ class testGeneralFileParsing(unittest.TestCase):
         )
 
 
-class testIcalendar(unittest.TestCase):
+class TestIcalendar(unittest.TestCase):
     """
     Tests for icalendar.py
     """
