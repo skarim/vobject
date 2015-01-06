@@ -282,6 +282,10 @@ class TestIcalendar(unittest.TestCase):
         )
         self.assertEqual(
             re.findall(base.patterns['safe_char'], 'a;b"*,cd'),
+            ['a', 'b', '*', 'c', 'd']
+        )
+        self.assertEqual(
+            re.findall(base.patterns['qsafe_char'], 'a;b"*,cd'),
             ['a', ';', 'b', '*', ',', 'c', 'd']
         )
         self.assertEqual(
