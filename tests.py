@@ -45,10 +45,10 @@ class TestCalendarSerializing(unittest.TestCase):
         cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=dateutil.tz.tzical("test_files/timezones.ics").get('US/Pacific'))
         cal.vevent.add('uid').value = "Not very random UID"
 
-        # has a date problem
+        # Note we're normalizing line endings, because no one got time for that.
         self.assertEqual(
-            cal.serialize(),
-            test_cal
+            cal.serialize().replace('\r\n', '\n'),
+            test_cal.replace('\r\n', '\n')
         )
 
     def test_unicode(self):
