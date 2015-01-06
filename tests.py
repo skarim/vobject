@@ -352,7 +352,6 @@ class TestIcalendar(unittest.TestCase):
 
         # Ensure date valued UNTILs in rrules are in a reasonable timezone,
         # and include that day (12/28 in this test)
-        """
         test_file = get_test_file("recurrence.ics")
         cal = base.readOne(test_file, findBegin=False)
         dates = list(cal.vevent.getrruleset())
@@ -368,7 +367,6 @@ class TestIcalendar(unittest.TestCase):
             dates[-1],
             datetime.datetime(2006, 12, 28, 23, 0, tzinfo=tzutc())
         )
-        """
 
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')
