@@ -71,15 +71,18 @@ class TestVobject(unittest.TestCase):
 
         # test get_behavior
         behavior = base.getBehavior('VCALENDAR')
-        print('is component', behavior.isComponent)
         self.assertEqual(
             str(behavior),
             "<class 'vobject.icalendar.VCalendar2_0'>"
         )
+        self.assertTrue(behavior.isComponent)
+
         self.assertEqual(
             base.getBehavior("invalid_name"),
             None
         )
+        newbehavior = base.getBehavior('RDATE')
+        print('iscomponent?', newbehavior.isComponent)
 
         """
         #def getBehavior(name, id=None):
