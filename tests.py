@@ -63,7 +63,7 @@ class TestVobject(unittest.TestCase):
         """
         # Check expected behavior registry.
         self.assertEqual(
-            behavior_registry.keys(),
+            sorted(behavior_registry).keys(),
             ['', 'REQUEST-STATUS', 'RELATED-TO', 'LAST-MODIFIED', 'CONTACT', 'DURATION', 'PRODID', 'AVAILABLE', 'CATEGORIES', 'VTODO', 'UID', 'COMPLETED', 'VEVENT', 'VJOURNAL', 'RDATE', 'EXDATE', 'BUSYTYPE', 'ACTION', 'METHOD', 'LOCATION', 'STATUS', 'COMMENT', 'VCALENDAR', 'VFREEBUSY', 'CREATED', 'RECURRENCE-ID', 'VTIMEZONE', 'TRANSP', 'DUE', 'STANDARD', 'DAYLIGHT', 'TRIGGER', 'SUMMARY', 'VAVAILABILITY', 'RESOURCES', 'FREEBUSY', 'DTSTAMP', 'VALARM', 'DESCRIPTION', 'CLASS', 'RRULE', 'EXRULE', 'DTEND', 'DTSTART', 'CALSCALE']
         )
         # test get_behavior
