@@ -191,10 +191,9 @@ class TestGeneralFileParsing(unittest.TestCase):
             str(c.vevent.dtstart.value),
             "2002-10-28 14:00:00-08:00"
         )
-
-        #self.assertTrue(
-        #    isinstance(c.vevent.dtstart.value, datetime.datetime)
-        #)
+        self.assertTrue(
+            isinstance(c.vevent.dtstart.value, datetime.datetime)
+        )
         #self.assertEqual(
         #    str(c.vevent.dtend.value),
         #    "2002-10-28"
