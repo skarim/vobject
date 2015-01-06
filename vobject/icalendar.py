@@ -155,7 +155,7 @@ class TimezoneComponent(Component):
         working   = {'daylight' : None, 'standard' : None}
 
         # rule may be based on the nth week of the month or the nth from the last
-        for year in xrange(start, end + 1):
+        for year in range(start, end + 1):
             newyear = datetime.datetime(year, 1, 1)
             for transitionTo in 'daylight', 'standard':
                 transition = getTransition(transitionTo, year, tzinfo)
@@ -305,7 +305,7 @@ class TimezoneComponent(Component):
         else:
             # return tzname for standard (non-DST) time
             notDST = datetime.timedelta(0)
-            for month in xrange(1,13):
+            for month in range(1, 13):
                 dt = datetime.datetime(2000, month, 1)
                 if tzinfo.dst(dt) == notDST:
                     return toUnicode(tzinfo.tzname(dt))
@@ -1899,7 +1899,7 @@ def tzinfo_eq(tzinfo1, tzinfo2, startYear = 2000, endYear=2020):
 
     if not dt_test(datetime.datetime(startYear, 1, 1)):
         return False
-    for year in xrange(startYear, endYear):
+    for year in range(startYear, endYear):
         for transitionTo in 'daylight', 'standard':
             t1=getTransition(transitionTo, year, tzinfo1)
             t2=getTransition(transitionTo, year, tzinfo2)
