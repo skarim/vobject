@@ -74,6 +74,7 @@ class TestVobject(unittest.TestCase):
             str(behavior),
             "<class 'vobject.icalendar.VCalendar2_0'>"
         )
+        print('invalid:', base.getBehavior("invalid_name"))
         self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
 
 
