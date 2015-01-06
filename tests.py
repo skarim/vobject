@@ -9,7 +9,7 @@ from dateutil.tz import tzutc
 
 from vobject import base
 from vobject.base import __behaviorRegistry as behavior_registry
-from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError
+from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, VObjectError
 from vobject.base import readComponents, readOne, textLineToContentLine
 
 from vobject.icalendar import MultiDateBehavior, PeriodBehavior, RecurringComponent, utc
@@ -60,7 +60,19 @@ class TestVobject(unittest.TestCase):
         Given a name, should return a valid ContentLine or Component.
         """
         #first, test get_behavior
-        print('__behaviorRegistry', behavior_registry.keys())
+        self.assertEqual(
+            behavior_registry.keys(),
+            ['', 'REQUEST-STATUS', 'RELATED-TO', 'LAST-MODIFIED', 'CONTACT', 'DURATION', 'PRODID', 'AVAILABLE', 'CATEGORIES', 'VTODO', 'UID', 'COMPLETED', 'VEVENT', 'VJOURNAL', 'RDATE', 'EXDATE', 'BUSYTYPE', 'ACTION', 'METHOD', 'LOCATION', 'STATUS', 'COMMENT', 'VCALENDAR', 'VFREEBUSY', 'CREATED', 'RECURRENCE-ID', 'VTIMEZONE', 'TRANSP', 'DUE', 'STANDARD', 'DAYLIGHT', 'TRIGGER', 'SUMMARY', 'VAVAILABILITY', 'RESOURCES', 'FREEBUSY', 'DTSTAMP', 'VALARM', 'DESCRIPTION', 'CLASS', 'RRULE', 'EXRULE', 'DTEND', 'DTSTART', 'CALSCALE']
+        )
+        self.assertFalse(
+            base.getBehavior('CONTACT'),
+            None
+        )
+        self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
+
+
+        #behavior = getBehavior(name, id)
+
 
         #def getBehavior(name, id=None):
         """
