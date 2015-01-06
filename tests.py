@@ -53,13 +53,12 @@ class TestCalendarSerializing(unittest.TestCase):
     def test_unicode(self):
         test_cal = get_test_file("utf8_test.ics")
         vevent = base.readOne(test_cal).vevent
-        print("vevent.summary.value", vevent.summary.value)
-        """
-        >>> vevent.summary.value
-        u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
-        >>> summary = vevent.summary.value
-        >>> test = str(vevent.serialize()),
-        """
+
+        self.assertEqual(
+            vevent.summary.value,
+            'こんにちはキティ'
+        )
+
 
 class TestBehaviors(unittest.TestCase):
     def test_general_behavior(self):
@@ -219,7 +218,7 @@ class TestGeneralFileParsing(unittest.TestCase):
         self.assertRaises(ParseError, base.readOne, cal)
 
     def test_bad_line(self):
-        cal = get_test_file("badline.ics")
+        cal = get_test_file("")
         #self.assertRaises(ParseError, readOne, cal)
 
         newcal = base.readOne(cal, ignoreUnreadable=True)
