@@ -8,6 +8,8 @@ import unittest
 from dateutil.tz import tzutc
 
 from vobject import base
+from vobject import icalendar
+
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, VObjectError
 from vobject.base import readComponents, readOne, textLineToContentLine
