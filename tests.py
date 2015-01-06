@@ -85,6 +85,7 @@ class TestVobject(unittest.TestCase):
         non_component_behavior = base.getBehavior('RDATE')
         self.assertFalse(non_component_behavior.isComponent)
         print('contentline?', non_component_behavior.__class__.__name__)
+        print('isinstance?', isinstance(non_component_behavior, ContentLine))
 
         """
         #def getBehavior(name, id=None):
