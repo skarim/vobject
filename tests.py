@@ -60,7 +60,7 @@ class TestVobject(unittest.TestCase):
         Given a name, should return a valid ContentLine or Component.
         """
         #first, test get_behavior
-        print('__behaviorRegistry', behavior_registry)
+        print('__behaviorRegistry', behavior_registry.keys())
 
         #def getBehavior(name, id=None):
         """
