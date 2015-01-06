@@ -65,14 +65,14 @@ class TestVobject(unittest.TestCase):
         # Check expected behavior registry.
         self.assertEqual(
             sorted(behavior_registry.keys()),
-            ['', 'ACTION', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FREEBUSY', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']        )
+            ['', 'ACTION', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FREEBUSY', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']
+        )
+
         # test get_behavior
         behavior = base.getBehavior('VCALENDAR')
-        print(behavior.__class__.__name__)
-        print(behavior)
-        print('str', str(behavior))
-        self.assertTrue(
-            isinstance(behavior, icalendar.VCALENDAR)
+        self.assertEqual(
+            str(behavior),
+            "<class 'vobject.icalendar.VCalendar2_0'>"
         )
         self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
 
