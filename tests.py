@@ -29,6 +29,8 @@ def get_test_file(path):
 
 
 class TestCalendarSerializing(unittest.TestCase):
+    maxDiff = None
+
     def test_scratchbuild(self):
         "CreateCalendar 2.0 format from scratch"
         test_cal = get_test_file("simple_2_0_test.ics")
