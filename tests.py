@@ -70,35 +70,19 @@ class TestVobject(unittest.TestCase):
 
         # test get_behavior
         behavior = base.getBehavior('VCALENDAR')
+        print('is component', behavior.isComponent)
         self.assertEqual(
             str(behavior),
             "<class 'vobject.icalendar.VCalendar2_0'>"
         )
-        print('invalid:', base.getBehavior("invalid_name"))
-        self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
+        self.assertEqual(
+            base.getBehavior("invalid_name"),
+            None
+        )
 
-
+        """
         #def getBehavior(name, id=None):
-        """
-        Should return a matching behavior if it exists, or None.
-                Given a name, should return a valid ContentLine or Component.
 
-        """
-
-        """
-        name=name.upper()
-        if name in __behaviorRegistry:
-            if id:
-                for n, behavior in __behaviorRegistry[name]:
-                    if n==id:
-                        return behavior
-
-            return __behaviorRegistry[name][0][1]
-        return None
-
-        behavior = getBehavior(name, id)
-        if behavior is None:
-            raise VObjectError("No behavior found named %s" % name)
         if behavior.isComponent:
             obj = Component(name)
         else:
