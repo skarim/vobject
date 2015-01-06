@@ -167,16 +167,7 @@ __test__ = { "Test readOne" :
     datetime.datetime(2002, 10, 28, 12, 0, tzinfo=tzutc())
     """,
 
-    "unicode test" :
-    r"""
-    >>> from pkg_resources import resource_stream
-    >>> f = resource_stream(__name__, 'test_files/utf8_test.ics')
-    >>> vevent = base.readOne(f).vevent
-    >>> vevent.summary.value
-    u'The title \u3053\u3093\u306b\u3061\u306f\u30ad\u30c6\u30a3'
-    >>> summary = vevent.summary.value
-    >>> test = str(vevent.serialize()),
-    """,
+
     "VTIMEZONE creation test:" :
 
     """

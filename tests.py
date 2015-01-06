@@ -50,24 +50,17 @@ class TestCalendarSerializing(unittest.TestCase):
         #    test_cal
         #)
 
-
-class TestVobject(unittest.TestCase):
-    maxDiff = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.simple_test_cal = get_test_file("simple_test.ics")
-
-    def test_behavior(self):
+class TestBehaviors(unittest.TestCase):
+    def test_general_behavior(self):
         """
         Tests for behavior registry, getting and creating a behavior.
         """
         # Check expected behavior registry.
         # THIS HAS 25 FEWER ITEMS IN PYTHON3???
-        #self.assertEqual(
-        #    sorted(behavior_registry.keys()),
-        #    ['', 'ACTION', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FREEBUSY', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']
-        #)
+        self.assertEqual(
+            sorted(behavior_registry.keys()),
+            ['', 'ACTION', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FREEBUSY', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']
+        )
 
         # test get_behavior
         behavior = base.getBehavior('VCALENDAR')
@@ -81,23 +74,52 @@ class TestVobject(unittest.TestCase):
             base.getBehavior("invalid_name"),
             None
         )
-        # test for not components
+        # test for ContentLine (not a component)
         non_component_behavior = base.getBehavior('RDATE')
         self.assertFalse(non_component_behavior.isComponent)
         print('contentline?', non_component_behavior.__class__.__name__)
-        print('isinstance?', non_component_behavior)
+        print('isinstance?', isinstance(non_component_behavior, icalendar.MultiDateBehavior))
 
-        """
-        #def getBehavior(name, id=None):
 
-        if behavior.isComponent:
-            obj = Component(name)
-        else:
-            obj = ContentLine(name, [], '')
-        obj.behavior = behavior
-        obj.isNative = False
-        return obj
-        """
+    def test_MultiDateBehavior(self):
+        parseRDate = MultiDateBehavior.transformToNative
+        self.assertEqual(
+            str(parseRDate(textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))),
+            "<RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>"
+        )
+        self.assertEqual(
+            str(parseRDate(textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))),
+            "<RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>"
+        )
+
+    def test_periodBehavior(self):
+        line = ContentLine('test', [], '', isNative=True)
+        line.behavior = PeriodBehavior
+        line.value = [(datetime.datetime(2006, 2, 16, 10), twoHours)]
+
+        self.assertEqual(
+            line.transformFromNative().value,
+            '20060216T100000/PT2H'
+        )
+        self.assertEqual(
+            line.transformToNative().value,
+            [(datetime.datetime(2006, 2, 16, 10, 0), datetime.timedelta(0, 7200))]
+        )
+
+        line.value.append((datetime.datetime(2006, 5, 16, 10), twoHours))
+
+        self.assertEqual(
+            line.serialize().strip(),
+            'TEST:20060216T100000/PT2H,20060516T100000/PT2H'
+        )
+
+
+class TestVobject(unittest.TestCase):
+    maxDiff = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
         cal = next(readComponents(self.simple_test_cal))
@@ -198,7 +220,6 @@ class TestGeneralFileParsing(unittest.TestCase):
             '<X-BAD-UNDERSCORE{}TRUE>'
         )
 
-
     def test_parseParams(self):
         self.assertEqual(
             parseParams(';ALTREP="http://www.wiz.org"'),
@@ -250,40 +271,6 @@ class TestIcalendar(unittest.TestCase):
         self.assertEqual(
             timedeltaToString(datetime.timedelta(minutes=20)),
             'PT20M'
-        )
-
-    def test_MultiDateBehavior(self):
-        parseRDate = MultiDateBehavior.transformToNative
-        self.assertEqual(
-            str(parseRDate(textLineToContentLine("RDATE;VALUE=DATE:19970304,19970504,19970704,19970904"))),
-            "<RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>"
-        )
-        self.assertEqual(
-            str(parseRDate(textLineToContentLine("RDATE;VALUE=PERIOD:19960403T020000Z/19960403T040000Z,19960404T010000Z/PT3H"))),
-            "<RDATE{'VALUE': ['PERIOD']}[(datetime.datetime(1996, 4, 3, 2, 0, tzinfo=tzutc()), datetime.datetime(1996, 4, 3, 4, 0, tzinfo=tzutc())), (datetime.datetime(1996, 4, 4, 1, 0, tzinfo=tzutc()), datetime.timedelta(0, 10800))]>"
-        )
-
-
-
-    def test_periodBehavior(self):
-        line = ContentLine('test', [], '', isNative=True)
-        line.behavior = PeriodBehavior
-        line.value = [(datetime.datetime(2006, 2, 16, 10), twoHours)]
-
-        self.assertEqual(
-            line.transformFromNative().value,
-            '20060216T100000/PT2H'
-        )
-        self.assertEqual(
-            line.transformToNative().value,
-            [(datetime.datetime(2006, 2, 16, 10, 0), datetime.timedelta(0, 7200))]
-        )
-
-        line.value.append((datetime.datetime(2006, 5, 16, 10), twoHours))
-
-        self.assertEqual(
-            line.serialize().strip(),
-            'TEST:20060216T100000/PT2H,20060516T100000/PT2H'
         )
 
     def test_freeBusy(self):
