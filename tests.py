@@ -170,11 +170,14 @@ class TestIcalendar(unittest.TestCase):
     Tests for icalendar.py
     """
     def test_parseDTStart(self):
-        content_line = textLineToContentLine("DTSTART:20060509T000000")
+        """
+        Should take a content line and return a datetime object.
+        """
         self.assertEqual(
-            parseDtstart(content_line),
-            "<RDATE{'VALUE': ['DATE']}[datetime.date(1997, 3, 4), datetime.date(1997, 5, 4), datetime.date(1997, 7, 4), datetime.date(1997, 9, 4)]>"
+            parseDtstart(textLineToContentLine("DTSTART:20060509T000000")),
+            datetime.datetime(2006, 5, 9, 0, 0)
         )
+
     def test_stringToTextValues(self):
         self.assertEqual(
             stringToTextValues(''),
