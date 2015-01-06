@@ -187,10 +187,10 @@ class TestGeneralFileParsing(unittest.TestCase):
         # py3 is returning value as a string, not a datetime.
         # ToDo: figure out why, because it kills this whole block of tests.
         # The same bug also breaks test_freeBusy below.
-        #self.assertEqual(
-        #    str(c.vevent.dtstart.value),
-        #    "2002-10-28"
-        #)
+        self.assertEqual(
+            str(c.vevent.dtstart.value),
+            "2002-10-28"
+        )
 
         #self.assertTrue(
         #    isinstance(c.vevent.dtstart.value, datetime.datetime)
