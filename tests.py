@@ -257,6 +257,23 @@ class testIcalendar(unittest.TestCase):
         #)
         # END PY3 PROBLEM!!!!!!!!!!!!!!
 
+    def test_recurrence(self):
+        test_file = get_test_file("recurrence.ics")
+        cal = readOne(test_file)
+        dates = list(cal.vevent.rruleset)
+        self.assertEqual(
+            dates[0],
+            datetime.datetime(2006, 1, 26, 23, 0, tzinfo=tzutc())
+        )
+        self.assertEqual(
+            dates[1],
+            datetime.datetime(2006, 2, 23, 23, 0, tzinfo=tzutc())
+        )
+        self.assertEqual(
+            dates[-1],
+            datetime.datetime(2006, 12, 28, 23, 0, tzinfo=tzutc())
+        )
+
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')
 
