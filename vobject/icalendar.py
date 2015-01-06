@@ -1793,7 +1793,8 @@ def stringToDurations(s, strict=False):
             error("error: unknown state: '%s' reached in %s" % (state, s))
 
 def parseDtstart(contentline, allowSignatureMismatch=False):
-    """Convert a contentline's value into a date or date-time.
+    """
+    Convert a contentline's value into a date or date-time.
 
     A variety of clients don't serialize dates with the appropriate VALUE
     parameter, so rather than failing on these (technically invalid) lines,
