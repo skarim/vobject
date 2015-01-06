@@ -286,15 +286,10 @@ class TestIcalendar(unittest.TestCase):
         vfb.add('freebusy').value = [(vfb.dtstart.value, twoHours / 2)]
         vfb.add('freebusy').value = [(vfb.dtstart.value, vfb.dtend.value)]
 
-        # print(vfb.serialize())
-
-        # PY3 PROBLEM!!!!!!!!!!!!!!
-        # Won't pass 3 yet due to datetime objects being seen as strings.
         self.assertEqual(
             vfb.serialize().replace('\r\n', '\n'),
             test_cal.replace('\r\n', '\n')
         )
-        # END PY3 PROBLEM!!!!!!!!!!!!!!
 
     def test_availablity(self):
         test_cal = get_test_file("availablity.ics")
@@ -315,13 +310,10 @@ class TestIcalendar(unittest.TestCase):
 
         vcal.add(av)
 
-        # PY3 PROBLEM!!!!!!!!!!!!!!
-        # Won't pass 3 yet due to datetime objects being seen as strings.
-        #self.assertEqual(
-        #    vcal.serialize(),
-        #    test_cal
-        #)
-        # END PY3 PROBLEM!!!!!!!!!!!!!!
+        self.assertEqual(
+            vcal.serialize().replace('\r\n', '\n'),
+            test_cal.replace('\r\n', '\n')
+        )
 
     def test_regexes(self):
         self.assertEqual(
