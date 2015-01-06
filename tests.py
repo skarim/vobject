@@ -220,7 +220,7 @@ class TestGeneralFileParsing(unittest.TestCase):
 
     def test_bad_line(self):
         cal = get_test_file("badline.ics")
-        self.assertRaises(ParseError, readOne, cal)
+        self.assertRaises(ParseError, base.readOne, cal)
 
         newcal = base.readOne(cal, ignoreUnreadable=True)
         self.assertEqual(
