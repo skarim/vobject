@@ -918,7 +918,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
                 #    offset -= 1
 
                 line = input[start:offset]
-                outbuf.write(bytes(line))
+                outbuf.write(line)
                 try:
                     outbuf.write(bytes("\r\n", 'UTF-8'))
                 except Exception:
