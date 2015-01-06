@@ -1438,7 +1438,7 @@ class FreeBusy(PeriodBehavior):
     """Free or busy period of time, must be specified in UTC."""
     name = 'FREEBUSY'
     forceUTC = True
-registerBehavior(FreeBusy)
+registerBehavior(FreeBusy, 'FREEBUSY')
 
 
 class RRule(behavior.Behavior):
