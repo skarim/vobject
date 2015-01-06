@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+-*- coding: utf-8 -*-
 from __future__ import print_function
 
 import datetime
@@ -219,8 +219,8 @@ class TestGeneralFileParsing(unittest.TestCase):
         self.assertRaises(ParseError, base.readOne, cal)
 
     def test_bad_line(self):
-        cal = get_test_file("")
-        #self.assertRaises(ParseError, readOne, cal)
+        cal = get_test_file("badline.ics")
+        self.assertRaises(ParseError, readOne, cal)
 
         newcal = base.readOne(cal, ignoreUnreadable=True)
         self.assertEqual(
