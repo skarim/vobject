@@ -290,10 +290,10 @@ class TestIcalendar(unittest.TestCase):
 
         # PY3 PROBLEM!!!!!!!!!!!!!!
         # Won't pass 3 yet due to datetime objects being seen as strings.
-        #self.assertEqual(
-        #    vfb.serialize(),
-        #    test_cal
-        #)
+        self.assertEqual(
+            vfb.serialize(),
+            test_cal
+        )
         # END PY3 PROBLEM!!!!!!!!!!!!!!
 
     def test_availablity(self):
