@@ -67,7 +67,7 @@ class TestVobject(unittest.TestCase):
             ['', 'REQUEST-STATUS', 'RELATED-TO', 'LAST-MODIFIED', 'CONTACT', 'DURATION', 'PRODID', 'AVAILABLE', 'CATEGORIES', 'VTODO', 'UID', 'COMPLETED', 'VEVENT', 'VJOURNAL', 'RDATE', 'EXDATE', 'BUSYTYPE', 'ACTION', 'METHOD', 'LOCATION', 'STATUS', 'COMMENT', 'VCALENDAR', 'VFREEBUSY', 'CREATED', 'RECURRENCE-ID', 'VTIMEZONE', 'TRANSP', 'DUE', 'STANDARD', 'DAYLIGHT', 'TRIGGER', 'SUMMARY', 'VAVAILABILITY', 'RESOURCES', 'FREEBUSY', 'DTSTAMP', 'VALARM', 'DESCRIPTION', 'CLASS', 'RRULE', 'EXRULE', 'DTEND', 'DTSTART', 'CALSCALE']
         )
         self.assertFalse(
-            base.getBehavior(icalendar.MultiDateBehavior),
+            base.getBehavior('VFREEBUSY'),
             None
         )
         self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
