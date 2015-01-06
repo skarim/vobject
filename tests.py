@@ -69,8 +69,10 @@ class TestVobject(unittest.TestCase):
         # test get_behavior
         behavior = base.getBehavior('VCALENDAR')
         print(behavior.__class__.__name__)
+        print(behavior)
+        print('str', str(behavior))
         self.assertTrue(
-            isinstance(behavior, icalendar.VFreeBusy)
+            isinstance(behavior, icalendar.VCALENDAR)
         )
         self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
 
