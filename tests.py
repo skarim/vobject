@@ -36,7 +36,7 @@ class TestCalendarSerializing(unittest.TestCase):
         cal.add('vevent')
         cal.vevent.add('dtstart').value = datetime.datetime(2006, 5, 9)
         cal.vevent.add('description').value = "Test event"
-        cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=dateutil.tz.tzical(get_test_file("timezones.ics")).get('US/Pacific'))
+        cal.vevent.add('created').value = datetime.datetime(2006, 1, 1, 10, tzinfo=dateutil.tz.tzical("test_files/timezones.ics").get('US/Pacific'))
         cal.vevent.add('uid').value = "Not very random UID"
         self.assertEqual(
             cal.serialize(),
