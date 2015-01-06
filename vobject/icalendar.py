@@ -1454,23 +1454,20 @@ registerBehavior(RRule, 'EXRULE')
 
 
 utcDateTimeList = ['LAST-MODIFIED', 'CREATED', 'COMPLETED', 'DTSTAMP']
-map(lambda x: registerBehavior(UTCDateTimeBehavior, x), utcDateTimeList)
+list(map(lambda x: registerBehavior(UTCDateTimeBehavior, x), utcDateTimeList))
 
 dateTimeOrDateList = ['DTEND', 'DTSTART', 'DUE', 'RECURRENCE-ID']
-map(lambda x: registerBehavior(DateOrDateTimeBehavior, x),
-    dateTimeOrDateList)
+list(map(lambda x: registerBehavior(DateOrDateTimeBehavior, x), dateTimeOrDateList))
 
 registerBehavior(MultiDateBehavior, 'RDATE')
 registerBehavior(MultiDateBehavior, 'EXDATE')
 
 
-textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION',
-            'LOCATION', 'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO',
-            'UID', 'ACTION', 'BUSYTYPE']
+textList = ['CALSCALE', 'METHOD', 'PRODID', 'CLASS', 'COMMENT', 'DESCRIPTION', 'LOCATION',
+            'STATUS', 'SUMMARY', 'TRANSP', 'CONTACT', 'RELATED-TO', 'UID', 'ACTION', 'BUSYTYPE']
 list(map(lambda x: registerBehavior(TextBehavior, x), textList))
 
-multiTextList = ['CATEGORIES', 'RESOURCES']
-list(map(lambda x: registerBehavior(MultiTextBehavior, x), multiTextList))
+list(map(lambda x: registerBehavior(MultiTextBehavior, x), ['CATEGORIES', 'RESOURCES']))
 registerBehavior(SemicolonMultiTextBehavior, 'REQUEST-STATUS')
 
 
