@@ -1734,7 +1734,7 @@ def stringToDurations(s, strict=False):
                 current = current + char   #update this part when updating "read field"
             else:
                 state = "error"
-                print("got unexpected character {} reading in duration: {}".format(char, s))
+                # print("got unexpected character {} reading in duration: {}".format(char, s))
                 error("got unexpected character {} reading in duration: {}".format(char, s))
 
         elif state == "read field":
