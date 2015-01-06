@@ -1221,7 +1221,6 @@ class VAlarm(VCalendarComponentBehavior):
             return super(VEvent, cls).validate(obj, raiseException, *args)
         """
         return True
-
 registerBehavior(VAlarm)
 
 
@@ -1262,7 +1261,6 @@ class VAvailability(VCalendarComponentBehavior):
             return False
         else:
             return super(VAvailability, cls).validate(obj, raiseException, *args)
-
 registerBehavior(VAvailability)
 
 
@@ -1366,7 +1364,7 @@ class Trigger(behavior.Behavior):
             try:
                 return Duration.transformToNative(obj)
             except ParseError:
-                logger.warn("TRIGGER not recognized as DURATION, trying "
+                logger.warning("TRIGGER not recognized as DURATION, trying "
                              "DATE-TIME, because iCal sometimes exports "
                              "DATE-TIMEs without setting VALUE=DATE-TIME")
                 try:
