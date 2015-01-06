@@ -61,16 +61,6 @@ class TestVobject(unittest.TestCase):
         )
         self.assertRaises(ParseError, parseLine, ":")
 
-    def test_parseParams(self):
-        self.assertEqual(
-            parseParams(';ALTREP="http://www.wiz.org"'),
-            [['ALTREP', 'http://www.wiz.org']]
-        )
-        self.assertEqual(
-            parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
-            [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
-        )
-
 
 class testGeneralFileParsing(unittest.TestCase):
     """
@@ -95,6 +85,7 @@ class testGeneralFileParsing(unittest.TestCase):
             str(c.vevent.valarm.trigger),
             "<TRIGGER{}-1 day, 0:00:00>"
         )
+        # PY3 PROBLEM!!!!!!!!!!!!!!
         # py3 is returning value as a string, not a datetime.
         # ToDo: figure out why, because it kills this whole block of tests.
         # The same bug also breaks test_freeBusy below.
@@ -117,11 +108,39 @@ class testGeneralFileParsing(unittest.TestCase):
         #    c.vevent.dtstamp.value,
         #    datetime.datetime(2002, 10, 28, 1, 17, 6, tzinfo=tzutc())
         #)
+        # END PY3 PROBLEM!!!!!!!!!!!!!!
 
         vevent = c.vevent.transformFromNative()
         self.assertEqual(
             str(vevent.rrule),
             "<RRULE{}FREQ=Weekly;COUNT=10>"
+        )
+
+    def test_bad_stream(self):
+        cal = get_test_file("badstream.ics")
+        self.assertRaises(ParseError, readOne, cal)
+
+    def test_bad_line(self):
+        cal = get_test_file("badline.ics")
+        self.assertRaises(ParseError, readOne, cal)
+
+        newcal = readOne(cal, ignoreUnreadable=True)
+        self.assertRaises(AttributeError, newcal.vevent.x_bad_slash)
+
+        self.assertEqual(
+            str(newcal.vevent.x_bad_underscore),
+            '<X-BAD-UNDERSCORE{}TRUE>'
+        )
+
+
+    def test_parseParams(self):
+        self.assertEqual(
+            parseParams(';ALTREP="http://www.wiz.org"'),
+            [['ALTREP', 'http://www.wiz.org']]
+        )
+        self.assertEqual(
+            parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
+            [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
         )
 
 
@@ -205,11 +224,13 @@ class testIcalendar(unittest.TestCase):
 
         print(vfb.serialize())
 
+        # PY3 PROBLEM!!!!!!!!!!!!!!
         # Won't pass 3 yet due to datetime objects being seen as strings.
         #self.assertEqual(
         #    vfb.serialize(),
         #    test_cal
         #)
+        # END PY3 PROBLEM!!!!!!!!!!!!!!
 
     def test_availablity(self):
         test_cal = get_test_file("availablity.ics")
@@ -230,11 +251,13 @@ class testIcalendar(unittest.TestCase):
 
         vcal.add(av)
 
+        # PY3 PROBLEM!!!!!!!!!!!!!!
         # Won't pass 3 yet due to datetime objects being seen as strings.
         #self.assertEqual(
         #    vcal.serialize(),
         #    test_cal
         #)
+        # END PY3 PROBLEM!!!!!!!!!!!!!!
 
     def test_recurring_component(self):
         vevent = RecurringComponent(name='VEVENT')

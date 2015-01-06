@@ -80,16 +80,6 @@ UID:EC9439B1-FF65-11D6-9973-003065F99D04
 END:VEVENT
 END:VCALENDAR"""
 
-badLineTest="""BEGIN:VCALENDAR
-METHOD:PUBLISH
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:19870405T020000
-X-BAD/SLASH:TRUE
-X-BAD_UNDERSCORE:TRUE
-UID:EC9439B1-FF65-11D6-9973-003065F99D04
-END:VEVENT
-END:VCALENDAR"""
 
 vcardtest =r"""BEGIN:VCARD
 VERSION:3.0
@@ -152,23 +142,6 @@ BEGIN:VALARM
 TRIGGER:20021028T120000Z
 ACTION:DISPLAY
 DESCRIPTION:This trigger is a date-time without a VALUE=DATE-TIME parameter
-END:VALARM
-END:VEVENT
-END:VCALENDAR"""
-
-badstream = r"""BEGIN:VCALENDAR
-CALSCALE:GREGORIAN
-X-WR-TIMEZONE;VALUE=TEXT:US/Pacific
-METHOD:PUBLISH
-PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
-X-WR-CALNAME;VALUE=TEXT:Example
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:20021028T140000Z
-BEGIN:VALARM
-TRIGGER:a20021028120000
-ACTION:DISPLAY
-DESCRIPTION:This trigger has a nonsensical value
 END:VALARM
 END:VEVENT
 END:VCALENDAR"""
@@ -293,27 +266,6 @@ __test__ = { "Test readOne" :
     <*unnamed*| [<CN{}Babs Jensen>, <CN{}Barbara J Jensen>, <EMAIL{}babs@umich.edu>, <PHONE{}+1 313 747-4454>, <SN{}Jensen>, <X-ID{}1234567890>]>
     >>> ex1.serialize()
     'CN:Babs Jensen\r\nCN:Barbara J Jensen\r\nEMAIL:babs@umich.edu\r\nPHONE:+1 313 747-4454\r\nSN:Jensen\r\nX-ID:1234567890\r\n'
-    """,
-
-
-
-    "read failure" :
-    """
-    >>> vevent = base.readOne(badstream)
-    Traceback (most recent call last):
-    ...
-    ParseError: At line 11: TRIGGER with no VALUE not recognized as DURATION or as DATE-TIME
-    >>> cal = base.readOne(badLineTest)
-    Traceback (most recent call last):
-    ...
-    ParseError: At line 6: Failed to parse line: X-BAD/SLASH:TRUE
-    >>> cal = base.readOne(badLineTest, ignoreUnreadable=True)
-    >>> cal.vevent.x_bad_slash
-    Traceback (most recent call last):
-    ...
-    AttributeError: x_bad_slash
-    >>> cal.vevent.x_bad_underscore
-    <X-BAD-UNDERSCORE{}TRUE>
     """,
 
     "ical trigger workaround" :
