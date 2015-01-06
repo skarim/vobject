@@ -57,28 +57,27 @@ class TestVobject(unittest.TestCase):
     def setUpClass(cls):
         cls.simple_test_cal = get_test_file("simple_test.ics")
 
-    def test_newFromBehavior(self):
+    def test_behavior(self):
         """
-        Given a name, should return a valid ContentLine or Component.
+        Tests for behavior registry, getting and creating a behavior.
         """
-        #first, test get_behavior
+        # Check expected behavior registry.
         self.assertEqual(
             behavior_registry.keys(),
             ['', 'REQUEST-STATUS', 'RELATED-TO', 'LAST-MODIFIED', 'CONTACT', 'DURATION', 'PRODID', 'AVAILABLE', 'CATEGORIES', 'VTODO', 'UID', 'COMPLETED', 'VEVENT', 'VJOURNAL', 'RDATE', 'EXDATE', 'BUSYTYPE', 'ACTION', 'METHOD', 'LOCATION', 'STATUS', 'COMMENT', 'VCALENDAR', 'VFREEBUSY', 'CREATED', 'RECURRENCE-ID', 'VTIMEZONE', 'TRANSP', 'DUE', 'STANDARD', 'DAYLIGHT', 'TRIGGER', 'SUMMARY', 'VAVAILABILITY', 'RESOURCES', 'FREEBUSY', 'DTSTAMP', 'VALARM', 'DESCRIPTION', 'CLASS', 'RRULE', 'EXRULE', 'DTEND', 'DTSTART', 'CALSCALE']
         )
-        self.assertFalse(
-            base.getBehavior('VFREEBUSY'),
-            None
+        # test get_behavior
+        self.assertTrue(
+            isinstance(base.getBehavior('VFREEBUSY'), icalendar.VFreeBusy)
         )
         self.assertRaises(VObjectError, base.getBehavior, "invalid_name")
-
-
-        #behavior = getBehavior(name, id)
 
 
         #def getBehavior(name, id=None):
         """
         Should return a matching behavior if it exists, or None.
+                Given a name, should return a valid ContentLine or Component.
+
         """
 
         """
