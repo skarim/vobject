@@ -291,8 +291,8 @@ class TestIcalendar(unittest.TestCase):
         # PY3 PROBLEM!!!!!!!!!!!!!!
         # Won't pass 3 yet due to datetime objects being seen as strings.
         self.assertEqual(
-            vfb.serialize(),
-            test_cal
+            vfb.serialize().replace('\r\n', '\n'),
+            test_cal.replace('\r\n', '\n')
         )
         # END PY3 PROBLEM!!!!!!!!!!!!!!
 
