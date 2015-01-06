@@ -46,7 +46,7 @@ class TestCalendarSerializing(unittest.TestCase):
 
 class TestVobject(unittest.TestCase):
 
-    def setupClass(self):
+    def setUpClass(self):
         self.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
