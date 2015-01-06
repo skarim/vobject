@@ -189,7 +189,7 @@ class TestGeneralFileParsing(unittest.TestCase):
         # The same bug also breaks test_freeBusy below.
         self.assertEqual(
             str(c.vevent.dtstart.value),
-            "2002-10-28"
+            "2002-10-28 14:00:00-08:00"
         )
 
         #self.assertTrue(
