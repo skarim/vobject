@@ -8,6 +8,7 @@ import unittest
 from dateutil.tz import tzutc
 
 from vobject import base
+from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError
 from vobject.base import readComponents, readOne, textLineToContentLine
 
@@ -59,7 +60,7 @@ class TestVobject(unittest.TestCase):
         Given a name, should return a valid ContentLine or Component.
         """
         #first, test get_behavior
-        print('__behaviorRegistry', base.__behaviorRegistry)
+        print('__behaviorRegistry', behavior_registry)
 
         #def getBehavior(name, id=None):
         """
