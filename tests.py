@@ -317,7 +317,7 @@ class TestIcalendar(unittest.TestCase):
         santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
         self.assertEqual(
             str(santiago),
-            "<VTIMEZONE | <TZID{}Santialgo>"
+            "<VTIMEZONE | <TZID{}Santiago>>"
         )
 
         #ser = santiago.serialize()
