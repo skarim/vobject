@@ -237,6 +237,7 @@ class TestIcalendar(unittest.TestCase):
     """
     Tests for icalendar.py
     """
+    maxDiff = None
     def test_parseDTStart(self):
         """
         Should take a content line and return a datetime object.
