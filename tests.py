@@ -247,6 +247,37 @@ class TestIcalendar(unittest.TestCase):
             datetime.datetime(2006, 5, 9, 0, 0)
         )
 
+    def test_regexes(self):
+        self.assertEqual(
+            re.findall(base.patterns['name'], '12foo-bar:yay'),
+            ['12foo-bar', 'yay']
+        )
+        self.assertEqual(
+            re.findall(base.patterns['safe_char'], 'a;b"*,cd'),
+            ['a', 'b', '*', 'c', 'd']
+        )
+        self.assertEqual(
+            re.findall(base.patterns['qsafe_char'], 'a;b"*,cd'),
+            ['a', ';', 'b', '*', ',', 'c', 'd']
+        )
+        self.assertEqual(
+            re.findall(base.patterns['param_value'], '"quoted";not-quoted;start"after-illegal-quote', re.VERBOSE),
+            ['"quoted"', '', 'not-quoted', '', 'start', '', 'after-illegal-quote', '']
+        )
+        match = base.line_re.match('TEST;ALTREP="http://www.wiz.org":value:;"')
+        self.assertEqual(
+            match.group('value'),
+            'value:;"'
+        )
+        self.assertEqual(
+            match.group('name'),
+            'TEST'
+        )
+        self.assertEqual(
+            match.group('params'),
+            ';ALTREP="http://www.wiz.org"'
+        )
+
     def test_stringToTextValues(self):
         self.assertEqual(
             stringToTextValues(''),
@@ -275,6 +306,52 @@ class TestIcalendar(unittest.TestCase):
             timedeltaToString(datetime.timedelta(minutes=20)),
             'PT20M'
         )
+
+    def test_vtimezone_creation(self):
+        tzs = dateutil.tz.tzical("test_files/timezones.ics")
+
+        self.assertEqual(
+            str(tzs.get("US/Pacific")),
+            "<tzicalvtz 'US/Pacific'>"
+        )
+        self.assertEqual(
+            icalendar.TimezoneComponent(_),
+            "<VTIMEZONE | <TZID{}US/Pacific>>"
+        )
+        self.assertEqual(
+            pacific.serialize().replace('\r\n', '\n'),
+            """BEGIN:VTIMEZONETZID:US/PacificBEGIN:STANDARDDTSTART:20001029T020000RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10TZNAME:PSTTZOFFSETFROM:-0700TZOFFSETTO:-0800END:STANDARDBEGIN:DAYLIGHTDTSTART:20000402T020000RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4TZNAME:PDTTZOFFSETFROM:-0800TZOFFSETTO:-0700END:DAYLIGHTEND:VTIMEZONE"""
+        )
+        santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
+        self.assertEqual(
+            santiago.serialize().replace('\r\n', '\n'),
+            """BEGIN:VTIMEZONETZID:SantiagoBEGIN:STANDARDDTSTART:20000311T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=3TZNAME:Pacific SA Standard TimeTZOFFSETFROM:-0300TZOFFSETTO:-0400END:STANDARDBEGIN:DAYLIGHTDTSTART:20001014T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=10TZNAME:Pacific SA Daylight TimeTZOFFSETFROM:-0400TZOFFSETTO:-0300END:DAYLIGHTEND:VTIMEZONE"""
+        """
+        >>> roundtrip = dateutil.tz.tzical(StringIO(str(ser))).get()
+        >>> for year in range(2001, 2010):
+        ...     for month in (2, 9):
+        ...         dt = datetime.datetime(year, month, 15, tzinfo = roundtrip)
+        ...         if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
+        ...             print "Failed for:", dt
+        >>> fict = icalendar.TimezoneComponent(tzs.get('US/Fictitious-Eastern'))
+        >>> print(fict.serialize())
+        BEGIN:VTIMEZONE
+        TZID:US/Fictitious-Eastern
+        BEGIN:STANDARD
+        DTSTART:20001029T020000
+        RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+        TZNAME:EST
+        TZOFFSETFROM:-0400
+        TZOFFSETTO:-0500
+        END:STANDARD
+        BEGIN:DAYLIGHT
+        DTSTART:20000402T020000
+        RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=20050403T070000Z
+        TZNAME:EDT
+        TZOFFSETFROM:-0500
+        TZOFFSETTO:-0400
+        END:DAYLIGHT
+        END:VTIMEZONE
 
     def test_freeBusy(self):
         test_cal = get_test_file("freebusy.ics")
@@ -315,41 +392,7 @@ class TestIcalendar(unittest.TestCase):
             test_cal.replace('\r\n', '\n')
         )
 
-    def test_regexes(self):
-        self.assertEqual(
-            re.findall(base.patterns['name'], '12foo-bar:yay'),
-            ['12foo-bar', 'yay']
-        )
-        self.assertEqual(
-            re.findall(base.patterns['safe_char'], 'a;b"*,cd'),
-            ['a', 'b', '*', 'c', 'd']
-        )
-        self.assertEqual(
-            re.findall(base.patterns['qsafe_char'], 'a;b"*,cd'),
-            ['a', ';', 'b', '*', ',', 'c', 'd']
-        )
-        self.assertEqual(
-            re.findall(base.patterns['param_value'], '"quoted";not-quoted;start"after-illegal-quote', re.VERBOSE),
-            ['"quoted"', '', 'not-quoted', '', 'start', '', 'after-illegal-quote', '']
-        )
-        match = base.line_re.match('TEST;ALTREP="http://www.wiz.org":value:;"')
-        self.assertEqual(
-            match.group('value'),
-            'value:;"'
-        )
-        self.assertEqual(
-            match.group('name'),
-            'TEST'
-        )
-        self.assertEqual(
-            match.group('params'),
-            ';ALTREP="http://www.wiz.org"'
-        )
-
     def test_recurrence(self):
-        # PY3 PROBLEM!!!!!!!!!!!!!!
-        # strings mean vevent is not what is expected, and can't get a rruleset.
-
         # Ensure date valued UNTILs in rrules are in a reasonable timezone,
         # and include that day (12/28 in this test)
         test_file = get_test_file("recurrence.ics")
