@@ -326,7 +326,7 @@ class TestIcalendar(unittest.TestCase):
             for month in (2, 9):
                 dt = datetime.datetime(year, month, 15, tzinfo = tzs.get('Santiago'))
                 #if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
-                self.assertFalse(dt.replace(tzinfo=tzs.get('Santiago')), dt)
+                self.assertTrue(dt.replace(tzinfo=tzs.get('Santiago')), dt)
 
 
 
