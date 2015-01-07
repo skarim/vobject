@@ -311,10 +311,6 @@ class TestIcalendar(unittest.TestCase):
         pacific = icalendar.TimezoneComponent(tzs.get('US/Pacific'))
         self.assertEqual(
             str(pacific),
-            "<tzicalvtz 'US/Pacific'>"
-        )
-        self.assertEqual(
-            str(icalendar.TimezoneComponent(pacific)),
             "<VTIMEZONE | <TZID{}US/Pacific>>"
         )
         self.assertEqual(
