@@ -67,7 +67,6 @@ class TestBehaviors(unittest.TestCase):
         Tests for behavior registry, getting and creating a behavior.
         """
         # Check expected behavior registry.
-        # THIS HAS 25 FEWER ITEMS IN PYTHON3???
         self.assertEqual(
             sorted(behavior_registry.keys()),
             ['', 'ACTION', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FREEBUSY', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']
@@ -309,7 +308,7 @@ class TestIcalendar(unittest.TestCase):
 
     def test_vtimezone_creation(self):
         tzs = dateutil.tz.tzical("test_files/timezones.ics")
-        pacific = tzs.get("US/Pacific")
+        pacific = icalendar.TimezoneComponent(tzs.get('US/Pacific'))
         self.assertEqual(
             str(pacific),
             "<tzicalvtz 'US/Pacific'>"

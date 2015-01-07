@@ -1,4 +1,4 @@
-"""Long or boring tests for vobjects."""
+    """Long or boring tests for vobjects."""
 
 import vobject
 
@@ -170,80 +170,7 @@ __test__ = { "Test readOne" :
     "VTIMEZONE creation test:" :
 
     """
-    >>> import dateutil
-    >>> from six import StringIO
-    >>> f = StringIO(timezones)
-    >>> tzs = dateutil.tz.tzical(f)
-    >>> tzs.get("US/Pacific")
-    <tzicalvtz 'US/Pacific'>
-    >>> icalendar.TimezoneComponent(_)
-    <VTIMEZONE | <TZID{}US/Pacific>>
-    >>> pacific = _
-    >>> print(pacific.serialize())
-    BEGIN:VTIMEZONE
-    TZID:US/Pacific
-    BEGIN:STANDARD
-    DTSTART:20001029T020000
-    RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-    TZNAME:PST
-    TZOFFSETFROM:-0700
-    TZOFFSETTO:-0800
-    END:STANDARD
-    BEGIN:DAYLIGHT
-    DTSTART:20000402T020000
-    RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
-    TZNAME:PDT
-    TZOFFSETFROM:-0800
-    TZOFFSETTO:-0700
-    END:DAYLIGHT
-    END:VTIMEZONE
-    >>> (_)
-    <VTIMEZONE | <TZID{}US/Pacific>>
-    >>> santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
-    >>> ser = santiago.serialize()
-    >>> print(ser)
-    BEGIN:VTIMEZONE
-    TZID:Santiago
-    BEGIN:STANDARD
-    DTSTART:20000311T000000
-    RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=3
-    TZNAME:Pacific SA Standard Time
-    TZOFFSETFROM:-0300
-    TZOFFSETTO:-0400
-    END:STANDARD
-    BEGIN:DAYLIGHT
-    DTSTART:20001014T000000
-    RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=10
-    TZNAME:Pacific SA Daylight Time
-    TZOFFSETFROM:-0400
-    TZOFFSETTO:-0300
-    END:DAYLIGHT
-    END:VTIMEZONE
-    >>> roundtrip = dateutil.tz.tzical(StringIO(str(ser))).get()
-    >>> for year in range(2001, 2010):
-    ...     for month in (2, 9):
-    ...         dt = datetime.datetime(year, month, 15, tzinfo = roundtrip)
-    ...         if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
-    ...             print "Failed for:", dt
-    >>> fict = icalendar.TimezoneComponent(tzs.get('US/Fictitious-Eastern'))
-    >>> print(fict.serialize())
-    BEGIN:VTIMEZONE
-    TZID:US/Fictitious-Eastern
-    BEGIN:STANDARD
-    DTSTART:20001029T020000
-    RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-    TZNAME:EST
-    TZOFFSETFROM:-0400
-    TZOFFSETTO:-0500
-    END:STANDARD
-    BEGIN:DAYLIGHT
-    DTSTART:20000402T020000
-    RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=20050403T070000Z
-    TZNAME:EDT
-    TZOFFSETFROM:-0500
-    TZOFFSETTO:-0400
-    END:DAYLIGHT
-    END:VTIMEZONE
+
     """,
 
     "Serializing with timezones test" :
