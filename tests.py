@@ -314,42 +314,21 @@ class TestIcalendar(unittest.TestCase):
             str(pacific),
             "<VTIMEZONE | <TZID{}US/Pacific>>"
         )
-        self.assertEqual(
-            pacific.serialize().replace('\r\n', ''),
-            """BEGIN:VTIMEZONETZID:US/PacificBEGIN:STANDARDDTSTART:20001029T020000RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10TZNAME:PSTTZOFFSETFROM:-0700TZOFFSETTO:-0800END:STANDARDBEGIN:DAYLIGHTDTSTART:20000402T020000RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4TZNAME:PDTTZOFFSETFROM:-0800TZOFFSETTO:-0700END:DAYLIGHTEND:VTIMEZONE"""
-        )
         santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
         self.assertEqual(
-            santiago.serialize().replace('\r\n', ''),
-            """BEGIN:VTIMEZONETZID:SantiagoBEGIN:STANDARDDTSTART:20000311T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=3TZNAME:Pacific SA Standard TimeTZOFFSETFROM:-0300TZOFFSETTO:-0400END:STANDARDBEGIN:DAYLIGHTDTSTART:20001014T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=10TZNAME:Pacific SA Daylight TimeTZOFFSETFROM:-0400TZOFFSETTO:-0300END:DAYLIGHTEND:VTIMEZONE"""
+            str(santiago),
+            "<VTIMEZONE | <TZID{}Santialgo>>"
         )
-        """
-        >>> roundtrip = dateutil.tz.tzical(StringIO(str(ser))).get()
-        >>> for year in range(2001, 2010):
-        ...     for month in (2, 9):
-        ...         dt = datetime.datetime(year, month, 15, tzinfo = roundtrip)
-        ...         if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
-        ...             print "Failed for:", dt
-        >>> fict = icalendar.TimezoneComponent(tzs.get('US/Fictitious-Eastern'))
-        >>> print(fict.serialize())
-        BEGIN:VTIMEZONE
-        TZID:US/Fictitious-Eastern
-        BEGIN:STANDARD
-        DTSTART:20001029T020000
-        RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-        TZNAME:EST
-        TZOFFSETFROM:-0400
-        TZOFFSETTO:-0500
-        END:STANDARD
-        BEGIN:DAYLIGHT
-        DTSTART:20000402T020000
-        RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=20050403T070000Z
-        TZNAME:EDT
-        TZOFFSETFROM:-0500
-        TZOFFSETTO:-0400
-        END:DAYLIGHT
-        END:VTIMEZONE
-        """
+
+        #ser = santiago.serialize()
+        #roundtrip = dateutil.tz.tzical('six.StringIO(str(ser))').get()
+        for year in range(2001, 2010):
+            for month in (2, 9):
+                dt = datetime.datetime(year, month, 15, tzinfo = tzs.get('Santiago'))
+                #if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
+                self.assertFalse(dt.replace(tzinfo=tzs.get('Santiago')), dt)
+
+
 
     def test_freeBusy(self):
         test_cal = get_test_file("freebusy.ics")
