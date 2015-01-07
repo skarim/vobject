@@ -314,12 +314,12 @@ class TestIcalendar(unittest.TestCase):
             "<VTIMEZONE | <TZID{}US/Pacific>>"
         )
         self.assertEqual(
-            pacific.serialize().replace('\r\n', '\n'),
+            pacific.serialize().replace('\r\n', ''),
             """BEGIN:VTIMEZONETZID:US/PacificBEGIN:STANDARDDTSTART:20001029T020000RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10TZNAME:PSTTZOFFSETFROM:-0700TZOFFSETTO:-0800END:STANDARDBEGIN:DAYLIGHTDTSTART:20000402T020000RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4TZNAME:PDTTZOFFSETFROM:-0800TZOFFSETTO:-0700END:DAYLIGHTEND:VTIMEZONE"""
         )
         santiago = icalendar.TimezoneComponent(tzs.get('Santiago'))
         self.assertEqual(
-            santiago.serialize().replace('\r\n', '\n'),
+            santiago.serialize().replace('\r\n', ''),
             """BEGIN:VTIMEZONETZID:SantiagoBEGIN:STANDARDDTSTART:20000311T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=3TZNAME:Pacific SA Standard TimeTZOFFSETFROM:-0300TZOFFSETTO:-0400END:STANDARDBEGIN:DAYLIGHTDTSTART:20001014T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=10TZNAME:Pacific SA Daylight TimeTZOFFSETFROM:-0400TZOFFSETTO:-0300END:DAYLIGHTEND:VTIMEZONE"""
         )
         tzs.close()
