@@ -13,7 +13,7 @@ from dateutil import rrule, tz
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
                     Component, ContentLine, logger, registerBehavior,
-                    backslashEscape, foldOneLine, newFromBehavior)
+                    backslashEscape, foldOneLine)
 
 
 #------------------------------- Constants -------------------------------------
@@ -235,7 +235,7 @@ class TimezoneComponent(Component):
 
         self.add('tzid').value = self.pickTzid(tzinfo, True)
 
-        old = None
+        # old = None # unused?
         for transitionTo in 'daylight', 'standard':
             for rule in completed[transitionTo]:
                 comp = self.add(transitionTo)
@@ -274,10 +274,9 @@ class TimezoneComponent(Component):
                     endString = ";UNTIL="+ dateTimeToString(endDate)
                 else:
                     endString = ''
-                rulestring = "FREQ=YEARLY%s;BYMONTH=%s%s" % \
-                              (dayString, six.u(rule['month']), endString)
+                new_rule = "FREQ=YEARLY%s;BYMONTH=%s%s" % (dayString, rule['month'], endString)
 
-                comp.add('rrule').value = rulestring
+                comp.add('rrule').value = new_rule
 
     tzinfo = property(gettzinfo, settzinfo)
     # prevent Component's __setattr__ from overriding the tzinfo property
