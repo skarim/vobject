@@ -7,6 +7,7 @@ import re
 import unittest
 
 from dateutil.tz import tzutc
+from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 
 from vobject import base
 from vobject import icalendar
@@ -319,14 +320,120 @@ class TestIcalendar(unittest.TestCase):
             str(santiago),
             "<VTIMEZONE | <TZID{}Santiago>>"
         )
-
-        #ser = santiago.serialize()
-        #roundtrip = dateutil.tz.tzical('six.StringIO(str(ser))').get()
         for year in range(2001, 2010):
             for month in (2, 9):
                 dt = datetime.datetime(year, month, 15, tzinfo = tzs.get('Santiago'))
                 #if dt.replace(tzinfo=tzs.get('Santiago')) != dt:
                 self.assertTrue(dt.replace(tzinfo=tzs.get('Santiago')), dt)
+
+    def test_timezone_serializing(self):
+        """
+        Serializing with timezones test
+        """
+        tzs = dateutil.tz.tzical("test_files/timezones.ics")
+        pacific = tzs.get('US/Pacific')
+        cal = base.Component('VCALENDAR')
+        cal.setBehavior(icalendar.VCalendar2_0)
+        ev = cal.add('vevent')
+        ev.add('dtstart').value = datetime.datetime(2005, 10, 12, 9, tzinfo = pacific)
+        evruleset = rruleset()
+        evruleset.rrule(rrule(WEEKLY, interval=2, byweekday=[2,4], until=datetime.datetime(2005, 12, 15, 9)))
+        evruleset.rrule(rrule(MONTHLY, bymonthday=[-1,-5]))
+        evruleset.exdate(datetime.datetime(2005, 10, 14, 9, tzinfo = pacific))
+        ev.rruleset = evruleset
+        ev.add('duration').value = datetime.timedelta(hours=1)
+
+        self.assertEqual(
+            cal.serialize().replace('\r\n', '\n'),
+            """BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//PYVOBJECT//NONSGML Version 1//EN
+BEGIN:VTIMEZONE
+TZID:US/Pacific
+BEGIN:STANDARD
+DTSTART:20001029T020000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:PST
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20000402T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
+TZNAME:PDT
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:...
+DTSTART;TZID=US/Pacific:20051012T090000
+DURATION:PT1H
+EXDATE;TZID=US/Pacific:20051014T090000
+RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
+RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
+END:VEVENT
+END:VCALENDAR"""
+        )
+
+        apple = tzs.get('America/Montreal')
+        ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
+        self.assertEqual(
+            cal.serialize().replace('\r\n', '\n'),
+            """BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//PYVOBJECT//NONSGML Version 1//EN
+BEGIN:VTIMEZONE
+TZID:US/Pacific
+BEGIN:STANDARD
+DTSTART:20001029T020000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZNAME:PST
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20000402T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
+TZNAME:PDT
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VTIMEZONE
+TZID:America/Montreal
+BEGIN:STANDARD
+DTSTART:20000101T000000
+RRULE:FREQ=YEARLY;BYMONTH=1;UNTIL=20040101T050000Z
+TZNAME:EST
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:STANDARD
+DTSTART:20051030T020000
+RRULE:FREQ=YEARLY;BYDAY=5SU;BYMONTH=10
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20050403T070000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=20050403T120000Z
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:...
+DTSTART;TZID=America/Montreal:20051012T090000
+DURATION:PT1H
+EXDATE;TZID=US/Pacific:20051014T090000
+RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
+RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
+END:VEVENT
+END:VCALENDAR"""
+        )
 
 
 

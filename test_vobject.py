@@ -1,5 +1,3 @@
-    """Long or boring tests for vobjects."""
-
 import vobject
 
 from vobject import base, icalendar, vcard
@@ -26,59 +24,6 @@ if __name__ == '__main__':
     runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
 
-
-icaltestx=r"""BEGIN:VCALENDAR
-CALSCALE:GREGORIAN
-X-WR-TIMEZONE;VALUE=TEXT:US/Pacific
-METHOD:PUBLISH
-PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
-X-WR-CALNAME;VALUE=TEXT:Example
-VERSION:2.0
-BEGIN:VEVENT
-SEQUENCE:5
-DTSTART;TZID=US/Pacific:20021028T140000
-RRULE:FREQ=Weekly;COUNT=10
-DTSTAMP:20021028T011706Z
-SUMMARY:Coffee with Jason
-UID:EC9439B1-FF65-11D6-9973-003065F99D04
-DTEND;TZID=US/Pacific:20021028T150000
-BEGIN:VALARM
-TRIGGER;VALUE=DURATION:-P1D
-ACTION:DISPLAY
-DESCRIPTION:Event reminder\, with comma\nand line feed
-END:VALARM
-END:VEVENT
-BEGIN:VTIMEZONE
-X-LIC-LOCATION:Random location
-TZID:US/Pacific
-LAST-MODIFIED:19870101T000000Z
-BEGIN:STANDARD
-DTSTART:19671029T020000
-RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-TZOFFSETFROM:-0700
-TZOFFSETTO:-0800
-TZNAME:PST
-END:STANDARD
-BEGIN:DAYLIGHT
-DTSTART:19870405T020000
-RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
-TZOFFSETFROM:-0800
-TZOFFSETTO:-0700
-TZNAME:PDT
-END:DAYLIGHT
-END:VTIMEZONE
-END:VCALENDAR"""
-
-badDtStartTest="""BEGIN:VCALENDAR
-METHOD:PUBLISH
-VERSION:2.0
-BEGIN:VEVENT
-DTSTART:20021028
-DTSTAMP:20021028T011706Z
-SUMMARY:Coffee with Jason
-UID:EC9439B1-FF65-11D6-9973-003065F99D04
-END:VEVENT
-END:VCALENDAR"""
 
 
 vcardtest =r"""BEGIN:VCARD
@@ -173,111 +118,7 @@ __test__ = { "Test readOne" :
 
     """,
 
-    "Serializing with timezones test" :
 
-    """
-    >>> import datetime
-    >>> import dateutil
-    >>> from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
-    >>> from six import StringIO
-    >>> pacific = dateutil.tz.tzical(StringIO(timezones)).get('US/Pacific')
-    >>> cal = base.Component('VCALENDAR')
-    >>> cal.setBehavior(icalendar.VCalendar2_0)
-    >>> ev = cal.add('vevent')
-    >>> ev.add('dtstart').value = datetime.datetime(2005, 10, 12, 9, tzinfo = pacific)
-    >>> set = rruleset()
-    >>> set.rrule(rrule(WEEKLY, interval=2, byweekday=[2,4], until=datetime.datetime(2005, 12, 15, 9)))
-    >>> set.rrule(rrule(MONTHLY, bymonthday=[-1,-5]))
-    >>> set.exdate(datetime.datetime(2005, 10, 14, 9, tzinfo = pacific))
-    >>> ev.rruleset = set
-    >>> ev.add('duration').value = datetime.timedelta(hours=1)
-    >>> print(cal.serialize())
-    BEGIN:VCALENDAR
-    VERSION:2.0
-    PRODID:-//PYVOBJECT//NONSGML Version 1//EN
-    BEGIN:VTIMEZONE
-    TZID:US/Pacific
-    BEGIN:STANDARD
-    DTSTART:20001029T020000
-    RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-    TZNAME:PST
-    TZOFFSETFROM:-0700
-    TZOFFSETTO:-0800
-    END:STANDARD
-    BEGIN:DAYLIGHT
-    DTSTART:20000402T020000
-    RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
-    TZNAME:PDT
-    TZOFFSETFROM:-0800
-    TZOFFSETTO:-0700
-    END:DAYLIGHT
-    END:VTIMEZONE
-    BEGIN:VEVENT
-    UID:...
-    DTSTART;TZID=US/Pacific:20051012T090000
-    DURATION:PT1H
-    EXDATE;TZID=US/Pacific:20051014T090000
-    RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
-    RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
-    END:VEVENT
-    END:VCALENDAR
-    >>> apple = dateutil.tz.tzical(StringIO(timezones)).get('America/Montreal')
-    >>> ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo = apple)
-    >>> print(cal.serialize())
-    BEGIN:VCALENDAR
-    VERSION:2.0
-    PRODID:-//PYVOBJECT//NONSGML Version 1//EN
-    BEGIN:VTIMEZONE
-    TZID:US/Pacific
-    BEGIN:STANDARD
-    DTSTART:20001029T020000
-    RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
-    TZNAME:PST
-    TZOFFSETFROM:-0700
-    TZOFFSETTO:-0800
-    END:STANDARD
-    BEGIN:DAYLIGHT
-    DTSTART:20000402T020000
-    RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4
-    TZNAME:PDT
-    TZOFFSETFROM:-0800
-    TZOFFSETTO:-0700
-    END:DAYLIGHT
-    END:VTIMEZONE
-    BEGIN:VTIMEZONE
-    TZID:America/Montreal
-    BEGIN:STANDARD
-    DTSTART:20000101T000000
-    RRULE:FREQ=YEARLY;BYMONTH=1;UNTIL=20040101T050000Z
-    TZNAME:EST
-    TZOFFSETFROM:-0500
-    TZOFFSETTO:-0500
-    END:STANDARD
-    BEGIN:STANDARD
-    DTSTART:20051030T020000
-    RRULE:FREQ=YEARLY;BYDAY=5SU;BYMONTH=10
-    TZNAME:EST
-    TZOFFSETFROM:-0400
-    TZOFFSETTO:-0500
-    END:STANDARD
-    BEGIN:DAYLIGHT
-    DTSTART:20050403T070000
-    RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=20050403T120000Z
-    TZNAME:EDT
-    TZOFFSETFROM:-0500
-    TZOFFSETTO:-0400
-    END:DAYLIGHT
-    END:VTIMEZONE
-    BEGIN:VEVENT
-    UID:...
-    DTSTART;TZID=America/Montreal:20051012T090000
-    DURATION:PT1H
-    EXDATE;TZID=US/Pacific:20051014T090000
-    RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
-    RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
-    END:VEVENT
-    END:VCALENDAR
-    """,
 
     "Handling DATE without a VALUE=DATE" :
 
