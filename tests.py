@@ -309,13 +309,13 @@ class TestIcalendar(unittest.TestCase):
 
     def test_vtimezone_creation(self):
         tzs = dateutil.tz.tzical("test_files/timezones.ics")
-
+        pacific = tzs.get("US/Pacific")
         self.assertEqual(
-            str(tzs.get("US/Pacific")),
+            str(pacific),
             "<tzicalvtz 'US/Pacific'>"
         )
         self.assertEqual(
-            icalendar.TimezoneComponent(_),
+            icalendar.TimezoneComponent(pacific),
             "<VTIMEZONE | <TZID{}US/Pacific>>"
         )
         self.assertEqual(
@@ -326,6 +326,7 @@ class TestIcalendar(unittest.TestCase):
         self.assertEqual(
             santiago.serialize().replace('\r\n', '\n'),
             """BEGIN:VTIMEZONETZID:SantiagoBEGIN:STANDARDDTSTART:20000311T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=3TZNAME:Pacific SA Standard TimeTZOFFSETFROM:-0300TZOFFSETTO:-0400END:STANDARDBEGIN:DAYLIGHTDTSTART:20001014T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=10TZNAME:Pacific SA Daylight TimeTZOFFSETFROM:-0400TZOFFSETTO:-0300END:DAYLIGHTEND:VTIMEZONE"""
+        )
         """
         >>> roundtrip = dateutil.tz.tzical(StringIO(str(ser))).get()
         >>> for year in range(2001, 2010):
@@ -352,6 +353,7 @@ class TestIcalendar(unittest.TestCase):
         TZOFFSETTO:-0400
         END:DAYLIGHT
         END:VTIMEZONE
+        """
 
     def test_freeBusy(self):
         test_cal = get_test_file("freebusy.ics")
