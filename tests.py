@@ -322,7 +322,6 @@ class TestIcalendar(unittest.TestCase):
             santiago.serialize().replace('\r\n', ''),
             """BEGIN:VTIMEZONETZID:SantiagoBEGIN:STANDARDDTSTART:20000311T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=3TZNAME:Pacific SA Standard TimeTZOFFSETFROM:-0300TZOFFSETTO:-0400END:STANDARDBEGIN:DAYLIGHTDTSTART:20001014T000000RRULE:FREQ=YEARLY;BYDAY=2SA;BYMONTH=10TZNAME:Pacific SA Daylight TimeTZOFFSETFROM:-0400TZOFFSETTO:-0300END:DAYLIGHTEND:VTIMEZONE"""
         )
-        tzs.close()
         """
         >>> roundtrip = dateutil.tz.tzical(StringIO(str(ser))).get()
         >>> for year in range(2001, 2010):
