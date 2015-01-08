@@ -61,6 +61,49 @@ class TestCalendarSerializing(unittest.TestCase):
             'The title こんにちはキティ'
         )
 
+    def test_ical_to_hcal(self):
+        """
+        Serializing iCalendar to hCalendar.
+
+        """
+        cal = base.newFromBehavior('hcalendar')
+        self.assertEqual(
+            str(cal.behavior),
+            "<class 'vobject.hcalendar.HCalendar'>"
+        )
+        cal.add('vevent')
+        cal.vevent.add('summary').value = "this is a note"
+        cal.vevent.add('url').value = "http://microformats.org/code/hcalendar/creator"
+        cal.vevent.add('dtstart').value = datetime.date(2006,2,27)
+        cal.vevent.add('location').value = "a place"
+        cal.vevent.add('dtend').value = datetime.date(2006,2,27) + datetime.timedelta(days = 2)
+
+        event2 = cal.add('vevent')
+        event2.add('summary').value = "Another one"
+        event2.add('description').value = "The greatest thing ever!"
+        event2.add('dtstart').value = datetime.datetime(1998, 12, 17, 16, 42, tzinfo = pacific)
+        event2.add('location').value = "somewhere else"
+        event2.add('dtend').value = event2.dtstart.value + datetime.timedelta(days = 6)
+        hcal = cal.serialize()
+
+        self.assertEqual(
+            str(hcal),
+            """<span class="vevent">
+                   <a class="url" href="http://microformats.org/code/hcalendar/creator">
+                      <span class="summary">this is a note</span>:
+                      <abbr class="dtstart", title="20060227">Monday, February 27</abbr>
+                      - <abbr class="dtend", title="20060301">Tuesday, February 28</abbr>
+                      at <span class="location">a place</span>
+                   </a>
+                </span>
+                <span class="vevent">
+                   <span class="summary">Another one</span>:
+                   <abbr class="dtstart", title="19981217T164200-0800">Thursday, December 17, 16:42</abbr>
+                   - <abbr class="dtend", title="19981223T164200-0800">Wednesday, December 23, 16:42</abbr>
+                   at <span class="location">somewhere else</span>
+                   <div class="description">The greatest thing ever!</div>
+                </span>
+            """
 
 class TestBehaviors(unittest.TestCase):
     def test_general_behavior(self):
@@ -355,8 +398,6 @@ class TestIcalendar(unittest.TestCase):
         #    cal.serialize().replace('\r\n', ''),
         #    """BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//PYVOBJECT//NONSGML Version 1//EN\nBEGIN:VTIMEZONE\nTZID:America/Montreal\nBEGIN:STANDARD\nDTSTART:20000101T000000\nRRULE:FREQ=YEARLY;BYMONTH=1;UNTIL=20040101T050000Z\nTZNAME:EST\nTZOFFSETFROM:-0500\nTZOFFSETTO:-0500\nEND:STANDARD\nBEGIN:STANDARD\nDTSTART:20051030T020000\nRRULE:FREQ=YEARLY;BYDAY=5SU;BYMONTH=10\nTZNAME:EST\nTZOFFSETFROM:-0400\nTZOFFSETTO:-0500\nEND:STANDARD\nBEGIN:DAYLIGHT\nDTSTART:20050403T070000\nRRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=20050403T120000Z\nTZNAME:EDT\nTZOFFSETFROM:-0500\nTZOFFSETTO:-0400\nEND:DAYLIGHT\nEND:VTIMEZONE\nBEGIN:VEVENT\nUID:20150108T164047Z - 11645@testing-worker-linux-12-1-29784-linux-12-4633\n5445\nDTSTART;TZID=America/Montreal:20051012T090000\nDURATION:PT1H\nEXDATE;TZID=US/Pacific:20051014T090000\nRRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-5,-1\nEND:VEVENT\nEND:VCALENDAR\n"""
         #)
-
-
 
     def test_freeBusy(self):
         test_cal = get_test_file("freebusy.ics")

@@ -112,65 +112,6 @@ __test__ = { "Test readOne" :
     datetime.datetime(2002, 10, 28, 12, 0, tzinfo=tzutc())
     """,
 
-    "VTIMEZONE creation test:" :
-
-    """
-
-    """,
-
-
-
-    "Handling DATE without a VALUE=DATE" :
-
-    """
-    >>> import datetime
-    >>> cal = base.readOne(badDtStartTest)
-    >>> print(cal.vevent.dtstart)
-    >>> cal.vevent.dtstart.value
-    datetime.date(2002, 10, 28)
-    """,
-
-    "Serializing iCalendar to hCalendar" :
-
-    """
-    >>> import dateutil
-    >>> from six import StringIO
-    >>> cal = base.newFromBehavior('hcalendar')
-    >>> cal.behavior
-    <class 'vobject.hcalendar.HCalendar'>
-    >>> pacific = dateutil.tz.tzical(StringIO(timezones)).get('US/Pacific')
-    >>> cal.add('vevent')
-    <VEVENT| []>
-    >>> cal.vevent.add('summary').value = "this is a note"
-    >>> cal.vevent.add('url').value = "http://microformats.org/code/hcalendar/creator"
-    >>> cal.vevent.add('dtstart').value = datetime.date(2006,2,27)
-    >>> cal.vevent.add('location').value = "a place"
-    >>> cal.vevent.add('dtend').value = datetime.date(2006,2,27) + datetime.timedelta(days = 2)
-    >>> event2 = cal.add('vevent')
-    >>> event2.add('summary').value = "Another one"
-    >>> event2.add('description').value = "The greatest thing ever!"
-    >>> event2.add('dtstart').value = datetime.datetime(1998, 12, 17, 16, 42, tzinfo = pacific)
-    >>> event2.add('location').value = "somewhere else"
-    >>> event2.add('dtend').value = event2.dtstart.value + datetime.timedelta(days = 6)
-    >>> hcal = cal.serialize()
-    >>> print(hcal)
-    <span class="vevent">
-       <a class="url" href="http://microformats.org/code/hcalendar/creator">
-          <span class="summary">this is a note</span>:
-          <abbr class="dtstart", title="20060227">Monday, February 27</abbr>
-          - <abbr class="dtend", title="20060301">Tuesday, February 28</abbr>
-          at <span class="location">a place</span>
-       </a>
-    </span>
-    <span class="vevent">
-       <span class="summary">Another one</span>:
-       <abbr class="dtstart", title="19981217T164200-0800">Thursday, December 17, 16:42</abbr>
-       - <abbr class="dtend", title="19981223T164200-0800">Wednesday, December 23, 16:42</abbr>
-       at <span class="location">somewhere else</span>
-       <div class="description">The greatest thing ever!</div>
-    </span>
-    """,
-
     "Generate UIDs automatically test:" :
 
     """
