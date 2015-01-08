@@ -66,6 +66,7 @@ class TestCalendarSerializing(unittest.TestCase):
         Serializing iCalendar to hCalendar.
 
         """
+        tzs = dateutil.tz.tzical("test_files/timezones.ics")
         cal = base.newFromBehavior('hcalendar')
         self.assertEqual(
             str(cal.behavior),
@@ -81,7 +82,7 @@ class TestCalendarSerializing(unittest.TestCase):
         event2 = cal.add('vevent')
         event2.add('summary').value = "Another one"
         event2.add('description').value = "The greatest thing ever!"
-        event2.add('dtstart').value = datetime.datetime(1998, 12, 17, 16, 42, tzinfo = pacific)
+        event2.add('dtstart').value = datetime.datetime(1998, 12, 17, 16, 42, tzinfo = tzs.get('US/Pacific'))
         event2.add('location').value = "somewhere else"
         event2.add('dtend').value = event2.dtstart.value + datetime.timedelta(days = 6)
         hcal = cal.serialize()
@@ -104,6 +105,8 @@ class TestCalendarSerializing(unittest.TestCase):
                    <div class="description">The greatest thing ever!</div>
                 </span>
             """
+        )
+
 
 class TestBehaviors(unittest.TestCase):
     def test_general_behavior(self):
