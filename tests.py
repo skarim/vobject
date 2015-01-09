@@ -289,7 +289,7 @@ class TestGeneralFileParsing(unittest.TestCase):
         f = get_test_file("simple_3_0_test.ics")
         card = base.readOne(f)
         self.assertEqual(
-            str(card.adr.value),
+            card.adr.value,
             "<Address: Haight Street 512;\nEscape, Test\nNovosibirsk,  80214\nGnuland>"
         )
         self.assertEqual(

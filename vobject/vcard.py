@@ -42,10 +42,13 @@ class Name(object):
         except:
             return False
 
+
 class Address(object):
     def __init__(self, street = '', city = '', region = '', code = '',
                  country = '', box = '', extended = ''):
-        """Each name attribute can be a string or a list of strings."""
+        """
+        Each name attribute can be a string or a list of strings.
+        """
         self.box      = box
         self.extended = extended
         self.street   = street
@@ -56,7 +59,9 @@ class Address(object):
 
     @staticmethod
     def toString(val, join_char='\n'):
-        """Turn a string or array value into a string."""
+        """
+        Turn a string or array value into a string.
+        """
         if type(val) in (list, tuple):
             return join_char.join(val)
         return val
@@ -135,8 +140,11 @@ class VCardBehavior(behavior.Behavior):
     allowGroup = True
     defaultBehavior = VCardTextBehavior
 
+
 class VCard3_0(VCardBehavior):
-    """vCard 3.0 behavior."""
+    """
+    vCard 3.0 behavior.
+    """
     name = 'VCARD'
     description = 'vCard 3.0, defined in rfc2426'
     versionString = '3.0'
@@ -156,7 +164,8 @@ class VCard3_0(VCardBehavior):
 
     @classmethod
     def generateImplicitParameters(cls, obj):
-        """Create PRODID, VERSION, and VTIMEZONEs if needed.
+        """
+        Create PRODID, VERSION, and VTIMEZONEs if needed.
 
         VTIMEZONEs will need to exist whenever TZID parameters exist or when
         datetimes with tzinfo exist.
@@ -165,6 +174,7 @@ class VCard3_0(VCardBehavior):
         if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
 registerBehavior(VCard3_0, default=True)
+
 
 class FN(VCardTextBehavior):
     name = "FN"
@@ -178,6 +188,7 @@ registerBehavior(Label)
 
 wacky_apple_photo_serialize = True
 REALLY_LARGE = 1E50
+
 
 class Photo(VCardTextBehavior):
     name = "Photo"
@@ -230,7 +241,10 @@ def serializeFields(obj, order=None):
             fields.append(','.join(escapedValueList))
     return ';'.join(fields)
 
+
 NAME_ORDER = ('family', 'given', 'additional', 'prefix', 'suffix')
+ADDRESS_ORDER = ('box', 'extended', 'street', 'city', 'region', 'code', 'country')
+
 
 class NameBehavior(VCardBehavior):
     """A structured name."""
@@ -252,28 +266,34 @@ class NameBehavior(VCardBehavior):
         return obj
 registerBehavior(NameBehavior, 'N')
 
-ADDRESS_ORDER = ('box', 'extended', 'street', 'city', 'region', 'code',
-                 'country')
 
 class AddressBehavior(VCardBehavior):
-    """A structured address."""
+    """
+    A structured address.
+    """
     hasNative = True
 
     @staticmethod
     def transformToNative(obj):
-        """Turn obj.value into an Address."""
-        if obj.isNative: return obj
+        """
+        Turn obj.value into an Address.
+        """
+        if obj.isNative:
+            return obj
         obj.isNative = True
         obj.value = Address(**dict(zip(ADDRESS_ORDER, splitFields(obj.value))))
         return obj
 
     @staticmethod
     def transformFromNative(obj):
-        """Replace the Address in obj.value with a string."""
+        """
+        Replace the Address in obj.value with a string.
+        """
         obj.isNative = False
         obj.value = serializeFields(obj.value, ADDRESS_ORDER)
         return obj
 registerBehavior(AddressBehavior, 'ADR')
+
 
 class OrgBehavior(VCardBehavior):
     """A list of organization values and sub-organization values."""
