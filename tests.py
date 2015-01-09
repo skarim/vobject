@@ -13,7 +13,7 @@ from vobject import base
 from vobject import icalendar
 
 from vobject.base import __behaviorRegistry as behavior_registry
-from vobject.base import ContentLine, newFromBehavior, parseLine, parseParams, ParseError, VObjectError
+from vobject.base import ContentLine, parseLine, ParseError, VObjectError
 from vobject.base import readComponents, textLineToContentLine
 
 from vobject.icalendar import MultiDateBehavior, PeriodBehavior, RecurringComponent, utc
@@ -274,13 +274,68 @@ class TestGeneralFileParsing(unittest.TestCase):
 
     def test_parseParams(self):
         self.assertEqual(
-            parseParams(';ALTREP="http://www.wiz.org"'),
+            base.parseParams(';ALTREP="http://www.wiz.org"'),
             [['ALTREP', 'http://www.wiz.org']]
         )
         self.assertEqual(
-            parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
+            base.parseParams(';ALTREP="http://www.wiz.org;;",Blah,Foo;NEXT=Nope;BAR'),
             [['ALTREP', 'http://www.wiz.org;;', 'Blah', 'Foo'], ['NEXT', 'Nope'], ['BAR']]
         )
+
+
+class TestVcards(unittest.TestCase):
+    def setUpClass(cls):
+        cls.test_file = get_test_file("vcard_with_groups.ics")
+        cls.card = base.readOne(cls.test_file)
+
+    def test_default_behavior(self):
+        """
+        Default behavior test.
+        """
+        card = self.card
+        self.assertEqual(
+            base.getBehavior('note'),
+            None
+        )
+        self.assertEqual(
+            str(card.note.behavior),
+            "<class 'vobject.vcard.VCardTextBehavior'>"
+        )
+        self.assertEqual(
+            str(card.note.value),
+            "The Mayor of the great city of  Goerlitz in the great country of Germany.\nNext line."
+        )
+
+    def test_with_groups(self):
+        """
+        vCard groups test
+        """
+        card = self.card
+        self.assertEqual(
+            str(card.group),
+            'home'
+        )
+        self.assertEqual(
+            str(card.tel.group),
+            'home'
+        )
+
+        card.group = card.tel.group = 'new'
+        self.assertEqual(
+            str(card.tel.serialize().strip()),
+            'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
+        )
+        self.assertEqual(
+            str(card.serialize().splitlines()[0]),
+            'new.BEGIN:VCARD'
+        )
+
+        dtstart = base.newFromBehavior('dtstart')
+        dtstart.group = "badgroup"
+        self.assertRaises(
+            VObjectError, dtstart.serialize()
+        )
+
 
     def test_vcard_3_parsing(self):
         """
@@ -424,7 +479,7 @@ class TestIcalendar(unittest.TestCase):
     def test_freeBusy(self):
         test_cal = get_test_file("freebusy.ics")
 
-        vfb = newFromBehavior('VFREEBUSY')
+        vfb = base.newFromBehavior('VFREEBUSY')
         vfb.add('uid').value = 'test'
         vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
         vfb.add('dtend').value   = vfb.dtstart.value + twoHours
@@ -439,14 +494,14 @@ class TestIcalendar(unittest.TestCase):
     def test_availablity(self):
         test_cal = get_test_file("availablity.ics")
 
-        vcal = newFromBehavior('VAVAILABILITY')
+        vcal = base.newFromBehavior('VAVAILABILITY')
         vcal.add('uid').value = 'test'
         vcal.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
         vcal.add('dtstart').value = datetime.datetime(2006, 2, 16, 0, tzinfo=utc)
         vcal.add('dtend').value   = datetime.datetime(2006, 2, 17, 0, tzinfo=utc)
         vcal.add('busytype').value = "BUSY"
 
-        av = newFromBehavior('AVAILABLE')
+        av = base.newFromBehavior('AVAILABLE')
         av.add('uid').value = 'test1'
         av.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
         av.add('dtstart').value = datetime.datetime(2006, 2, 16, 9, tzinfo=utc)

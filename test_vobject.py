@@ -25,24 +25,7 @@ if __name__ == '__main__':
     unittest.main(testRunner=runner)
 
 
-vcardWithGroups = r"""home.begin:vcard
-version:3.0
-source:ldap://cn=Meister%20Berger,o=Universitaet%20Goerlitz,c=DE
-name:Meister Berger
-fn:Meister Berger
-n:Berger;Meister
-bday;value=date:1963-09-21
-o:Universit=E6t G=F6rlitz
-title:Mayor
-title;language=de;value=text:Burgermeister
-note:The Mayor of the great city of
-  Goerlitz in the great country of Germany.\nNext line.
-email;internet:mb@goerlitz.de
-home.tel;type=fax,voice;type=msg:+49 3581 123456
-home.label:Hufenshlagel 1234\n
- 02828 Goerlitz\n
- Deutschland
-END:VCARD"""
+vcardWithGroups = r""""""
 
 lowercaseComponentNames = r"""begin:vcard
 fn:Anders Bobo
@@ -107,8 +90,6 @@ __test__ = { "Test readOne" :
     1
     """,
 
-
-
     "Multi-text serialization test:" :
 
     """
@@ -130,45 +111,5 @@ __test__ = { "Test readOne" :
     REQUEST-STATUS:5.1;Service unavailable
     """,
 
-    "vCard groups test:" :
 
-    """
-    >>> card = base.readOne(vcardWithGroups)
-    >>> card.group
-    u'home'
-    >>> card.tel.group
-    u'home'
-    >>> card.group = card.tel.group = 'new'
-    >>> card.tel.serialize().strip()
-    'new.TEL;TYPE=fax,voice,msg:+49 3581 123456'
-    >>> card.serialize().splitlines()[0]
-    'new.BEGIN:VCARD'
-    >>> dtstart = base.newFromBehavior('dtstart')
-    >>> dtstart.group = "badgroup"
-    >>> dtstart.serialize()
-    Traceback (most recent call last):
-    ...
-    VObjectError: "<DTSTART{}> has a group, but this object doesn't support groups"
-    """,
-
-    "Lowercase components test:" :
-
-    """
-    >>> card = base.readOne(lowercaseComponentNames)
-    >>> card.version
-    <VERSION{}2.1>
-    """,
-
-    "Default behavior test" :
-
-    """
-    >>> card = base.readOne(vcardWithGroups)
-    >>> base.getBehavior('note') == None
-    True
-    >>> card.note.behavior
-    <class 'vobject.vcard.VCardTextBehavior'>
-    >>> print(card.note.value)
-    The Mayor of the great city of  Goerlitz in the great country of Germany.
-    Next line.
-    """
     }
