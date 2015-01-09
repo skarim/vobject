@@ -25,22 +25,6 @@ if __name__ == '__main__':
     unittest.main(testRunner=runner)
 
 
-
-vcardtest =r"""BEGIN:VCARD
-VERSION:3.0
-FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
-N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto)
-NICKNAME:gnat and gnu and pluto
-BDAY;value=date:02-10
-TEL;type=HOME:+01-(0)2-765.43.21
-TEL;type=CELL:+01-(0)5-555.55.55
-ACCOUNT;type=HOME:010-1234567-05
-ADR;type=HOME:;;Haight Street 512\;\nEscape\, Test;Novosibirsk;;80214;Gnuland
-TEL;type=HOME:+01-(0)2-876.54.32
-ORG:University of Novosibirsk\, Department of Octopus
-  Parthenogenesis
-END:VCARD"""
-
 vcardWithGroups = r"""home.begin:vcard
 version:3.0
 source:ldap://cn=Meister%20Berger,o=Universitaet%20Goerlitz,c=DE
@@ -123,35 +107,7 @@ __test__ = { "Test readOne" :
     1
     """,
 
-    "VCARD 3.0 parse test:" :
 
-    r"""
-    >>> card = base.readOne(vcardtest)
-    >>> card.adr.value
-    <Address: Haight Street 512;\nEscape, Test\nNovosibirsk,  80214\nGnuland>
-    >>> print(card.adr.value)
-    Haight Street 512;
-    Escape, Test
-    Novosibirsk,  80214
-    Gnuland
-    >>> card.org.value
-    [u'University of Novosibirsk, Department of Octopus Parthenogenesis']
-    >>> print(card.serialize())
-    BEGIN:VCARD
-    VERSION:3.0
-    ACCOUNT;TYPE=HOME:010-1234567-05
-    ADR;TYPE=HOME:;;Haight Street 512\;\nEscape\, Test;Novosibirsk;;80214;Gnul
-     and
-    BDAY;VALUE=date:02-10
-    FN:Daffy Duck Knudson (with Bugs Bunny and Mr. Pluto)
-    N:Knudson;Daffy Duck (with Bugs Bunny and Mr. Pluto);;;
-    NICKNAME:gnat and gnu and pluto
-    ORG:University of Novosibirsk\, Department of Octopus Parthenogenesis
-    TEL;TYPE=HOME:+01-(0)2-765.43.21
-    TEL;TYPE=CELL:+01-(0)5-555.55.55
-    TEL;TYPE=HOME:+01-(0)2-876.54.32
-    END:VCARD
-    """,
 
     "Multi-text serialization test:" :
 

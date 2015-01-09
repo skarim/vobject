@@ -3,10 +3,10 @@
 from __future__ import print_function
 
 import copy
-import re
-import sys
 import logging
+import re
 import six
+import sys
 
 # Python 3 no longer has a basestring type, so....
 try:
