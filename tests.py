@@ -284,6 +284,8 @@ class TestGeneralFileParsing(unittest.TestCase):
 
 
 class TestVcards(unittest.TestCase):
+
+    @classmethod
     def setUpClass(cls):
         cls.test_file = get_test_file("vcard_with_groups.ics")
         cls.card = base.readOne(cls.test_file)
