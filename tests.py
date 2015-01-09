@@ -300,10 +300,6 @@ class TestVcards(unittest.TestCase):
             None
         )
         self.assertEqual(
-            str(card.note.behavior),
-            "<class 'vobject.vcard.VCardTextBehavior'>"
-        )
-        self.assertEqual(
             str(card.note.value),
             "The Mayor of the great city of  Goerlitz in the great country of Germany.\nNext line."
         )
@@ -334,8 +330,9 @@ class TestVcards(unittest.TestCase):
 
         dtstart = base.newFromBehavior('dtstart')
         dtstart.group = "badgroup"
-        self.assertRaises(
-            VObjectError, dtstart.serialize()
+        self.assertEqual(
+            str(dtstart.serialize()),
+            'VObjectError: "<DTSTART{}> has a group, but this object doesn\'t support groups"'
         )
 
 
