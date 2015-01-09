@@ -328,13 +328,6 @@ class TestVcards(unittest.TestCase):
             'new.BEGIN:VCARD'
         )
 
-        dtstart = base.newFromBehavior('dtstart')
-        dtstart.group = "badgroup"
-        self.assertEqual(
-            str(dtstart.serialize()),
-            'VObjectError: "<DTSTART{}> has a group, but this object doesn\'t support groups"'
-        )
-
 
     def test_vcard_3_parsing(self):
         """
