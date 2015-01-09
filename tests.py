@@ -286,8 +286,8 @@ class TestGeneralFileParsing(unittest.TestCase):
         """
         VCARD 3.0 parse test
         """
-        f = get_test_file("simple_3_0_test.ics")
-        card = base.readOne(f)
+        test_file = get_test_file("simple_3_0_test.ics")
+        card = base.readOne(test_file, findBegin=False)
         self.assertEqual(
             card.adr.value,
             "<Address: Haight Street 512;\nEscape, Test\nNovosibirsk,  80214\nGnuland>"
