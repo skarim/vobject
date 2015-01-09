@@ -301,7 +301,7 @@ class TestVcards(unittest.TestCase):
         )
         self.assertEqual(
             str(card.note.value),
-            "The Mayor of the great city of  Goerlitz in the great country of Germany.\nNext line."
+            "The Mayor of the great city of  Goerlitz in the great country of Germany.\\nNext line."
         )
 
     def test_with_groups(self):
