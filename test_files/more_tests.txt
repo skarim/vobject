@@ -1,8 +1,5 @@
 
-Unicode in vCards
-.................
 
->>>
 
 Helper function
 ...............
@@ -13,14 +10,7 @@ Helper function
 ...     except: # different paths, depending on whether doctest is run directly
 ...         return resource_stream(__name__, path)
 
-Unicode in TZID
-...............
->>> f = get_stream("tzid_8bit.ics")
->>> cal = vobject.readOne(f)
->>> print(cal.vevent.dtstart.value)
-2008-05-30 15:00:00+06:00
->>> print(cal.vevent.dtstart.serialize())
-DTSTART;TZID=Екатеринбург:20080530T150000
+
 
 Commas in TZID
 ..............

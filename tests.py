@@ -59,14 +59,17 @@ class TestCalendarSerializing(unittest.TestCase):
             vevent.summary.value,
             'The title こんにちはキティ'
         )
-
-        card = vCard()
-        card.add('fn').value = u'Hello\u1234 World!'
-        card.add('n').value = vcard.Name('World', u'Hello\u1234')
-        card.add('adr').value = vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
+    def test_unicode_in_TZID(self):
+        """Unicode in TZID"""
+        f = get_test_file("tzid_8bit.ics")
+        cal = base.readOne(f)
         self.assertEqual(
-            str(card),
-            '<VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>'
+            cal.vevent.dtstart.value,
+            '2008-05-30 15:00:00+06:00'
+        )
+        self.assertEqual(
+            cal.vevent.dtstart.serialize(),
+            'DTSTART;TZID=Екатеринбург:20080530T150000'
         )
 
 
