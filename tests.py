@@ -377,6 +377,15 @@ class TestIcalendar(unittest.TestCase):
     Tests for icalendar.py
     """
     maxDiff = None
+    def test_uid_creation(self):
+        """Generate UIDs automatically test"""
+        cal = base.newFromBehavior('vcalendar')
+        cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
+        self.assertEqual(
+            len(cal.vevent.uid_list),
+            1
+        )
+
     def test_parseDTStart(self):
         """
         Should take a content line and return a datetime object.
