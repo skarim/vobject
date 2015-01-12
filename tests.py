@@ -78,6 +78,15 @@ class TestCalendarSerializing(unittest.TestCase):
             "CATEGORIES:Random category,Other category"
         )
 
+    def test_semicolon_separated(self):
+        """Semi-colon separated multi-text serialization test"""
+        requestStatus = base.newFromBehavior('request-status')
+        requestStatus.value = ['5.1', 'Service unavailable']
+        self.assertEqual(
+            requestStatus.serialize().strip(),
+            "REQUEST-STATUS:5.1;Service unavailable"
+        )
+
     def test_ical_to_hcal(self):
         """
         Serializing iCalendar to hCalendar.

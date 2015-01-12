@@ -90,14 +90,4 @@ __test__ = { "Test readOne" :
     1
     """,
 
-    "Semi-colon separated multi-text serialization test:" :
-
-    """
-    >>> requestStatus = base.newFromBehavior('request-status')
-    >>> requestStatus.value = ['5.1', 'Service unavailable']
-    >>> print(requestStatus.serialize().strip())
-    REQUEST-STATUS:5.1;Service unavailable
-    """,
-
-
     }
