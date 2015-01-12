@@ -66,10 +66,7 @@ class TestCalendarSerializing(unittest.TestCase):
         Multi-text serialization test
         """
         category = base.newFromBehavior('categories')
-        self.assertEqual(
-            category.value,
-            ['Random category']
-        )
+        category.value = ['Random category']
         self.assertEqual(
             category.serialize().strip(),
             "CATEGORIES:Random category"
