@@ -1,5 +1,23 @@
 
+Unicode in vCards
+.................
 
+>>> import vobject
+>>> card = vobject.vCard()
+>>> card.add('fn').value = u'Hello\u1234 World!'
+>>> card.add('n').value = vobject.vcard.Name('World', u'Hello\u1234')
+>>> card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
+>>> card
+<VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>
+>>> card.serialize()
+u'BEGIN:VCARD\r\nVERSION:3.0\r\nADR:;;5\u1234 Nowhere\\, Apt 1;Berkeley;CA;94704;USA\r\nFN:Hello\u1234 World!\r\nN:World;Hello\u1234;;;\r\nEND:VCARD\r\n'
+>>> print(card.serialize())
+BEGIN:VCARD
+VERSION:3.0
+ADR:;;5ሴ Nowhere\, Apt 1;Berkeley;CA;94704;USA
+FN:Helloሴ World!
+N:World;Helloሴ;;;
+END:VCARD
 
 Helper function
 ...............
@@ -10,7 +28,14 @@ Helper function
 ...     except: # different paths, depending on whether doctest is run directly
 ...         return resource_stream(__name__, path)
 
-
+Unicode in TZID
+...............
+>>> f = get_stream("tzid_8bit.ics")
+>>> cal = vobject.readOne(f)
+>>> print(cal.vevent.dtstart.value)
+2008-05-30 15:00:00+06:00
+>>> print(cal.vevent.dtstart.serialize())
+DTSTART;TZID=Екатеринбург:20080530T150000
 
 Commas in TZID
 ..............

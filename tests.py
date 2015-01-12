@@ -9,7 +9,8 @@ import unittest
 from dateutil.tz import tzutc
 from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 
-from vobject import base, icalendar, vCard, vcard
+from vobject import base
+from vobject import icalendar
 
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, parseLine, ParseError
@@ -59,21 +60,6 @@ class TestCalendarSerializing(unittest.TestCase):
             vevent.summary.value,
             'The title こんにちはキティ'
         )
-    """
-    def test_unicode_in_TZID(self):
-        #Unicode in TZID
-        f = get_test_file("tzid_8bit.ics")
-        cal = base.readOne(f)
-        self.assertEqual(
-            cal.vevent.dtstart.value,
-            '2008-05-30 15:00:00+06:00'
-        )
-        #self.assertEqual(
-        #    cal.vevent.dtstart.serialize(),
-        #    'DTSTART;TZID=Екатеринбург:20080530T150000'
-        #)
-    """
-
 
     def test_multiline(self):
         """
@@ -391,7 +377,6 @@ class TestIcalendar(unittest.TestCase):
     Tests for icalendar.py
     """
     maxDiff = None
-
     def test_parseDTStart(self):
         """
         Should take a content line and return a datetime object.
