@@ -61,6 +61,16 @@ class TestCalendarSerializing(unittest.TestCase):
             'The title こんにちはキティ'
         )
 
+        card = vobject.vCard()
+        card.add('fn').value = u'Hello\u1234 World!'
+        card.add('n').value = vobject.vcard.Name('World', u'Hello\u1234')
+        card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
+        self.assertEqual(
+            str(card),
+            '<VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>'
+        )
+
+
     def test_multiline(self):
         """
         Multi-text serialization test
@@ -377,14 +387,6 @@ class TestIcalendar(unittest.TestCase):
     Tests for icalendar.py
     """
     maxDiff = None
-    def test_uid_creation(self):
-        """Generate UIDs automatically test"""
-        cal = base.newFromBehavior('vcalendar')
-        cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
-        self.assertEqual(
-            len(cal.vevent.uid),
-            1
-        )
 
     def test_parseDTStart(self):
         """
