@@ -382,7 +382,7 @@ class TestIcalendar(unittest.TestCase):
         cal = base.newFromBehavior('vcalendar')
         cal.add('vevent').add('dtstart').value = datetime.datetime(2006,2,2,10)
         self.assertEqual(
-            len(cal.vevent.uid_list),
+            len(cal.vevent.uid),
             1
         )
 
