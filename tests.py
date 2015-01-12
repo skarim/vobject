@@ -13,7 +13,7 @@ from vobject import base
 from vobject import icalendar
 
 from vobject.base import __behaviorRegistry as behavior_registry
-from vobject.base import ContentLine, parseLine, ParseError, VObjectError
+from vobject.base import ContentLine, parseLine, ParseError
 from vobject.base import readComponents, textLineToContentLine
 
 from vobject.icalendar import MultiDateBehavior, PeriodBehavior, RecurringComponent, utc
@@ -59,6 +59,26 @@ class TestCalendarSerializing(unittest.TestCase):
         self.assertEqual(
             vevent.summary.value,
             'The title こんにちはキティ'
+        )
+
+    def test_multiline(self):
+        """
+        Multi-text serialization test
+        """
+        category = base.newFromBehavior('categories')
+        self.assertEqual(
+            category.value,
+            ['Random category']
+        )
+        self.assertEqual(
+            category.serialize().strip(),
+            "CATEGORIES:Random category"
+        )
+
+        category.value.append('Other category')
+        self.assertEqual(
+            category.serialize().strip(),
+            "CATEGORIES:Random category,Other category"
         )
 
     def test_ical_to_hcal(self):

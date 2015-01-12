@@ -90,18 +90,6 @@ __test__ = { "Test readOne" :
     1
     """,
 
-    "Multi-text serialization test:" :
-
-    """
-    >>> category = base.newFromBehavior('categories')
-    >>> category.value = ['Random category']
-    >>> print(category.serialize().strip())
-    CATEGORIES:Random category
-    >>> category.value.append('Other category')
-    >>> print(category.serialize().strip())
-    CATEGORIES:Random category,Other category
-    """,
-
     "Semi-colon separated multi-text serialization test:" :
 
     """
