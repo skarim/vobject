@@ -61,7 +61,7 @@ class TestCalendarSerializing(unittest.TestCase):
         )
     """
     def test_unicode_in_TZID(self):
-        """Unicode in TZID"""
+        #Unicode in TZID
         f = get_test_file("tzid_8bit.ics")
         cal = base.readOne(f)
         self.assertEqual(
