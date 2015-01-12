@@ -9,8 +9,7 @@ import unittest
 from dateutil.tz import tzutc
 from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 
-from vobject import base
-from vobject import icalendar
+from vobject import base, icalendar, vCard, vcard
 
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, parseLine, ParseError
@@ -61,10 +60,10 @@ class TestCalendarSerializing(unittest.TestCase):
             'The title こんにちはキティ'
         )
 
-        card = vobject.vCard()
+        card = vCard()
         card.add('fn').value = u'Hello\u1234 World!'
-        card.add('n').value = vobject.vcard.Name('World', u'Hello\u1234')
-        card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
+        card.add('n').value = vcard.Name('World', u'Hello\u1234')
+        card.add('adr').value = vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
         self.assertEqual(
             str(card),
             '<VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>'
