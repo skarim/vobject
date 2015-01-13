@@ -46,7 +46,7 @@ doclines = __doc__.splitlines()
 
 setup(name = "vobject",
       version = "0.8.1c",
-      author = "Jeffrey Harris",
+      author = "Jeffrey Harris, Tim Baxter",
       author_email = "jeffrey@osafoundation.org",
       license = "Apache",
       zip_safe = True,

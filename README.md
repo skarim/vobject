@@ -2,31 +2,32 @@
 VObject
 =======
 
-[![Build Status](https://travis-ci.org/tBaxter/vobject.svg?branch=master)](https://travis-ci.org/tBaxter/vobject)
-
 VObject simplifies the process of parsing and creating iCalendar and
 vCard objects.
+
+This fork has been substantially rewritten for Python3 support, bug fixes, and to include some proper unit tests.
 
 --------------
  Installation
 --------------
 
-To install vobject, run::
+To install this fork of vobject, pip install from git:
 
-  python setup.py install
+`pip install git+https://github.com/tBaxter/vobject.git`
 
 vobject requires the dateutil package, which can be installed via
 easy_install or downloaded from http://labix.org/python-dateutil
 
-six should also be installed: `pip install six`
+six should also be installed, if it isn't already: `pip install six`
 
 ---------------
  Running tests
 ---------------
 
-Unit tests live in doctests throughout the source code, to run all tests, use::
+[![Build Status](https://travis-ci.org/tBaxter/vobject.svg?branch=master)](https://travis-ci.org/tBaxter/vobject)
 
-  python tests/tests.py
+To run unit tests, use `python tests.py` from within the vobject directory.
+
 
 -------
  Usage

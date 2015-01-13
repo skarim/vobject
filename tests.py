@@ -426,6 +426,7 @@ class TestIcalendar(unittest.TestCase):
             stringToTextValues('abcd,efgh'),
             ['abcd', 'efgh']
         )
+
     def test_stringToPeriod(self):
         self.assertEqual(
             stringToPeriod("19970101T180000Z/19970102T070000Z"),
