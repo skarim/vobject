@@ -1,4 +1,3 @@
-=======
 VObject
 =======
 
@@ -6,6 +5,8 @@ VObject simplifies the process of parsing and creating iCalendar and
 vCard objects.
 
 This fork has been substantially rewritten for Python3 support, bug fixes, and to include some proper unit tests.
+
+[![Build Status](https://travis-ci.org/tBaxter/vobject.svg?branch=master)](https://travis-ci.org/tBaxter/vobject)
 
 --------------
  Installation
@@ -20,8 +21,6 @@ six should also be installed, if it isn't already: `pip install six`
 ---------------
  Running tests
 ---------------
-
-[![Build Status](https://travis-ci.org/tBaxter/vobject.svg?branch=master)](https://travis-ci.org/tBaxter/vobject)
 
 To run unit tests, use `python tests.py` from within the vobject directory.
 
