@@ -11,12 +11,9 @@ This fork has been substantially rewritten for Python3 support, bug fixes, and t
  Installation
 --------------
 
-To install this fork of vobject, pip install from git:
+To install this fork of vobject, pip install from git: `pip install git+https://github.com/tBaxter/vobject.git`
 
-`pip install git+https://github.com/tBaxter/vobject.git`
-
-vobject requires the dateutil package, which can be installed via
-easy_install or downloaded from http://labix.org/python-dateutil
+vobject requires the dateutil 2.0: `pip install dateutil`
 
 six should also be installed, if it isn't already: `pip install six`
 
