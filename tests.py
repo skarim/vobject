@@ -5,6 +5,7 @@ import datetime
 import dateutil
 import re
 import unittest
+import io
 
 from dateutil.tz import tzutc
 from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
@@ -27,7 +28,7 @@ def get_test_file(path):
     Helper function to open and read test files.
     """
     filepath = "test_files/{}".format(path)
-    f = open(filepath, 'r')
+    f = io.open(filepath, 'r', encoding='utf-8')
     text = f.read()
     f.close()
     return text
