@@ -6,6 +6,7 @@ import dateutil
 import re
 import unittest
 import io
+import sys
 
 from dateutil.tz import tzutc
 from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
@@ -28,7 +29,13 @@ def get_test_file(path):
     Helper function to open and read test files.
     """
     filepath = "test_files/{}".format(path)
-    f = io.open(filepath, 'r', encoding='utf-8')
+    if sys.version_info[0] < 3:
+        # On python 2, this library operates on bytes.
+        f = open(filepath, 'r')
+    else:
+        # On python 3, it operates on unicode. We need to specify an encoding for systems
+        # for which the preferred encoding isn't utf-8 (e.g windows).
+        f = open(filepath, 'r', encoding='utf-8')
     text = f.read()
     f.close()
     return text
