@@ -56,7 +56,7 @@ setup(name = "vobject",
       include_package_data = True,
       test_suite = "test_vobject",
 
-      install_requires = ['python-dateutil >= 2.0'],
+      install_requires = ['python-dateutil == 2.4.0'],
 
       platforms = ["any"],
       packages = find_packages(),
