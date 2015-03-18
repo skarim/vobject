@@ -13,6 +13,18 @@ except:
 from datetime import datetime
 
 def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
+    """Change the timezone of the specified component.
+
+    Args:
+        cal (Component): the component to change
+        new_timezone (tzinfo): the timezone to change to
+        default (tzinfo): a timezone to assume if the dtstart or dtend in cal 
+            doesn't have an existing timezone
+        utc_only (bool): only convert dates that are in utc
+        utc_tz (tzinfo): the tzinfo to compare to for UTC when processing 
+            utc_only=True
+    """
+
     for vevent in getattr(cal, 'vevent_list', []):
         start = getattr(vevent, 'dtstart', None)
         end   = getattr(vevent, 'dtend',   None)
@@ -20,7 +32,7 @@ def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
             if node:
                 dt = node.value
                 if (isinstance(dt, datetime) and
-                    (not utc_only or dt.tzinfo == utc_tz)):
+                        (not utc_only or dt.tzinfo == utc_tz)):
                     if dt.tzinfo is None:
                         dt = dt.replace(tzinfo = default)
                     node.value = dt.astimezone(new_timezone)
@@ -45,7 +57,7 @@ def main():
         else:
             timezone = PyICU.ICUtzinfo.default
         print("... Reading %s" % ics_file)
-        cal = base.readOne(file(ics_file))
+        cal = base.readOne(open(ics_file))
         change_tz(cal, timezone, PyICU.ICUtzinfo.default, utc_only)
 
         out_name = ics_file + '.converted'
