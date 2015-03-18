@@ -3,7 +3,9 @@ from __future__ import print_function
 
 import datetime
 import dateutil
+import io
 import re
+import sys
 import unittest
 
 from dateutil.tz import tzutc
@@ -16,6 +18,8 @@ from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, parseLine, ParseError
 from vobject.base import readComponents, textLineToContentLine
 
+from vobject.change_tz import change_tz
+
 from vobject.icalendar import MultiDateBehavior, PeriodBehavior, RecurringComponent, utc
 from vobject.icalendar import parseDtstart, stringToTextValues, stringToPeriod, timedeltaToString
 
@@ -27,7 +31,13 @@ def get_test_file(path):
     Helper function to open and read test files.
     """
     filepath = "test_files/{}".format(path)
-    f = open(filepath, 'r')
+    if sys.version_info[0] < 3:
+        # On python 2, this library operates on bytes.
+        f = open(filepath, 'r')
+    else:
+        # On python 3, it operates on unicode. We need to specify an encoding for systems
+        # for which the preferred encoding isn't utf-8 (e.g windows).
+        f = open(filepath, 'r', encoding='utf-8')
     text = f.read()
     f.close()
     return text
@@ -586,6 +596,112 @@ class TestIcalendar(unittest.TestCase):
             list(vevent.getrruleset(True)),
             [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
         )
+
+
+class TestChangeTZ(unittest.TestCase):
+    """Tests for change_tz.change_tz"""
+
+    class StubCal(object):
+        class StubEvent(object):
+            class Node(object):
+                def __init__(self, value):
+                    self.value = value
+
+            def __init__(self, dtstart, dtend):
+                self.dtstart = self.Node(dtstart)
+                self.dtend = self.Node(dtend)
+
+        def __init__(self, dates):
+            """ dates is a list of tuples (dtstart, dtend) """
+            self.vevent_list = [self.StubEvent(*d) for d in dates]
+
+    def test_change_tz(self):
+        """Change the timezones of events in a component to a different
+        timezone"""
+
+        # Setup - create a stub vevent list
+        old_tz = dateutil.tz.gettz('UTC')  # 0:00
+        new_tz = dateutil.tz.gettz('America/Chicago')  # -5:00
+
+        dates = [
+            (datetime.datetime(1999, 12, 31, 23, 59, 59, 0, tzinfo=old_tz),
+             datetime.datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=old_tz)),
+            (datetime.datetime(2010, 12, 31, 23, 59, 59, 0, tzinfo=old_tz),
+             datetime.datetime(2011, 1, 2, 3, 0, 0, 0, tzinfo=old_tz))]
+
+        cal = self.StubCal(dates)
+
+        # Exercise - change the timezone
+        change_tz(cal, new_tz, dateutil.tz.gettz('UTC'))
+
+        # Test - that the tzs were converted correctly
+        expected_new_dates = [
+            (datetime.datetime(1999, 12, 31, 17, 59, 59, 0, tzinfo=new_tz),
+             datetime.datetime(1999, 12, 31, 18, 0, 0, 0, tzinfo=new_tz)),
+            (datetime.datetime(2010, 12, 31, 17, 59, 59, 0, tzinfo=new_tz),
+             datetime.datetime(2011, 1, 1, 21, 0, 0, 0, tzinfo=new_tz))]
+
+        for vevent, expected_datepair in zip(cal.vevent_list,
+                                             expected_new_dates):
+            self.assertEqual(vevent.dtstart.value, expected_datepair[0])
+            self.assertEqual(vevent.dtend.value, expected_datepair[1])
+
+    def test_change_tz_utc_only(self):
+        """Change any UTC timezones of events in a component to a different
+        timezone"""
+
+        # Setup - create a stub vevent list
+        utc_tz = dateutil.tz.gettz('UTC')  # 0:00
+        non_utc_tz = dateutil.tz.gettz('America/Santiago')  # -4:00
+        new_tz = dateutil.tz.gettz('America/Chicago')  # -5:00
+
+        dates = [
+            (datetime.datetime(1999, 12, 31, 23, 59, 59, 0, tzinfo=utc_tz),
+             datetime.datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=non_utc_tz))]
+
+        cal = self.StubCal(dates)
+
+        # Exercise - change the timezone passing utc_only=True
+        change_tz(cal, new_tz, dateutil.tz.gettz('UTC'), utc_only=True)
+
+        # Test - that only the utc item has changed
+        expected_new_dates = [
+            (datetime.datetime(1999, 12, 31, 17, 59, 59, 0, tzinfo=new_tz),
+             dates[0][1])]
+
+        for vevent, expected_datepair in zip(cal.vevent_list,
+                                             expected_new_dates):
+            self.assertEqual(vevent.dtstart.value, expected_datepair[0])
+            self.assertEqual(vevent.dtend.value, expected_datepair[1])
+
+    def test_change_tz_default(self):
+        """Change the timezones of events in a component to a different
+        timezone, passing a default timezone that is assumed when the events
+        don't have one"""
+
+        # Setup - create a stub vevent list
+        old_tz = dateutil.tz.gettz('UTC')  # 0:00
+        new_tz = dateutil.tz.gettz('America/Chicago')  # -5:00
+
+        dates = [
+            (datetime.datetime(1999, 12, 31, 23, 59, 59, 0, tzinfo=None),
+             datetime.datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=None))]
+
+        cal = self.StubCal(dates)
+
+        # Exercise - change the timezone
+        change_tz(cal, new_tz, dateutil.tz.gettz('UTC'))
+
+        # Test - that the tzs were converted correctly
+        expected_new_dates = [
+            (datetime.datetime(1999, 12, 31, 17, 59, 59, 0, tzinfo=new_tz),
+             datetime.datetime(1999, 12, 31, 18, 0, 0, 0, tzinfo=new_tz))]
+
+        for vevent, expected_datepair in zip(cal.vevent_list,
+                                             expected_new_dates):
+            self.assertEqual(vevent.dtstart.value, expected_datepair[0])
+            self.assertEqual(vevent.dtend.value, expected_datepair[1])
+
 
 if __name__ == '__main__':
     unittest.main()
