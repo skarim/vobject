@@ -76,7 +76,7 @@ VObject Overview
 
 """
 
-from .base import newFromBehavior, readOne
+from .base import newFromBehavior, readOne, readComponents
 
 
 def iCalendar():
