@@ -77,8 +77,8 @@ class TestCalendarSerializing(unittest.TestCase):
         """
         test_journal = get_test_file("journal.ics")
         vobj = base.readOne(test_journal)
-        vjournal = base.readOne(vobj.serialize()).vjournal
-        self.assertTrue('Joe, Lisa and Bob' in vjournal.description.value)
+        vjournal = base.readOne(vobj.serialize())
+        self.assertTrue('Joe, Lisa, and Bob' in vjournal.description.value)
         self.assertTrue('Tuesday.\n2.' in vjournal.description.value)
         
 
