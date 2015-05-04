@@ -71,6 +71,16 @@ class TestCalendarSerializing(unittest.TestCase):
             'The title こんにちはキティ'
         )
 
+    def test_wrapping(self):
+        """
+        Should support an input file with a long text field covering multiple lines
+        """
+        test_journal = get_test_file("journal.ics")
+        vobj = base.readOne(test_journal)
+        vjournal = base.readOne(vobj.serialize())
+        self.assertTrue('Joe, Lisa, and Bob' in vjournal.description.value)
+        self.assertTrue('Tuesday.\n2.' in vjournal.description.value)
+
     def test_multiline(self):
         """
         Multi-text serialization test
