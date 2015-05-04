@@ -80,7 +80,6 @@ class TestCalendarSerializing(unittest.TestCase):
         vjournal = base.readOne(vobj.serialize())
         self.assertTrue('Joe, Lisa, and Bob' in vjournal.description.value)
         self.assertTrue('Tuesday.\n2.' in vjournal.description.value)
-        
 
     def test_multiline(self):
         """
