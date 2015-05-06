@@ -13,7 +13,7 @@ from dateutil import rrule, tz
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
                     Component, ContentLine, logger, registerBehavior,
-                    backslashEscape, foldOneLine, u)
+                    backslashEscape, foldOneLine, str_)
 
 
 #------------------------------- Constants -------------------------------------
@@ -309,7 +309,7 @@ class TimezoneComponent(Component):
                 if tzinfo.dst(dt) == notDST:
                     return toUnicode(tzinfo.tzname(dt))
         # there was no standard time in 2000!
-        raise VObjectError("Unable to guess TZID for tzinfo %s" % u(tzinfo))
+        raise VObjectError("Unable to guess TZID for tzinfo %s" % tzinfo)
 
     def __str__(self):
         return "<VTIMEZONE | %s>" % getattr(self, 'tzid', 'No TZID')
@@ -399,7 +399,7 @@ class RecurringComponent(Component):
 
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
-                    value = str(line.value).replace('\\', '')
+                    value = str_(line.value).replace('\\', '')
                     rule = rrule.rrulestr(value, dtstart=dtstart)
                     until = rule._until
 
@@ -521,7 +521,7 @@ class RecurringComponent(Component):
                         days.extend(WEEKDAYS[n] for n in rule._byweekday)
 
                     if rule._bynweekday is not None:
-                        days.extend(u(n) + WEEKDAYS[day] for day, n in rule._bynweekday)
+                        days.extend(n + WEEKDAYS[day] for day, n in rule._bynweekday)
 
                     if len(days) > 0:
                         values['BYDAY'] = days
@@ -598,7 +598,7 @@ class TextBehavior(behavior.Behavior):
             if encoding and encoding.upper() == cls.base64string:
                 line.value = line.value.encode('base64').replace('\n', '')
             else:
-                line.value = backslashEscape(str(line.value))
+                line.value = backslashEscape(str_(line.value))
             line.encoded=True
 
 
@@ -663,7 +663,7 @@ class DateTimeBehavior(behavior.Behavior):
         if obj.isNative: return obj
         obj.isNative = True
         if obj.value == '': return obj
-        obj.value=u(obj.value)
+        obj.value=obj.value
         #we're cheating a little here, parseDtstart allows DATE
         obj.value=parseDtstart(obj)
         if obj.value.tzinfo is None:
@@ -707,7 +707,7 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         if obj.isNative: return obj
         obj.isNative = True
         if obj.value == '': return obj
-        obj.value=u(obj.value)
+        obj.value=obj.value
         obj.value=parseDtstart(obj, allowSignatureMismatch=True)
         if getattr(obj, 'value_param', 'DATE-TIME').upper() == 'DATE-TIME':
             if hasattr(obj, 'tzid_param'):
@@ -1319,7 +1319,7 @@ class Duration(behavior.Behavior):
         """Turn obj.value into a datetime.timedelta."""
         if obj.isNative: return obj
         obj.isNative = True
-        obj.value=u(obj.value)
+        obj.value=obj.value
         if obj.value == '':
             return obj
         else:

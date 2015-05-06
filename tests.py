@@ -65,6 +65,8 @@ class TestCalendarSerializing(unittest.TestCase):
     def test_unicode(self):
         test_cal = get_test_file("utf8_test.ics")
         vevent = base.readOne(test_cal).vevent
+        vevent2 = base.readOne(vevent.serialize())
+        self.assertEqual(str(vevent), str(vevent2))
 
         self.assertEqual(
             vevent.summary.value,
@@ -74,9 +76,11 @@ class TestCalendarSerializing(unittest.TestCase):
         if sys.version_info[0] < 3:
             test_cal = test_cal.decode('utf-8')
             vevent = base.readOne(test_cal).vevent
+            vevent2 = base.readOne(vevent.serialize())
+            self.assertEqual(str(vevent), str(vevent2))
             self.assertEqual(
                 vevent.summary.value,
-                u'The title こんにちはキティ'
+                'The title こんにちはキティ'
             )
 
     def test_wrapping(self):

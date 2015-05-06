@@ -8,18 +8,25 @@ import re
 import six
 import sys
 
+#------------------------------------ Python 2/3 compatibility challenges  -----
 # Python 3 no longer has a basestring type, so....
 try:
     basestring = basestring
 except NameError:
     basestring = (str,bytes)
 
-# Also, the six.u method breaks in python2 if the input variable is already unicode.
-# That's not good.
-def u(s):
-    if type(s)=='str':
-        return six.u(s)
-    return s
+## One more problem ... in python2 the str operator breaks on unicode
+## objects containing non-ascii characters
+try:
+    unicode
+    def str_(s):
+        if type(s) == unicode:
+            return s.encode('utf-8')
+        else:
+            return str(s)
+except NameError:
+    def str_(s):
+        return s
 
 #------------------------------------ Logging ----------------------------------
 logger = logging.getLogger(__name__)
@@ -182,7 +189,7 @@ class VBase(object):
                     msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise NativeError(msg, lineNumber)
         else:
-            return u(self)
+            return self
 
     def transformChildrenToNative(self):
         """Recursively replace children with their native representation."""
@@ -976,7 +983,10 @@ def defaultSerialize(obj, buf, lineLength):
         for key in keys:
             paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
             s.write(";{}={}".format(key, paramstr))
-        s.write(":{}".format(obj.value))
+        try:
+            s.write(":{}".format(str_(obj.value)))
+        except:
+            import pdb; pdb.set_trace()
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
@@ -1017,7 +1027,7 @@ def readComponents(streamOrString, validate=False, transform=True,
     Generate one Component at a time from a stream.
     """
     if isinstance(streamOrString, basestring):
-        stream = six.StringIO(streamOrString)
+        stream = six.StringIO(str_(streamOrString))
     else:
         stream = streamOrString
 
