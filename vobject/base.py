@@ -140,7 +140,7 @@ class VBase(object):
         else:
             try:
                 return self.behavior.transformToNative(self)
-            except ValueError as e:
+            except Exception as e:
                 # wrap errors in transformation in a ParseError
                 lineNumber = getattr(self, 'lineNumber', None)
 
