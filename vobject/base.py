@@ -14,6 +14,12 @@ try:
 except NameError:
     basestring = (str,bytes)
 
+# Also, the six.u method breaks in python2 if the input variable is already unicode.
+# That's not good.
+def u(s):
+    if type(s)=='str':
+        return six.u(s)
+    return s
 
 #------------------------------------ Logging ----------------------------------
 logger = logging.getLogger(__name__)
@@ -134,7 +140,7 @@ class VBase(object):
         else:
             try:
                 return self.behavior.transformToNative(self)
-            except Exception as e:
+            except ValueError as e:
                 # wrap errors in transformation in a ParseError
                 lineNumber = getattr(self, 'lineNumber', None)
 
@@ -176,7 +182,7 @@ class VBase(object):
                     msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise NativeError(msg, lineNumber)
         else:
-            return six.u(self)
+            return u(self)
 
     def transformChildrenToNative(self):
         """Recursively replace children with their native representation."""

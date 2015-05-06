@@ -77,7 +77,13 @@ VObject Overview
 """
 
 from .base import newFromBehavior, readOne, readComponents
-
+## TODO: if we import vcard here (or in the test code), the test code
+## breaks.  that should certainly be looked more into!  We most likely
+## should import vcard here, to make sure the __behaviorRegistry gets
+## populated correctly, and to make sure there won't be nasty
+## surprises that the library behaves differently dependent on weather
+## vcard is imported or not.
+from . import icalendar
 
 def iCalendar():
     return newFromBehavior('vcalendar', '2.0')

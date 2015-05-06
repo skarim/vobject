@@ -71,6 +71,14 @@ class TestCalendarSerializing(unittest.TestCase):
             'The title こんにちはキティ'
         )
 
+        if sys.version_info[0] < 3:
+            test_cal = test_cal.decode('utf-8')
+            vevent = base.readOne(test_cal).vevent
+            self.assertEqual(
+                vevent.summary.value,
+                u'The title こんにちはキティ'
+            )
+
     def test_wrapping(self):
         """
         Should support an input file with a long text field covering multiple lines
@@ -216,6 +224,15 @@ class TestBehaviors(unittest.TestCase):
             'TEST:20060216T100000/PT2H,20060516T100000/PT2H'
         )
 
+class TestVTodo(unittest.TestCase):
+    def test_vtodo(self):
+        vtodo = get_test_file("vtodo.ics")
+        obj = base.readOne(vtodo)
+        obj.vtodo.add('completed')
+        obj.vtodo.completed.value = datetime.datetime(2015,5,5,13,30)
+        self.assertEqual(obj.vtodo.completed.serialize()[0:23], 'COMPLETED:20150505T1330')
+        obj = base.readOne(obj.serialize())
+        self.assertEqual(obj.vtodo.completed.value, datetime.datetime(2015,5,5,13,30))
 
 class TestVobject(unittest.TestCase):
     maxDiff = None
