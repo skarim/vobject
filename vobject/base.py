@@ -983,10 +983,7 @@ def defaultSerialize(obj, buf, lineLength):
         for key in keys:
             paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
             s.write(";{}={}".format(key, paramstr))
-        try:
-            s.write(":{}".format(str_(obj.value)))
-        except:
-            import pdb; pdb.set_trace()
+        s.write(":{}".format(str_(obj.value)))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
