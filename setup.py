@@ -45,9 +45,9 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.8.2",
+      version = "0.8.3",
       author = "Jeffrey Harris, Tim Baxter",
-      author_email = "jeffrey@osafoundation.org",
+      author_email = "mail.baxter@gmail.com",
       license = "Apache",
       zip_safe = True,
       url = "http://vobject.skyhouseconsulting.com",
