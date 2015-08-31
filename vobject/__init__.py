@@ -85,7 +85,7 @@ from .base import newFromBehavior, readOne, readComponents
 ## sure there won't be nasty surprises that the library behaves
 ## differently dependent on whether vcard is imported or not.
 ## -- Tobias Brox, 2015-05-06
-from . import icalendar
+from . import icalendar, vcard
 
 def iCalendar():
     return newFromBehavior('vcalendar', '2.0')

@@ -5,4 +5,4 @@ python:
 install: pip install -e .
 script:
     - python tests.py
-    #- python test_vobject.py additional_tests
+sudo: false

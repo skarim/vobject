@@ -177,7 +177,7 @@ class TestBehaviors(unittest.TestCase):
         # Check expected behavior registry.
         self.assertEqual(
             sorted(behavior_registry.keys()),
-            ['', 'ACTION', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FREEBUSY', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']
+            ['', 'ACTION', 'ADR', 'AVAILABLE', 'BUSYTYPE', 'CALSCALE', 'CATEGORIES', 'CLASS', 'COMMENT', 'COMPLETED', 'CONTACT', 'CREATED', 'DAYLIGHT', 'DESCRIPTION', 'DTEND', 'DTSTAMP', 'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FN', 'FREEBUSY', 'LABEL', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'N', 'ORG', 'PHOTO', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO', 'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS', 'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY', 'VCALENDAR', 'VCARD', 'VEVENT', 'VFREEBUSY', 'VJOURNAL', 'VTIMEZONE', 'VTODO']
         )
 
         # test get_behavior
@@ -357,6 +357,13 @@ class TestVcards(unittest.TestCase):
         cls.test_file = get_test_file("vcard_with_groups.ics")
         cls.card = base.readOne(cls.test_file)
 
+    def test_vcard_creation(self):
+        vcard = base.newFromBehavior('vcard', '3.0')
+        self.assertEqual(
+            str(vcard),
+            "<VCARD| []>"
+        )
+
     def test_default_behavior(self):
         """
         Default behavior test.
@@ -368,7 +375,7 @@ class TestVcards(unittest.TestCase):
         )
         self.assertEqual(
             str(card.note.value),
-            "The Mayor of the great city of Goerlitz in the great country of Germany.\\nNext line."
+            "The Mayor of the great city of Goerlitz in the great country of Germany.\nNext line."
         )
 
     def test_with_groups(self):
@@ -408,7 +415,7 @@ class TestVcards(unittest.TestCase):
         #    "<Address: Haight Street 512;\nEscape, Test\nNovosibirsk,  80214\nGnuland>"
         #)
         self.assertEqual(
-            str(card.org.value),
+            card.org.value,
             "University of Novosibirsk, Department of Octopus Parthenogenesis"
         )
 

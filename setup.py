@@ -45,7 +45,7 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.8.3",
+      version = "0.8.4",
       author = "Jeffrey Harris, Tim Baxter",
       author_email = "mail.baxter@gmail.com",
       license = "Apache",
