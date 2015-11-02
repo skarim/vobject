@@ -3,7 +3,9 @@
 Description
 -----------
 
-Parses iCalendar and vCard files into Python data structures, decoding the relevant encodings. Also serializes vobject data structures to iCalendar, vCard, or (experimentally) hCalendar unicode strings.
+Parses iCalendar and vCard files into Python data structures, decoding the relevant encodings.
+Also serializes vobject data structures to iCalendar, vCard, or (experimentally)
+hCalendar unicode strings.
 
 Requirements
 ------------
@@ -44,31 +46,32 @@ from setuptools import setup, find_packages
 
 doclines = __doc__.splitlines()
 
-setup(name = "vobject",
-      version = "0.8.4",
-      author = "Jeffrey Harris, Tim Baxter",
-      author_email = "mail.baxter@gmail.com",
-      license = "Apache",
-      zip_safe = True,
-      url = "http://vobject.skyhouseconsulting.com",
-      entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main',
-                                           'change_tz = vobject.change_tz:main']},
-      include_package_data = True,
-      test_suite = "test_vobject",
-
-      install_requires = ['python-dateutil == 2.4.0'],
-
-      platforms = ["any"],
-      packages = find_packages(),
-      description = doclines[0],
-      long_description = "\n".join(doclines[2:]),
-      classifiers =  """
-      Development Status :: 5 - Production/Stable
-      Environment :: Console
-      License :: OSI Approved :: BSD License
-      Intended Audience :: Developers
-      Natural Language :: English
-      Programming Language :: Python
-      Operating System :: OS Independent
-      Topic :: Text Processing""".strip().splitlines()
+setup(name="vobject",
+      version="0.8.5",
+      author="Jeffrey Harris, Tim Baxter",
+      author_email="mail.baxter@gmail.com",
+      license="Apache",
+      zip_safe=True,
+      url="http://vobject.skyhouseconsulting.com",
+      entry_points={
+          'console_scripts': [
+              'ics_diff = vobject.ics_diff:main',
+              'change_tz = vobject.change_tz:main'
+          ]
+      },
+      include_package_data=True,
+      install_requires=['python-dateutil >= 2.4.0'],
+      platforms=["any"],
+      packages=find_packages(),
+      description=doclines[0],
+      long_description="\n".join(doclines[2:]),
+      classifiers="""
+          Development Status :: 5 - Production/Stable
+          Environment :: Console
+          License :: OSI Approved :: BSD License
+          Intended Audience :: Developers
+          Natural Language :: English
+          Programming Language :: Python
+          Operating System :: OS Independent
+          Topic :: Text Processing""".strip().splitlines()
       )
