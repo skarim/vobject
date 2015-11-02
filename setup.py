@@ -60,7 +60,7 @@ setup(name="vobject",
           ]
       },
       include_package_data=True,
-      install_requires=['python-dateutil >= 2.4.0'],
+      install_requires=['python-dateutil == 2.4.0'],
       platforms=["any"],
       packages=find_packages(),
       description=doclines[0],
