@@ -1550,7 +1550,7 @@ def dateTimeToString(dateTime, convertToUTC=False):
 
 def deltaToOffset(delta):
     absDelta = abs(delta)
-    hours = absDelta.seconds / 3600
+    hours = int(absDelta.seconds / 3600)
     hoursString      = numToDigits(hours, 2)
     minutesString    = '00'
     if absDelta == delta:

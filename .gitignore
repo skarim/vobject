@@ -1,4 +1,6 @@
 
+__pycache__
+
 vobject.egg-info/PKG-INFO
 
 vobject.egg-info/SOURCES.txt
@@ -12,11 +14,3 @@ vobject.egg-info/requires.txt
 vobject.egg-info/top_level.txt
 
 vobject.egg-info/zip-safe
-
-vobject/__pycache__/__init__.cpython-33.pyc
-
-vobject/__pycache__/base.cpython-33.pyc
-
-vobject/__pycache__/behavior.cpython-33.pyc
-
-vobject/__pycache__/icalendar.cpython-33.pyc
