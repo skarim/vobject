@@ -45,12 +45,14 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.8.1c",
+      version = "0.8.1d",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
+      maintainer = "Sameen Karim",
+      maintainer_email="sameen@eventable.com",
       license = "Apache",
       zip_safe = True,
-      url = "http://vobject.skyhouseconsulting.com",
+      url = "http://eventable.github.io/vobject/",
       entry_points = { 'console_scripts': ['ics_diff = vobject.ics_diff:main',
                                            'change_tz = vobject.change_tz:main']},
       include_package_data = True,
