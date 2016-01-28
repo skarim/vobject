@@ -45,7 +45,7 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.8.1d",
+      version = "0.8.2",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       maintainer = "Sameen Karim",
