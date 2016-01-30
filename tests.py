@@ -4,7 +4,7 @@ import vobject
 from vobject import base, icalendar, behavior, vcard, hcalendar
 import StringIO, re, dateutil.tz, datetime
 
-import doctest, test_vobject, unittest
+import doctest, tests, unittest
 
 from pkg_resources import resource_stream
 
@@ -15,11 +15,11 @@ def additional_tests():
 
     flags = doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE | doctest.ELLIPSIS
     suite = unittest.TestSuite()
-    for module in base, test_vobject, icalendar, vobject, vcard:
+    for module in base, tests, icalendar, vobject, vcard:
         suite.addTest(doctest.DocTestSuite(module, optionflags=flags))
 
     suite.addTest(doctest.DocFileSuite(
-        'README.txt', 'test_files/more_tests.txt',
+        'test_files/more_tests.txt',
         package='__main__', optionflags=flags
     ))
     return suite
@@ -570,7 +570,7 @@ __test__ = { "Test readOne" :
     DURATION:PT1H
     EXDATE;TZID=US/Pacific:20051014T090000
     RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
-    RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
+    RRULE:FREQ=MONTHLY;BYMONTHDAY=-5,-1
     END:VEVENT
     END:VCALENDAR
     >>> apple = dateutil.tz.tzical(StringIO.StringIO(timezones)).get('America/Montreal')
@@ -626,7 +626,7 @@ __test__ = { "Test readOne" :
     DURATION:PT1H
     EXDATE;TZID=US/Pacific:20051014T090000
     RRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;UNTIL=20051215T090000
-    RRULE:FREQ=MONTHLY;BYMONTHDAY=-1,-5
+    RRULE:FREQ=MONTHLY;BYMONTHDAY=-5,-1
     END:VEVENT
     END:VCALENDAR
     """,
