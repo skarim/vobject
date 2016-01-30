@@ -1,4 +1,4 @@
-# VObject [![PyPI version](https://badge.fury.io/py/vobject.svg)](https://pypi.python.org/pypi/vobject) [![Build Status](https://travis-ci.org/eventable/vobject.svg?branch=master)](https://travis-ci.org/eventable/vobject)
+# VObject [![PyPI version](https://badge.fury.io/py/vobject.svg)](https://pypi.python.org/pypi/vobject) [![Build Status](https://travis-ci.org/eventable/vobject.svg?branch=master)](https://travis-ci.org/eventable/vobject) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/bb995082e4d24119956445829b1e960c/badge.svg)](https://www.quantifiedcode.com/app/project/bb995082e4d24119956445829b1e960c)
 
 VObject is intended to be a full-featured Python package for parsing and generating vCard and vCalendar files. It was originally developed in concert with the Open Source Application Foundation's Chandler project by Jeffrey Harris. The project is currently being maintained by [Eventable](https://github.com/eventable) and [Sameen Karim](https://github.com/skarim).
 
