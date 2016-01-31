@@ -182,10 +182,10 @@ class VBase(object):
             behavior = self.behavior
         
         if behavior:
-            if DEBUG: logger.debug("serializing %s with behavior" % self.name)
+            if DEBUG: logger.debug("serializing {0!s} with behavior".format(self.name))
             return behavior.serialize(self, buf, lineLength, validate)
         else:
-            if DEBUG: logger.debug("serializing %s without behavior" % self.name)
+            if DEBUG: logger.debug("serializing {0!s} without behavior".format(self.name))
             return defaultSerialize(self, buf, lineLength)
 
 def ascii(s):
@@ -635,8 +635,7 @@ class VObjectError(Exception):
             self.lineNumber = lineNumber
     def __str__(self):
         if hasattr(self, 'lineNumber'):
-            return "At line %s: %s" % \
-                   (self.lineNumber, self.msg)
+            return "At line {0!s}: {1!s}".format(self.lineNumber, self.msg)
         else:
             return repr(self.msg)
 
@@ -666,41 +665,41 @@ patterns['qsafe_char'] = '[^"]'
 # param_value is any number of safe_chars or any number of qsaf_chars surrounded
 # by double quotes.
 
-patterns['param_value'] = ' "%(qsafe_char)s * " | %(safe_char)s * ' % patterns
+patterns['param_value'] = ' "{qsafe_char!s} * " | {safe_char!s} * '.format(**patterns)
 
 
 # get a tuple of two elements, one will be empty, the other will have the value
 patterns['param_value_grouped'] = """
-" ( %(qsafe_char)s * )" | ( %(safe_char)s + )
-""" % patterns
+" ( {qsafe_char!s} * )" | ( {safe_char!s} + )
+""".format(**patterns)
 
 # get a parameter and its values, without any saved groups
 patterns['param'] = r"""
-; (?: %(name)s )                     # parameter name
+; (?: {name!s} )                     # parameter name
 (?:
-    (?: = (?: %(param_value)s ) )?   # 0 or more parameter values, multiple 
-    (?: , (?: %(param_value)s ) )*   # parameters are comma separated
+    (?: = (?: {param_value!s} ) )?   # 0 or more parameter values, multiple 
+    (?: , (?: {param_value!s} ) )*   # parameters are comma separated
 )*                         
-""" % patterns
+""".format(**patterns)
 
 # get a parameter, saving groups for name and value (value still needs parsing)
 patterns['params_grouped'] = r"""
-; ( %(name)s )
+; ( {name!s} )
 
 (?: =
     (
-        (?:   (?: %(param_value)s ) )?   # 0 or more parameter values, multiple 
-        (?: , (?: %(param_value)s ) )*   # parameters are comma separated
+        (?:   (?: {param_value!s} ) )?   # 0 or more parameter values, multiple 
+        (?: , (?: {param_value!s} ) )*   # parameters are comma separated
     )
 )?
-""" % patterns
+""".format(**patterns)
 
 # get a full content line, break it up into group, name, parameters, and value
 patterns['line'] = r"""
-^ ((?P<group> %(name)s)\.)?(?P<name> %(name)s) # name group
-  (?P<params> (?: %(param)s )* )               # params group (may be empty)
+^ ((?P<group> {name!s})\.)?(?P<name> {name!s}) # name group
+  (?P<params> (?: {param!s} )* )               # params group (may be empty)
 : (?P<value> .* )$                             # value group
-""" % patterns
+""".format(**patterns)
 
 ' "%(qsafe_char)s*" | %(safe_char)s* '
 
@@ -755,7 +754,7 @@ def parseLine(line, lineNumber = None):
     
     match = line_re.match(line)
     if match is None:
-        raise ParseError("Failed to parse line: %s" % line, lineNumber)
+        raise ParseError("Failed to parse line: {0!s}".format(line), lineNumber)
     # Underscores are replaced with dash to work around Lotus Notes
     return (match.group('name').replace('_','-'),                                 
             parseParams(match.group('params')),
@@ -764,15 +763,15 @@ def parseLine(line, lineNumber = None):
 # logical line regular expressions
 
 patterns['lineend'] = r'(?:\r\n|\r|\n|$)'
-patterns['wrap'] = r'%(lineend)s [\t ]' % patterns
+patterns['wrap'] = r'{lineend!s} [\t ]'.format(**patterns)
 patterns['logicallines'] = r"""
 (
-   (?: [^\r\n] | %(wrap)s )*
-   %(lineend)s
+   (?: [^\r\n] | {wrap!s} )*
+   {lineend!s}
 )
-""" % patterns
+""".format(**patterns)
 
-patterns['wraporend'] = r'(%(wrap)s | %(lineend)s )' % patterns
+patterns['wraporend'] = r'({wrap!s} | {lineend!s} )'.format(**patterns)
 
 wrap_re          = re.compile(patterns['wraporend'],    re.VERBOSE)
 logical_lines_re = re.compile(patterns['logicallines'], re.VERBOSE)
@@ -1043,8 +1042,8 @@ def readComponents(streamOrString, validate=False, transform=True,
                 stack.top().setProfile(vline.value)
             elif vline.name == "END":
                 if len(stack) == 0:
-                    err = "Attempted to end the %s component, \
-                           but it was never opened" % vline.value
+                    err = "Attempted to end the {0!s} component, \
+                           but it was never opened".format(vline.value)
                     raise ParseError(err, n)
                 if vline.value.upper() == stack.topName(): #START matches END
                     if len(stack) == 1:
@@ -1067,7 +1066,7 @@ def readComponents(streamOrString, validate=False, transform=True,
             if stack.topName() is None:
                 logger.warning("Top level component was never named")
             elif stack.top().useBegin:
-                raise ParseError("Component %s was never closed" % (stack.topName()), n)
+                raise ParseError("Component {0!s} was never closed".format((stack.topName())), n)
             yield stack.pop()
 
     except ParseError, e:
@@ -1122,7 +1121,7 @@ def newFromBehavior(name, id=None):
     name = name.upper()
     behavior = getBehavior(name, id)
     if behavior is None:
-        raise VObjectError("No behavior found named %s" % name)
+        raise VObjectError("No behavior found named {0!s}".format(name))
     if behavior.isComponent:
         obj = Component(name)
     else:
