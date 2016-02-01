@@ -20,12 +20,18 @@ except NameError:
 try:
     unicode
     def str_(s):
+        """
+        Return string with correct encoding
+        """
         if type(s) == unicode:
             return s.encode('utf-8')
         else:
             return str(s)
 except NameError:
     def str_(s):
+        """
+        Return string
+        """
         return s
 
 #------------------------------------ Logging ----------------------------------
@@ -732,6 +738,9 @@ begin_re        = re.compile('BEGIN', re.IGNORECASE)
 
 
 def parseParams(string):
+    """
+    Parse parameters
+    """
     all = params_re.findall(string)
     allParameters = []
     for tup in all:
@@ -746,7 +755,10 @@ def parseParams(string):
     return allParameters
 
 
-def parseLine(line, lineNumber = None):
+def parseLine(line, lineNumber=None):
+    """
+    Parse line
+    """
     match = line_re.match(line)
     if match is None:
         raise ParseError("Failed to parse line: %s" % line, lineNumber)
@@ -807,24 +819,8 @@ def getLogicalLines(fp, allowQP=True, findBegin=False):
     if not allowQP:
         val = fp.read(-1)
 
-        #Shouldn't need this anymore...
-        """
-        if len(val) > 0:
-            if not findBegin:
-                val = val.decode('utf-8')
-            else:
-                for encoding in 'utf-8', 'utf-16-LE', 'utf-16-BE', 'iso-8859-1':
-                    try:
-                        val = val.decode(encoding)
-                        if begin_re.search(val) is not None:
-                            break
-                    except UnicodeDecodeError:
-                        pass
-                else:
-                    raise ParseError('Could not find BEGIN when trying to determine encoding')
-        """
         # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
-        #val = val.lstrip( unicode( codecs.BOM_UTF8, "utf8" ) )
+        # val = val.lstrip(unicode(codecs.BOM_UTF8, "utf8"))
 
         lineNumber = 1
         for match in logical_lines_re.finditer(val):

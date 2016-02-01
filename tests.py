@@ -291,15 +291,25 @@ class TestVobject(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """
+        Method for setting up class fixture before running tests in the class.
+        Fetches test file.
+        """
         cls.simple_test_cal = get_test_file("simple_test.ics")
 
     def test_readComponents(self):
+        """
+        Test if reading components correctly
+        """
         cal = next(readComponents(self.simple_test_cal))
 
         self.assertEqual(str(cal), "<VCALENDAR| [<VEVENT| [<SUMMARY{'BLAH': ['hi!']}Bastille Day Party>]>]>")
         self.assertEqual(str(cal.vevent.summary), "<SUMMARY{'BLAH': ['hi!']}Bastille Day Party>")
 
     def test_parseLine(self):
+        """
+        Test line parsing
+        """
         self.assertEqual(parseLine("BLAH:"), ('BLAH', [], '', None))
         self.assertEqual(
             parseLine("RDATE:VALUE=DATE:19970304,19970504,19970704,19970904"),
@@ -329,6 +339,9 @@ class TestGeneralFileParsing(unittest.TestCase):
     General tests for parsing ics files.
     """
     def test_readOne(self):
+        """
+        Test reading first component of ics
+        """
         cal = get_test_file("silly_test.ics")
         silly = base.readOne(cal, findBegin=False)
         self.assertEqual(
@@ -341,6 +354,9 @@ class TestGeneralFileParsing(unittest.TestCase):
         )
 
     def test_importing(self):
+        """
+        Test importing ics
+        """
         cal = get_test_file("standard_test.ics")
         c = base.readOne(cal, validate=True)
         self.assertEqual(
@@ -374,10 +390,16 @@ class TestGeneralFileParsing(unittest.TestCase):
         )
 
     def test_bad_stream(self):
+        """
+        Test bad ics stream
+        """
         cal = get_test_file("badstream.ics")
         self.assertRaises(ParseError, base.readOne, cal)
 
     def test_bad_line(self):
+        """
+        Test bad line in ics file
+        """
         cal = get_test_file("badline.ics")
         self.assertRaises(ParseError, base.readOne, cal)
 
@@ -388,6 +410,9 @@ class TestGeneralFileParsing(unittest.TestCase):
         )
 
     def test_parseParams(self):
+        """
+        Test parsing parameters
+        """
         self.assertEqual(
             base.parseParams(';ALTREP="http://www.wiz.org"'),
             [['ALTREP', 'http://www.wiz.org']]
@@ -405,10 +430,17 @@ class TestVcards(unittest.TestCase):
     """
     @classmethod
     def setUpClass(cls):
+        """
+        Method for setting up class fixture before running tests in the class.
+        Fetches test file.
+        """
         cls.test_file = get_test_file("vcard_with_groups.ics")
         cls.card = base.readOne(cls.test_file)
 
     def test_vcard_creation(self):
+        """
+        Test creating a vCard
+        """
         vcard = base.newFromBehavior('vcard', '3.0')
         self.assertEqual(
             str(vcard),
@@ -486,6 +518,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_regexes(self):
+        """
+        Test regex patterns
+        """
         self.assertEqual(
             re.findall(base.patterns['name'], '12foo-bar:yay'),
             ['12foo-bar', 'yay']
@@ -520,6 +555,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_stringToTextValues(self):
+        """
+        Test string lists
+        """
         self.assertEqual(
             stringToTextValues(''),
             ['']
@@ -530,6 +568,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_stringToPeriod(self):
+        """
+        Test datetime strings
+        """
         self.assertEqual(
             stringToPeriod("19970101T180000Z/19970102T070000Z"),
             (datetime.datetime(1997, 1, 1, 18, 0, tzinfo=tzutc()),
@@ -542,6 +583,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_timedeltaToString(self):
+        """
+        Test timedelta strings
+        """
         self.assertEqual(
             timedeltaToString(two_hours),
             'PT2H'
@@ -552,6 +596,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_vtimezone_creation(self):
+        """
+        Test timezones
+        """
         tzs = dateutil.tz.tzical("test_files/timezones.ics")
         pacific = icalendar.TimezoneComponent(tzs.get('US/Pacific'))
         self.assertEqual(
@@ -593,6 +640,9 @@ class TestIcalendar(unittest.TestCase):
         ev.dtstart.value = datetime.datetime(2005, 10, 12, 9, tzinfo=apple)
 
     def test_freeBusy(self):
+        """
+        Test freebusy components
+        """
         test_cal = get_test_file("freebusy.ics")
 
         vfb = base.newFromBehavior('VFREEBUSY')
@@ -608,6 +658,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_availablity(self):
+        """
+        Test availability components
+        """
         test_cal = get_test_file("availablity.ics")
 
         vcal = base.newFromBehavior('VAVAILABILITY')
@@ -632,8 +685,10 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_recurrence(self):
-        # Ensure date valued UNTILs in rrules are in a reasonable timezone,
-        # and include that day (12/28 in this test)
+        """
+        Ensure date valued UNTILs in rrules are in a reasonable timezone,
+        and include that day (12/28 in this test)
+        """
         test_file = get_test_file("recurrence.ics")
         cal = base.readOne(test_file, findBegin=False)
         dates = list(cal.vevent.getrruleset())
@@ -651,6 +706,9 @@ class TestIcalendar(unittest.TestCase):
         )
 
     def test_recurring_component(self):
+        """
+        Test recurring events
+        """
         vevent = RecurringComponent(name='VEVENT')
 
         # init
