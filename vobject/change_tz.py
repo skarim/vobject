@@ -86,7 +86,7 @@ def get_options():
     (cmdline_options, args) = parser.parse_args()
     if not args and not cmdline_options.list:
         print("error: too few arguments given")
-        print()
+        print
         print(parser.format_help())
         return False, False
 
