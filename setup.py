@@ -68,7 +68,7 @@ setup(name = "vobject",
       classifiers =  """
       Development Status :: 5 - Production/Stable
       Environment :: Console
-      License :: OSI Approved :: BSD License
+      License :: OSI Approved :: Apache Software License
       Intended Audience :: Developers
       Natural Language :: English
       Programming Language :: Python
