@@ -1,7 +1,5 @@
 """Translate an ics file's events to a different timezone."""
 
-import sys
-
 from optparse import OptionParser
 from vobject import icalendar, base
 
@@ -13,7 +11,8 @@ except:
 from datetime import datetime
 
 def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
-    """Change the timezone of the specified component.
+    """
+    Change the timezone of the specified component.
 
     Args:
         cal (Component): the component to change
@@ -71,7 +70,7 @@ def main():
 version = "0.1"
 
 def get_options():
-    ##### Configuration options #####
+    # Configuration options
 
     usage = """usage: %prog [options] ics_file [timezone]"""
     parser = OptionParser(usage=usage, version=version)
@@ -81,7 +80,6 @@ def get_options():
                       default=False, help="Only change UTC events.")
     parser.add_option("-l", "--list", dest="list", action="store_true",
                       default=False, help="List available timezones")
-
 
     (cmdline_options, args) = parser.parse_args()
     if not args and not cmdline_options.list:
