@@ -386,7 +386,7 @@ class ContentLine(VBase):
         return v
 
     def __str__(self):
-        return "<%s%s%s>" % (self.name, self.params, self.valueRepr())
+        return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
 
     def __repr__(self):
         return self.__str__()
@@ -632,9 +632,9 @@ class Component(VBase):
 
     def __str__(self):
         if self.name:
-            return "<%s| %s>" % (self.name, self.getSortedChildren())
+            return "<{0}| {1}>".format(self.name, self.getSortedChildren())
         else:
-            return u'<*unnamed*| {}>'.format(self.getSortedChildren())
+            return u'<*unnamed*| {0}>'.format(self.getSortedChildren())
 
     def __repr__(self):
         return self.__str__()

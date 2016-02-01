@@ -323,7 +323,7 @@ class TimezoneComponent(Component):
         raise VObjectError("Unable to guess TZID for tzinfo %s" % tzinfo)
 
     def __str__(self):
-        return "<VTIMEZONE | %s>" % getattr(self, 'tzid', 'No TZID')
+        return "<VTIMEZONE | {0}>".format(getattr(self, 'tzid', 'No TZID'))
 
     def __repr__(self):
         return self.__str__()
