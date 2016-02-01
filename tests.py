@@ -134,7 +134,8 @@ class TestCalendarSerializing(unittest.TestCase):
             "REQUEST-STATUS:5.1;Service unavailable"
         )
 
-    def test_ical_to_hcal(self):
+    @staticmethod
+    def test_ical_to_hcal():
         """
         Serializing iCalendar to hCalendar.
 
@@ -568,7 +569,8 @@ class TestIcalendar(unittest.TestCase):
                                        tzinfo=tzs.get('Santiago'))
                 self.assertTrue(dt.replace(tzinfo=tzs.get('Santiago')), dt)
 
-    def test_timezone_serializing(self):
+    @staticmethod
+    def test_timezone_serializing():
         """
         Serializing with timezones test
         """
