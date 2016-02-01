@@ -1537,13 +1537,13 @@ def dateTimeToString(dateTime, convertToUTC=False):
     if dateTime.tzinfo and convertToUTC:
         dateTime = dateTime.astimezone(utc)
 
-    datestr = "{}{}{}T{}{}{}".format(
-        numToDigits( dateTime.year,  4 ),
-        numToDigits( dateTime.month, 2 ),
-        numToDigits( dateTime.day,   2 ),
-        numToDigits( dateTime.hour,  2 ),
-        numToDigits( dateTime.minute,  2 ),
-        numToDigits( dateTime.second,  2 ),
+    datestr = "{0}{1}{2}T{3}{4}{5}".format(
+        numToDigits( dateTime.year, 4),
+        numToDigits( dateTime.month, 2),
+        numToDigits( dateTime.day, 2),
+        numToDigits( dateTime.hour, 2),
+        numToDigits( dateTime.minute, 2),
+        numToDigits( dateTime.second, 2),
     )
     if tzinfo_eq(dateTime.tzinfo, utc):
         datestr += "Z"
@@ -1729,7 +1729,7 @@ def stringToDurations(s, strict=False):
                 current = current + char  # update this part when updating "read field"
             else:
                 state = "error"
-                error("got unexpected character {} reading in duration: {}"
+                error("got unexpected character {0} reading in duration: {1}"
                       .format(char, s))
 
         elif state == "read field":
