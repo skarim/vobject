@@ -792,7 +792,7 @@ Line 1;encoding=quoted-printable:this is an evil=
 Line 2 is a new line, it does not start with whitespace.
 """
 
-def getLogicalLines(fp, allowQP=True, findBegin=False):
+def getLogicalLines(fp, allowQP=True):
     """
     Iterate through a stream, yielding one logical line at a time.
 
@@ -1015,7 +1015,7 @@ class Stack:
 
 
 def readComponents(streamOrString, validate=False, transform=True,
-                   findBegin=True, ignoreUnreadable=False, allowQP=False):
+                   ignoreUnreadable=False, allowQP=False):
     """
     Generate one Component at a time from a stream.
     """
@@ -1028,7 +1028,7 @@ def readComponents(streamOrString, validate=False, transform=True,
         stack = Stack()
         versionLine = None
         n = 0
-        for line, n in getLogicalLines(stream, allowQP, findBegin):
+        for line, n in getLogicalLines(stream, allowQP):
             if ignoreUnreadable:
                 try:
                     vline = textLineToContentLine(line, n)
@@ -1088,11 +1088,11 @@ def readComponents(streamOrString, validate=False, transform=True,
         raise
 
 
-def readOne(stream, validate=False, transform=True, findBegin=True, ignoreUnreadable=False, allowQP=False):
+def readOne(stream, validate=False, transform=True, ignoreUnreadable=False, allowQP=False):
     """
     Return the first component from stream.
     """
-    return next(readComponents(stream, validate, transform, findBegin, ignoreUnreadable, allowQP))
+    return next(readComponents(stream, validate, transform, ignoreUnreadable, allowQP))
 
 
 #--------------------------- version registry ----------------------------------

@@ -343,7 +343,7 @@ class TestGeneralFileParsing(unittest.TestCase):
         Test reading first component of ics
         """
         cal = get_test_file("silly_test.ics")
-        silly = base.readOne(cal, findBegin=False)
+        silly = base.readOne(cal)
         self.assertEqual(
             str(silly),
             "<SILLYPROFILE| [<MORESTUFF{}this line is not folded, but in practice probably ought to be, as it is exceptionally long, and moreover demonstratively stupid>, <SILLYNAME{}name>, <STUFF{}foldedline>]>"
@@ -491,7 +491,7 @@ class TestVcards(unittest.TestCase):
         VCARD 3.0 parse test
         """
         test_file = get_test_file("simple_3_0_test.ics")
-        card = base.readOne(test_file, findBegin=False)
+        card = base.readOne(test_file)
         # value not rendering correctly?
         #self.assertEqual(
         #    card.adr.value,
@@ -690,7 +690,7 @@ class TestIcalendar(unittest.TestCase):
         and include that day (12/28 in this test)
         """
         test_file = get_test_file("recurrence.ics")
-        cal = base.readOne(test_file, findBegin=False)
+        cal = base.readOne(test_file)
         dates = list(cal.vevent.getrruleset())
         self.assertEqual(
             dates[0],
