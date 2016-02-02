@@ -258,8 +258,7 @@ class TimezoneComponent(Component):
                     endString = ";UNTIL="+ dateTimeToString(endDate)
                 else:
                     endString = ''
-                rulestring = "FREQ=YEARLY%s;BYMONTH=%s%s" % \
-                              (dayString, str(rule['month']), endString)
+                rulestring = "FREQ=YEARLY{0!s};BYMONTH={1!s}{2!s}".format(dayString, str(rule['month']), endString)
                 
                 comp.add('rrule').value = rulestring
 
@@ -294,7 +293,7 @@ class TimezoneComponent(Component):
                 if tzinfo.dst(dt) == notDST:
                     return toUnicode(tzinfo.tzname(dt))
         # there was no standard time in 2000!
-        raise VObjectError("Unable to guess TZID for tzinfo %s" % str(tzinfo))
+        raise VObjectError("Unable to guess TZID for tzinfo {0!s}".format(str(tzinfo)))
 
     def __str__(self):
         return "<VTIMEZONE | " + str(getattr(self, 'tzid', 'No TZID')) +">"
@@ -1616,7 +1615,7 @@ def stringToDateTime(s, tzinfo=None):
             if s[15] == 'Z':
                 tzinfo = utc
     except:
-        raise ParseError("'%s' is not a valid DATE-TIME" % s)
+        raise ParseError("'{0!s}' is not a valid DATE-TIME".format(s))
     return datetime.datetime(year, month, day, hour, minute, second, 0, tzinfo)
 
 
@@ -1690,7 +1689,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '%s' reached in %s" % (state, s))
+            error("error: unknown state: '{0!s}' reached in {1!s}".format(state, s))
 
 def stringToDurations(s, strict=False):
     """Returns list of timedelta objects."""
@@ -1748,8 +1747,8 @@ def stringToDurations(s, strict=False):
                 current = current + char   #update this part when updating "read field"
             else:
                 state = "error"
-                print "got unexpected character %s reading in duration: %s" % (char, s)
-                error("got unexpected character %s reading in duration: %s" % (char, s))
+                print "got unexpected character {0!s} reading in duration: {1!s}".format(char, s)
+                error("got unexpected character {0!s} reading in duration: {1!s}".format(char, s))
 
         elif state == "read field":
             if (char in string.digits):
@@ -1806,7 +1805,7 @@ def stringToDurations(s, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '%s' reached in %s" % (state, s))
+            error("error: unknown state: '{0!s}' reached in {1!s}".format(state, s))
 
 def parseDtstart(contentline, allowSignatureMismatch=False):
     """Convert a contentline's value into a date or date-time.
