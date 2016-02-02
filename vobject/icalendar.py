@@ -284,7 +284,8 @@ class TimezoneComponent(Component):
                     endString = ";UNTIL="+ dateTimeToString(endDate)
                 else:
                     endString = ''
-                new_rule = "FREQ=YEARLY{0!s};BYMONTH={1!s}{2!s}".format(dayString, rule['month'], endString)
+                new_rule = "FREQ=YEARLY{0!s};BYMONTH={1!s}{2!s}"\
+                    .format(dayString, rule['month'], endString)
 
                 comp.add('rrule').value = new_rule
 
@@ -319,7 +320,8 @@ class TimezoneComponent(Component):
                 if tzinfo.dst(dt) == notDST:
                     return toUnicode(tzinfo.tzname(dt))
         # there was no standard time in 2000!
-        raise VObjectError("Unable to guess TZID for tzinfo {0!s}".format(tzinfo))
+        raise VObjectError("Unable to guess TZID for tzinfo {0!s}"
+                           .format(tzinfo))
 
     def __str__(self):
         return "<VTIMEZONE | {0}>".format(getattr(self, 'tzid', 'No TZID'))
