@@ -284,8 +284,7 @@ class TimezoneComponent(Component):
                     endString = ";UNTIL="+ dateTimeToString(endDate)
                 else:
                     endString = ''
-                new_rule = "FREQ=YEARLY%s;BYMONTH=%s%s" % \
-                           (dayString, rule['month'], endString)
+                new_rule = "FREQ=YEARLY{0!s};BYMONTH={1!s}{2!s}".format(dayString, rule['month'], endString)
 
                 comp.add('rrule').value = new_rule
 
@@ -320,7 +319,7 @@ class TimezoneComponent(Component):
                 if tzinfo.dst(dt) == notDST:
                     return toUnicode(tzinfo.tzname(dt))
         # there was no standard time in 2000!
-        raise VObjectError("Unable to guess TZID for tzinfo %s" % tzinfo)
+        raise VObjectError("Unable to guess TZID for tzinfo {0!s}".format(tzinfo))
 
     def __str__(self):
         return "<VTIMEZONE | {0}>".format(getattr(self, 'tzid', 'No TZID'))
@@ -1595,7 +1594,7 @@ def stringToDateTime(s, tzinfo=None):
             if s[15] == 'Z':
                 tzinfo = utc
     except:
-        raise ParseError("'%s' is not a valid DATE-TIME" % s)
+        raise ParseError("'{0!s}' is not a valid DATE-TIME".format(s))
     year = year and year or 2000
     return datetime.datetime(year, month, day, hour, minute, second, 0, tzinfo)
 
@@ -1670,7 +1669,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '%s' reached in %s" % (state, s))
+            error("error: unknown state: '{0!s}' reached in {1!s}".format(state, s))
 
 def stringToDurations(s, strict=False):
     """
@@ -1787,7 +1786,7 @@ def stringToDurations(s, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '%s' reached in %s" % (state, s))
+            error("error: unknown state: '{0!s}' reached in {1!s}".format(state, s))
 
 def parseDtstart(contentline, allowSignatureMismatch=False):
     """

@@ -87,8 +87,7 @@ class HCalendar(VCalendar2_0):
                 #TODO: Handle non-datetime formats?
                 #TODO: Spec says we should handle when dtstart isn't included
 
-                out('<abbr class="dtstart", title="%s">%s</abbr>\r\n' %
-                     (dtstart.strftime(machine), dtstart.strftime(timeformat)))
+                out('<abbr class="dtstart", title="{0!s}">{1!s}</abbr>\r\n'.format(dtstart.strftime(machine), dtstart.strftime(timeformat)))
 
                 # DTEND
                 dtend = event.getChildValue("dtend")
@@ -104,8 +103,7 @@ class HCalendar(VCalendar2_0):
                     if type(dtend) == date:
                         human = dtend - timedelta(days=1)
 
-                    out('- <abbr class="dtend", title="%s">%s</abbr>\r\n' %
-                     (dtend.strftime(machine), human.strftime(timeformat)))
+                    out('- <abbr class="dtend", title="{0!s}">{1!s}</abbr>\r\n'.format(dtend.strftime(machine), human.strftime(timeformat)))
 
             # LOCATION
             location = event.getChildValue("location")
