@@ -27,8 +27,7 @@ Or download the package and run:
 python setup.py install
 ```
 
-vobject requires the dateutil package, which can be installed via
-easy_install or downloaded from [http://labix.org/python-dateutil](http://labix.org/python-dateutil)
+VObject requires the[dateutil](https://pypi.python.org/pypi/python-dateutil/) package
 
 
 # Running tests
@@ -46,7 +45,7 @@ python tests.py
 
 #### Creating iCalendar objects
 
-vobject has a basic datastructure for working with iCalendar-like
+VObject has a basic datastructure for working with iCalendar-like
 syntaxes.  Additionally, it defines specialized behaviors for many of
 the commonly used iCalendar objects.
 
@@ -139,7 +138,7 @@ cal.vevent_list both delete all vevent children:
 >>> cal.vevent = first_ev
 ```
 
-vobject understands Python's datetime module and tzinfo classes.
+VObject understands Python's datetime module and tzinfo classes.
 
 ```
 >>> import datetime

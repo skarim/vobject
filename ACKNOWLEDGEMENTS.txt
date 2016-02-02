@@ -1,4 +1,5 @@
 Enormous thanks to:
+Tim Baxter, for all his work with testing and Python3 compatibility
 Gustavo Niemeyer, for all his work on dateutil
 Dave Cridland, for helping talk about vobject and working on vcard
 TJ Gabbour, for putting his heart into parsing
