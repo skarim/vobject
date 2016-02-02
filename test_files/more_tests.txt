@@ -9,9 +9,9 @@ Unicode in vCards
 >>> card.add('adr').value = vobject.vcard.Address(u'5\u1234 Nowhere, Apt 1', 'Berkeley', 'CA', '94704', 'USA')
 >>> card
 <VCARD| [<ADR{}5? Nowhere, Apt 1\nBerkeley, CA 94704\nUSA>, <FN{}Hello? World!>, <N{} Hello?  World >]>
->>> card.serialize().decode("utf-8")
+>>> card.serialize()
 u'BEGIN:VCARD\r\nVERSION:3.0\r\nADR:;;5\u1234 Nowhere\\, Apt 1;Berkeley;CA;94704;USA\r\nFN:Hello\u1234 World!\r\nN:World;Hello\u1234;;;\r\nEND:VCARD\r\n'
->>> print card.serialize()
+>>> print(card.serialize())
 BEGIN:VCARD
 VERSION:3.0
 ADR:;;5ሴ Nowhere\, Apt 1;Berkeley;CA;94704;USA
@@ -32,16 +32,16 @@ Unicode in TZID
 ...............
 >>> f = get_stream("tzid_8bit.ics")
 >>> cal = vobject.readOne(f)
->>> print cal.vevent.dtstart.value
+>>> print(cal.vevent.dtstart.value)
 2008-05-30 15:00:00+06:00
->>> print cal.vevent.dtstart.serialize()
+>>> print(cal.vevent.dtstart.serialize())
 DTSTART;TZID=Екатеринбург:20080530T150000
 
 Commas in TZID
 ..............
 >>> f = get_stream("ms_tzid.ics")
 >>> cal = vobject.readOne(f)
->>> print cal.vevent.dtstart.value
+>>> print(cal.vevent.dtstart.value)
 2008-05-30 15:00:00+10:00
 
 Equality in vCards
@@ -56,7 +56,7 @@ Organization (org)
 ..................
 
 >>> card.add('org').value = ["Company, Inc.", "main unit", "sub-unit"]
->>> print card.org.serialize()
+>>> print(card.org.serialize())
 ORG:Company\, Inc.;main unit;sub-unit
 
 Ruby escapes semi-colons in rrules
@@ -66,7 +66,6 @@ Ruby escapes semi-colons in rrules
 >>> cal = vobject.readOne(f)
 >>> iter(cal.vevent.rruleset).next()
 datetime.datetime(2003, 1, 1, 7, 0)
-
 
 quoted-printable
 ................

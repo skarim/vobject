@@ -20,7 +20,7 @@ and an equivalent event in hCalendar format with various elements optimized appr
 
 <span class="vevent">
  <a class="url" href="http://www.web2con.com/">
-  <span class="summary">Web 2.0 Conference</span>: 
+  <span class="summary">Web 2.0 Conference</span>:
   <abbr class="dtstart" title="2005-10-05">October 5</abbr>-
   <abbr class="dtend" title="2005-10-08">7</abbr>,
  at the <span class="location">Argent Hotel, San Francisco, CA</span>
@@ -28,39 +28,42 @@ and an equivalent event in hCalendar format with various elements optimized appr
 </span>
 """
 
-from base import foldOneLine, CRLF, registerBehavior
-from icalendar import VCalendar2_0
+import six
+
 from datetime import date, datetime, timedelta
-import StringIO
+
+from .base import CRLF, registerBehavior
+from .icalendar import VCalendar2_0
+
 
 class HCalendar(VCalendar2_0):
     name = 'HCALENDAR'
-    
+
     @classmethod
     def serialize(cls, obj, buf=None, lineLength=None, validate=True):
         """
         Serialize iCalendar to HTML using the hCalendar microformat (http://microformats.org/wiki/hcalendar)
         """
-        
-        outbuf = buf or StringIO.StringIO()
-        level = 0 # holds current indentation level        
+
+        outbuf = buf or six.StringIO()
+        level = 0 # holds current indentation level
         tabwidth = 3
-        
+
         def indent():
             return ' ' * level * tabwidth
-        
+
         def out(s):
             outbuf.write(indent())
             outbuf.write(s)
-        
+
         # not serializing optional vcalendar wrapper
-        
+
         vevents = obj.vevent_list
-        
+
         for event in vevents:
             out('<span class="vevent">' + CRLF)
             level += 1
-            
+
             # URL
             url = event.getChildValue("url")
             if url:
@@ -70,7 +73,7 @@ class HCalendar(VCalendar2_0):
             summary = event.getChildValue("summary")
             if summary:
                 out('<span class="summary">' + summary + '</span>:' + CRLF)
-            
+
             # DTSTART
             dtstart = event.getChildValue("dtstart")
             if dtstart:
@@ -83,10 +86,10 @@ class HCalendar(VCalendar2_0):
 
                 #TODO: Handle non-datetime formats?
                 #TODO: Spec says we should handle when dtstart isn't included
-                
-                out('<abbr class="dtstart", title="%s">%s</abbr>\r\n' % 
+
+                out('<abbr class="dtstart", title="%s">%s</abbr>\r\n' %
                      (dtstart.strftime(machine), dtstart.strftime(timeformat)))
-                
+
                 # DTEND
                 dtend = event.getChildValue("dtend")
                 if not dtend:
@@ -94,32 +97,32 @@ class HCalendar(VCalendar2_0):
                     if duration:
                         dtend = duration + dtstart
                    # TODO: If lacking dtend & duration?
-               
+
                 if dtend:
                     human = dtend
                     # TODO: Human readable part could be smarter, excluding repeated data
                     if type(dtend) == date:
                         human = dtend - timedelta(days=1)
-                        
-                    out('- <abbr class="dtend", title="%s">%s</abbr>\r\n' % 
-                     (dtend.strftime(machine), human.strftime(timeformat)))    
 
-            # LOCATION    
+                    out('- <abbr class="dtend", title="%s">%s</abbr>\r\n' %
+                     (dtend.strftime(machine), human.strftime(timeformat)))
+
+            # LOCATION
             location = event.getChildValue("location")
             if location:
                 out('at <span class="location">' + location + '</span>' + CRLF)
-        
+
             description = event.getChildValue("description")
             if description:
                 out('<div class="description">' + description + '</div>' + CRLF)
-            
+
             if url:
                 level -= 1
                 out('</a>' + CRLF)
-            
-            level -= 1                
+
+            level -= 1
             out('</span>' + CRLF) # close vevent
 
         return buf or outbuf.getvalue()
-    
+
 registerBehavior(HCalendar)

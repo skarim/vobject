@@ -22,7 +22,7 @@ VObject Overview
     L{Component<base.Component>}s.  To validate, an object must have all
     required children.  There (TODO: will be) a toggle to raise an exception or
     just log unrecognized, non-experimental children and parameters.
-    
+
     Creating objects programatically
     --------------------------------
     A L{Component<base.Component>} can be created from scratch.  No encoding
@@ -31,7 +31,7 @@ VObject Overview
 
     Serializing objects
     -------------------
-    Serialization: 
+    Serialization:
       - Looks for missing required children that can be automatically generated,
         like a UID or a PRODID, and adds them
       - Encodes all values that can be automatically encoded
@@ -39,10 +39,10 @@ VObject Overview
         explicitly disabled)
       - Appends the serialized object to a buffer, or fills a new
         buffer and returns it
-    
+
     Examples
     --------
-    
+
     >>> import datetime
     >>> import dateutil.rrule as rrule
     >>> x = iCalendar()
@@ -73,11 +73,11 @@ VObject Overview
     RRULE:FREQ=WEEKLY;COUNT=2
     END:VEVENT
     END:VCALENDAR
-    
+
 """
 
-import base, icalendar, vcard
-from base import readComponents, readOne, newFromBehavior
+from .base import newFromBehavior, readOne, readComponents
+from . import icalendar, vcard
 
 def iCalendar():
     return newFromBehavior('vcalendar', '2.0')
