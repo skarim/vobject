@@ -69,7 +69,7 @@ class win32tz(datetime.tzinfo):
             else: return True
 
     def __repr__(self):
-        return "<win32tz - %s>" % self.data.display
+        return "<win32tz - {0!s}>".format(self.data.display)
 
 def pickNthWeekday(year, month, dayofweek, hour, minute, whichweek):
     """dayofweek == 0 means Sunday, whichweek > 4 means last instance"""

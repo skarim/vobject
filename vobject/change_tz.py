@@ -49,18 +49,18 @@ def main():
             which = "only UTC"
         else:
             which = "all"
-        print("Converting %s events" % which)
+        print("Converting {0!s} events".format(which))
         ics_file = args[0]
         if len(args) > 1:
             timezone = PyICU.ICUtzinfo.getInstance(args[1])
         else:
             timezone = PyICU.ICUtzinfo.default
-        print("... Reading %s" % ics_file)
+        print("... Reading {0!s}".format(ics_file))
         cal = base.readOne(open(ics_file))
         change_tz(cal, timezone, PyICU.ICUtzinfo.default, utc_only)
 
         out_name = ics_file + '.converted'
-        print("... Writing %s" % out_name)
+        print("... Writing {0!s}".format(out_name))
 
         out = file(out_name, 'wb')
         cal.serialize(out)
