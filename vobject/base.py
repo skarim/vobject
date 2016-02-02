@@ -8,15 +8,15 @@ import re
 import six
 import sys
 
-#------------------------------------ Python 2/3 compatibility challenges  -----
+# ------------------------------------ Python 2/3 compatibility challenges  ----
 # Python 3 no longer has a basestring type, so....
 try:
     basestring = basestring
 except NameError:
     basestring = (str,bytes)
 
-## One more problem ... in python2 the str operator breaks on unicode
-## objects containing non-ascii characters
+# One more problem ... in python2 the str operator breaks on unicode
+# objects containing non-ascii characters
 try:
     unicode
     def str_(s):
@@ -34,17 +34,17 @@ except NameError:
         """
         return s
 
-#------------------------------------ Logging ----------------------------------
+# ------------------------------------ Logging ---------------------------------
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(name)s %(levelname)s %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-logger.setLevel(logging.ERROR) # Log errors
-DEBUG = False # Don't waste time on debug calls
+logger.setLevel(logging.ERROR)  # Log errors
+DEBUG = False  # Don't waste time on debug calls
 
-#----------------------------------- Constants ---------------------------------
+# ----------------------------------- Constants --------------------------------
 CR     = '\r'
 LF     = '\n'
 CRLF   = CR + LF
@@ -52,7 +52,7 @@ SPACE  = ' '
 TAB    = '\t'
 SPACEORTAB = SPACE + TAB
 
-#--------------------------------- Main classes --------------------------------
+# --------------------------------- Main classes -------------------------------
 
 
 class VBase(object):
@@ -113,7 +113,6 @@ class VBase(object):
 
         If cascade is True, unset behavior and parentBehavior for all
         descendants, then recalculate behavior and parentBehavior.
-
         """
         parentBehavior = self.parentBehavior
         if parentBehavior is not None:
@@ -146,7 +145,6 @@ class VBase(object):
         transformToNative should always return a representation of this object.
         It may do so by modifying self in place then returning self, or by
         creating a new object.
-
         """
         if self.isNative or not self.behavior or not self.behavior.hasNative:
             return self
@@ -162,8 +160,10 @@ class VBase(object):
                         e.lineNumber = lineNumber
                     raise
                 else:
-                    msg = "In transformToNative, unhandled exception on line %s: %s: %s"
-                    msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
+                    msg = "In transformToNative, unhandled exception on " \
+                          "line %s: %s: %s"
+                    msg = msg % (lineNumber, sys.exc_info()[0],
+                                 sys.exc_info()[1])
                     raise ParseError(msg, lineNumber)
 
     def transformFromNative(self):
@@ -178,7 +178,6 @@ class VBase(object):
         Note that it isn't always possible for transformFromNative to be a
         perfect inverse of transformToNative, in such cases transformFromNative
         should return a new object, not self after modifications.
-
         """
         if self.isNative and self.behavior and self.behavior.hasNative:
             try:
@@ -191,18 +190,24 @@ class VBase(object):
                         e.lineNumber = lineNumber
                     raise
                 else:
-                    msg = "In transformFromNative, unhandled exception on line %s %s: %s"
-                    msg = msg % (lineNumber, sys.exc_info()[0], sys.exc_info()[1])
+                    msg = "In transformFromNative, unhandled exception " \
+                          "on line %s %s: %s"
+                    msg = msg % (lineNumber, sys.exc_info()[0],
+                                 sys.exc_info()[1])
                     raise NativeError(msg, lineNumber)
         else:
             return self
 
     def transformChildrenToNative(self):
-        """Recursively replace children with their native representation."""
+        """
+        Recursively replace children with their native representation.
+        """
         pass
 
     def transformChildrenFromNative(self, clearBehavior=True):
-        """Recursively transform native children to vanilla representations."""
+        """
+        Recursively transform native children to vanilla representations.
+        """
         pass
 
     def serialize(self, buf=None, lineLength=75, validate=True, behavior=None):
@@ -210,13 +215,11 @@ class VBase(object):
         Serialize to buf if it exists, otherwise return a string.
 
         Use self.behavior.serialize if behavior exists.
-
         """
         if not behavior:
             behavior = self.behavior
 
         if behavior:
-            #print("serializing %s with behavior %s" % (self.name, behavior))
             if DEBUG:
                 logger.debug("serializing %s with behavior %s" % (self.name, behavior))
             return behavior.serialize(self, buf, lineLength, validate)
@@ -270,7 +273,6 @@ class ContentLine(VBase):
         Take output from parseLine, convert params list to dictionary.
 
         Group is used as a positional argument to match parseLine's return
-
         """
         super(ContentLine, self).__init__(group, *args, **kwds)
 
@@ -323,7 +325,8 @@ class ContentLine(VBase):
 
     def __eq__(self, other):
         try:
-            return (self.name == other.name) and (self.params == other.params) and (self.value == other.value)
+            return (self.name == other.name) and (self.params == other.params) \
+                   and (self.value == other.value)
         except Exception:
             return False
 
@@ -333,7 +336,6 @@ class ContentLine(VBase):
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-
         """
         try:
             if name.endswith('_param'):
@@ -351,7 +353,6 @@ class ContentLine(VBase):
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-
         """
         if name.endswith('_param'):
             if type(value) == list:
@@ -423,7 +424,6 @@ class Component(VBase):
     @ivar useBegin:
         A boolean flag determining whether BEGIN: and END: lines should
         be serialized.
-
     """
     def __init__(self, name=None, *args, **kwds):
         super(Component, self).__init__(*args, **kwds)
@@ -463,12 +463,12 @@ class Component(VBase):
         Assign a PROFILE to this unnamed component.
 
         Used by vCard, not by vCalendar.
-
         """
         if self.name or self.useBegin:
             if self.name == name:
                 return
-            raise VObjectError("This component already has a PROFILE or uses BEGIN.")
+            raise VObjectError("This component already has a PROFILE or "
+                               "uses BEGIN.")
         self.name = name.upper()
 
     def __getattr__(self, name):
@@ -477,7 +477,6 @@ class Component(VBase):
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-
         """
         # if the object is being re-created by pickle, self.contents may not
         # be set, don't get into an infinite loop over the issue
@@ -498,7 +497,6 @@ class Component(VBase):
 
         Underscores, legal in python variable names, are converted to dashes,
         which are legal in IANA tokens.
-
         """
         if name not in self.normal_attributes and name.lower()==name:
             if type(value) == list:
@@ -573,7 +571,9 @@ class Component(VBase):
         return obj
 
     def remove(self, obj):
-        """Remove obj from contents."""
+        """
+        Remove obj from contents.
+        """
         named = self.contents.get(obj.name.lower())
         if named:
             try:
@@ -584,16 +584,22 @@ class Component(VBase):
                 pass;
 
     def getChildren(self):
-        """Return an iterable of all children."""
+        """
+        Return an iterable of all children.
+        """
         for objList in self.contents.values():
             for obj in objList: yield obj
 
     def components(self):
-        """Return an iterable of all Component children."""
+        """
+        Return an iterable of all Component children.
+        """
         return (i for i in self.getChildren() if isinstance(i, Component))
 
     def lines(self):
-        """Return an iterable of all ContentLine children."""
+        """
+        Return an iterable of all ContentLine children.
+        """
         return (i for i in self.getChildren() if isinstance(i, ContentLine))
 
     def sortChildKeys(self):
@@ -607,7 +613,9 @@ class Component(VBase):
         return [obj for k in self.sortChildKeys() for obj in self.contents[k]]
 
     def setBehaviorFromVersionLine(self, versionLine):
-        """Set behavior if one matches name, versionLine.value."""
+        """
+        Set behavior if one matches name, versionLine.value.
+        """
         v = getBehavior(self.name, versionLine.value)
         if v:
             self.setBehavior(v)
@@ -617,7 +625,6 @@ class Component(VBase):
         Recursively replace children with their native representation.
 
         Sort to get dependency order right, like vtimezone before vevent.
-
         """
         for childArray in (self.contents[k] for k in self.sortChildKeys()):
             for child in childArray:
@@ -678,7 +685,7 @@ class NativeError(VObjectError):
     pass
 
 
-#--------- Parsing functions and parseLine regular expressions ------------------
+# --------- Parsing functions and parseLine regular expressions ----------------
 
 patterns = {}
 
@@ -744,7 +751,7 @@ def parseParams(string):
     all = params_re.findall(string)
     allParameters = []
     for tup in all:
-        paramList = [tup[0]] # tup looks like (name, valuesString)
+        paramList = [tup[0]]  # tup looks like (name, valuesString)
         for pair in param_values_re.findall(tup[1]):
             # pair looks like ('', value) or (value, '')
             if pair[0] != '':
@@ -814,13 +821,9 @@ def getLogicalLines(fp, allowQP=True):
      evil=
      format.
     Line 2: Line 2 is a new line, it does not start with whitespace.
-
     """
     if not allowQP:
         val = fp.read(-1)
-
-        # strip off any UTF8 BOMs which Python's UTF8 decoder leaves
-        # val = val.lstrip(unicode(codecs.BOM_UTF8, "utf8"))
 
         lineNumber = 1
         for match in logical_lines_re.finditer(val):
@@ -865,7 +868,7 @@ def getLogicalLines(fp, allowQP=True):
                 logicalLine = newbuffer()
                 logicalLine.write(line)
 
-            # vCard 2.1 allows parameters to be encoded without a parameter name.
+            # vCard 2.1 allows parameters to be encoded without a parameter name
             # False positives are unlikely, but possible.
             val = logicalLine.getvalue()
             if val[-1]=='=' and val.lower().find('quoted-printable') >= 0:
@@ -876,7 +879,8 @@ def getLogicalLines(fp, allowQP=True):
 
 
 def textLineToContentLine(text, n=None):
-    return ContentLine(*parseLine(text, n), **{'encoded':True, 'lineNumber' : n})
+    return ContentLine(*parseLine(text, n), **{'encoded':True,
+                                               'lineNumber' : n})
 
 
 def dquoteEscape(param):
@@ -892,11 +896,11 @@ def dquoteEscape(param):
 
 def foldOneLine(outbuf, input, lineLength = 75):
     """
-    Folding line procedure that ensures multi-byte utf-8 sequences are not broken across lines
+    Folding line procedure that ensures multi-byte utf-8 sequences are not
+    broken across lines
 
     TO-DO: This all seems odd. Is it still needed, especially in python3?
     """
-
     if len(input) < lineLength:
         # Optimize for unfolded line case
         try:
@@ -921,11 +925,6 @@ def foldOneLine(outbuf, input, lineLength = 75):
                     outbuf.write(line)
                 written = len(input)
             else:
-                # Check whether next char is valid utf8 lead byte
-                # while (input[offset] > 0x7F) and ((ord(input[offset]) & 0xC0) == 0x80):
-                #    # Step back until we have a valid char
-                #    offset -= 1
-
                 line = input[start:offset]
                 try:
                     outbuf.write(bytes(line, 'UTF-8'))
@@ -947,7 +946,6 @@ def defaultSerialize(obj, buf, lineLength):
     """
     Encode and fold obj and its children, write to buf or return a string.
     """
-
     outbuf = buf or six.StringIO()
 
     if isinstance(obj, Component):
@@ -956,20 +954,20 @@ def defaultSerialize(obj, buf, lineLength):
         else:
             groupString = obj.group + '.'
         if obj.useBegin:
-            foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name), lineLength)
+            foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name),
+                        lineLength)
         for child in obj.getSortedChildren():
             # validate is recursive, we only need to validate once
             child.serialize(outbuf, lineLength, validate=False)
-            # print('child serialized', str(child))
         if obj.useBegin:
-            foldOneLine(outbuf, "{0}END:{1}".format(groupString, obj.name), lineLength)
+            foldOneLine(outbuf, "{0}END:{1}".format(groupString, obj.name),
+                        lineLength)
 
     elif isinstance(obj, ContentLine):
         startedEncoded = obj.encoded
         if obj.behavior and not startedEncoded:
             obj.behavior.encode(obj)
 
-        #s = codecs.getwriter('utf-8')(six.StringIO()) #unfolded buffer
         s = six.StringIO()
 
         if obj.group is not None:
@@ -1005,7 +1003,7 @@ class Stack:
         else:
             new = Component()
             self.push(new)
-            new.add(item) # add sets behavior for item and children
+            new.add(item)  # add sets behavior for item and children
 
     def push(self, obj):
         self.stack.append(obj)
@@ -1037,7 +1035,8 @@ def readComponents(streamOrString, validate=False, transform=True,
                         msg = "Skipped line %(lineNumber)s, message: %(msg)s"
                     else:
                         msg = "Skipped a line, message: %(msg)s"
-                    logger.error(msg % {'lineNumber' : e.lineNumber, 'msg' : str(e)})
+                    logger.error(msg % {'lineNumber' : e.lineNumber,
+                                        'msg' : str(e)})
                     continue
             else:
                 vline = textLineToContentLine(line, n)
@@ -1052,7 +1051,8 @@ def readComponents(streamOrString, validate=False, transform=True,
                 stack.top().setProfile(vline.value)
             elif vline.name == "END":
                 if len(stack) == 0:
-                    err = "Attempted to end the %s component but it was never opened" % vline.value
+                    err = "Attempted to end the %s component but it was " \
+                          "never opened" % vline.value
                     raise ParseError(err, n)
 
                 if vline.value.upper() == stack.topName(): # START matches END
@@ -1068,19 +1068,20 @@ def readComponents(streamOrString, validate=False, transform=True,
                             component.validate(raiseException=True)
                         if transform:
                             component.transformChildrenToNative()
-                        yield component # EXIT POINT
+                        yield component  # EXIT POINT
                     else:
                         stack.modifyTop(stack.pop())
                 else:
                     err = "%s component wasn't closed"
                     raise ParseError(err % stack.topName(), n)
             else:
-                stack.modifyTop(vline) # not a START or END line
+                stack.modifyTop(vline)  # not a START or END line
         if stack.top():
             if stack.topName() is None:
                 logger.warning("Top level component was never named")
             elif stack.top().useBegin:
-                raise ParseError("Component %s was never closed" % (stack.topName()), n)
+                raise ParseError("Component %s was never closed" %
+                                 (stack.topName()), n)
             yield stack.pop()
 
     except ParseError as e:
@@ -1088,22 +1089,24 @@ def readComponents(streamOrString, validate=False, transform=True,
         raise
 
 
-def readOne(stream, validate=False, transform=True, ignoreUnreadable=False, allowQP=False):
+def readOne(stream, validate=False, transform=True, ignoreUnreadable=False,
+            allowQP=False):
     """
     Return the first component from stream.
     """
-    return next(readComponents(stream, validate, transform, ignoreUnreadable, allowQP))
+    return next(readComponents(stream, validate, transform, ignoreUnreadable,
+                               allowQP))
 
 
-#--------------------------- version registry ----------------------------------
+# --------------------------- version registry ---------------------------------
 __behaviorRegistry={}
 
 def registerBehavior(behavior, name=None, default=False, id=None):
-    """Register the given behavior.
+    """
+    Register the given behavior.
 
     If default is True (or if this is the first version registered with this
     name), the version will be the default if no id is given.
-
     """
     if not name:
         name=behavior.name.upper()
@@ -1118,10 +1121,10 @@ def registerBehavior(behavior, name=None, default=False, id=None):
         __behaviorRegistry[name]=[(id, behavior)]
 
 def getBehavior(name, id=None):
-    """Return a matching behavior if it exists, or None.
+    """
+    Return a matching behavior if it exists, or None.
 
     If id is None, return the default for name.
-
     """
     name=name.upper()
     if name in __behaviorRegistry:
@@ -1150,8 +1153,7 @@ def newFromBehavior(name, id=None):
     return obj
 
 
-#--------------------------- Helper function -----------------------------------
+# --------------------------- Helper function ----------------------------------
 def backslashEscape(s):
     s = s.replace("\\","\\\\").replace(";","\;").replace(",","\,")
     return s.replace("\r\n", "\\n").replace("\n","\\n").replace("\r","\\n")
-
