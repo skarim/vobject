@@ -1,6 +1,6 @@
 # VObject [![PyPI version](https://badge.fury.io/py/vobject.svg)](https://pypi.python.org/pypi/vobject) [![PyPI downloads](https://img.shields.io/pypi/dm/vobject.svg)](https://pypi.python.org/pypi/vobject) [![Build Status](https://travis-ci.org/eventable/vobject.svg?branch=master)](https://travis-ci.org/eventable/vobject) [![License](https://img.shields.io/pypi/l/vobject.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/bb995082e4d24119956445829b1e960c/badge.svg)](https://www.quantifiedcode.com/app/project/bb995082e4d24119956445829b1e960c)
 
-VObject is intended to be a full-featured Python package for parsing and generating vCard and vCalendar files. It was originally developed in concert with the Open Source Application Foundation's Chandler project by Jeffrey Harris. The project is currently being maintained by [Eventable](https://github.com/eventable) and [Sameen Karim](https://github.com/skarim).
+VObject is intended to be a full-featured Python package for parsing and generating vCard and vCalendar files. It was originally developed in concert with the Open Source Application Foundation's Chandler project by Jeffrey Harris. Many thanks to [all the contributors](https://github.com/eventable/vobject/blob/master/ACKNOWLEDGEMENTS.txt) for their dedication and support. The project is currently being maintained by [Eventable](https://github.com/eventable) and [Sameen Karim](https://github.com/skarim).
 
 Currently, iCalendar files are supported and well tested. vCard 3.0 files are supported, and all data should be imported, but only a few components are understood in a sophisticated way. The [Calendar Server](http://calendarserver.org/) team has added VAVAILABILITY support to VObject's iCalendar parsing. Please report bugs and issues directly on [GitHub](https://github.com/eventable/vobject/issues).
 
@@ -27,12 +27,12 @@ Or download the package and run:
 python setup.py install
 ```
 
-VObject requires the[dateutil](https://pypi.python.org/pypi/python-dateutil/) package
+VObject requires Python 2.7 or higher, along with the [dateutil 2.4.0](https://pypi.python.org/pypi/python-dateutil/) and [six](https://pypi.python.org/pypi/six) packages.
 
 
 # Running tests
 
-Unit tests live in doctests throughout the source code, to run all tests, use:
+To run all tests, use:
 
 ```
 python tests.py
