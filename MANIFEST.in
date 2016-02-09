@@ -1,2 +1,2 @@
-include README.md
+include README.md ACKNOWLEDGEMENTS.txt LICENSE-2.0.txt
 recursive-include test_files *.ics
