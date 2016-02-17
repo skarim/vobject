@@ -210,7 +210,8 @@ class TimezoneComponent(Component):
                             'weekday' : transition.weekday(),
                             'hour'    : transition.hour,
                             'name'    : tzinfo.tzname(transition),
-                            'plus'    : (transition.day - 1)/ 7 + 1,  # nth week of the month
+                            'plus'    : int(
+                                (transition.day - 1)/ 7 + 1),  # nth week of the month
                             'minus'   : fromLastWeek(transition),  # nth from last week
                             'offset'  : tzinfo.utcoffset(transition),
                             'offsetfrom' : old_offset}
