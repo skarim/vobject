@@ -39,6 +39,8 @@ setup(name = "vobject",
       license = "Apache",
       zip_safe = True,
       url = "http://eventable.github.io/vobject/",
+      download_url = 'https://github.com/eventable/vobject/tarball/0.9.1',
+      bugtrack_url = "https://github.com/eventable/vobject/issues",
       entry_points = {
             'console_scripts': [
                   'ics_diff = vobject.ics_diff:main',
@@ -49,15 +51,19 @@ setup(name = "vobject",
       install_requires = ['python-dateutil >= 2.4.0'],
       platforms = ["any"],
       packages = find_packages(),
-      description = doclines[0],
+      description = "A full-featured Python package for parsing and creating "
+                    "iCalendar and vCard files",
       long_description = "\n".join(doclines[2:]),
+      keywords = ['vobject', 'icalendar', 'vcard', 'ics', 'vcs', 'hcalendar'],
       classifiers =  """
       Development Status :: 5 - Production/Stable
       Environment :: Console
-      License :: OSI Approved :: Apache Software License
       Intended Audience :: Developers
+      License :: OSI Approved :: Apache Software License
       Natural Language :: English
-      Programming Language :: Python
       Operating System :: OS Independent
+      Programming Language :: Python
+      Programming Language :: Python :: 2.7
+      Programming Language :: Python :: 3
       Topic :: Text Processing""".strip().splitlines()
       )
