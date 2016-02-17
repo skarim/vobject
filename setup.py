@@ -16,7 +16,7 @@ Requires python 2.7 or later, dateutil 2.4.0 or later.
 Recent changes
 --------------
    - Python 3 compatible
-   - Updated version of dateutil (2.4.0)
+   - Updated version of dateutil (2.4.0 and above)
    - More comprehensive unit tests available in tests.py
    - Performance improvements in iteration
    - Test files are included in PyPI download package
@@ -31,7 +31,7 @@ from setuptools import setup, find_packages
 doclines = __doc__.splitlines()
 
 setup(name = "vobject",
-      version = "0.9.0",
+      version = "0.9.1",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       maintainer = "Sameen Karim",

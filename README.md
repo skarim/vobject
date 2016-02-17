@@ -27,7 +27,7 @@ Or download the package and run:
 python setup.py install
 ```
 
-VObject requires Python 2.7 or higher, along with the [dateutil 2.4.0](https://pypi.python.org/pypi/python-dateutil/) and [six](https://pypi.python.org/pypi/six) packages.
+VObject requires Python 2.7 or higher, along with the [dateutil](https://pypi.python.org/pypi/python-dateutil/) and [six](https://pypi.python.org/pypi/six) packages.
 
 
 # Running tests
