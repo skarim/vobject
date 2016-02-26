@@ -913,28 +913,29 @@ def foldOneLine(outbuf, input, lineLength = 75):
         # Look for valid utf8 range and write that out
         start = 0
         written = 0
+        counter = 0  # counts line size in bytes
+        decoded = input.decode('utf-8')
         while written < len(input):
-            # Start max length -1 chars on from where we are
-            offset = start + lineLength - 1
-            if offset >= len(input):
-                line = input[start:]
+            s = decoded[start]  # take one char
+            size = len(s.encode('utf-8'))  # calculate it's size in bytes
+            if counter + size > lineLength:
                 try:
-                    outbuf.write(bytes(line, 'UTF-8'))
-                except Exception:
-                    # fall back on py2 syntax
-                    outbuf.write(line)
-                written = len(input)
-            else:
-                line = input[start:offset]
-                try:
-                    outbuf.write(bytes(line, 'UTF-8'))
                     outbuf.write(bytes("\r\n ", 'UTF-8'))
                 except Exception:
                     # fall back on py2 syntax
-                    outbuf.write(line)
                     outbuf.write("\r\n ")
-                written += offset - start
-                start = offset
+
+                counter = 1  # one for space
+
+            try:
+                outbuf.write(bytes(s.encode('utf-8'), 'UTF-8'))
+            except:
+                # fall back on py2 syntax
+                outbuf.write(s.encode('utf-8'))
+
+            written += size
+            counter += size
+            start += 1
     try:
         outbuf.write(bytes("\r\n", 'UTF-8'))
     except Exception:
