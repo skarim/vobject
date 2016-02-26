@@ -34,6 +34,30 @@ except NameError:
         """
         return s
 
+if not isinstance(b'', type('')):
+    unicode_type = str
+else:
+    unicode_type = unicode  # noqa
+
+
+def to_unicode(value):
+    """Converts a string argument to a unicode string.
+
+    If the argument is already a unicode string, it is returned
+    unchanged.  Otherwise it must be a byte string and is decoded as utf8.
+    """
+    if isinstance(value, unicode_type):
+        return value
+
+    return value.decode('utf-8')
+
+
+def to_basestring(s):
+    if isinstance(s, bytes):
+        return s
+
+    return s.encode('utf-8')
+
 # ------------------------------------ Logging ---------------------------------
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
@@ -914,10 +938,11 @@ def foldOneLine(outbuf, input, lineLength = 75):
         start = 0
         written = 0
         counter = 0  # counts line size in bytes
-        decoded = input.decode('utf-8')
-        while written < len(input):
+        decoded = to_unicode(input)
+        length = len(to_basestring(input))
+        while written < length:
             s = decoded[start]  # take one char
-            size = len(s.encode('utf-8'))  # calculate it's size in bytes
+            size = len(to_basestring(s))  # calculate it's size in bytes
             if counter + size > lineLength:
                 try:
                     outbuf.write(bytes("\r\n ", 'UTF-8'))
@@ -927,9 +952,9 @@ def foldOneLine(outbuf, input, lineLength = 75):
 
                 counter = 1  # one for space
 
-            try:
-                outbuf.write(bytes(s.encode('utf-8'), 'UTF-8'))
-            except:
+            if str is unicode_type:
+                outbuf.write(to_unicode(s))
+            else:
                 # fall back on py2 syntax
                 outbuf.write(s.encode('utf-8'))
 
