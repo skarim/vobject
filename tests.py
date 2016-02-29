@@ -135,7 +135,8 @@ class TestCalendarSerializing(unittest.TestCase):
             "REQUEST-STATUS:5.1;Service unavailable"
         )
 
-    def test_unicode_multiline(self):
+    @staticmethod
+    def test_unicode_multiline():
         """
         Test multiline unicode characters
         """

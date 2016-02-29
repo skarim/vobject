@@ -53,6 +53,11 @@ def to_unicode(value):
 
 
 def to_basestring(s):
+    """Converts a string argument to a byte string.
+
+    If the argument is already a byte string, it is returned unchanged.
+    Otherwise it must be a unicode string and is encoded as utf8.
+    """
     if isinstance(s, bytes):
         return s
 
