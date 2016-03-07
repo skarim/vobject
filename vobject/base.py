@@ -907,7 +907,7 @@ def foldOneLine(outbuf, input, lineLength = 75):
             outbuf.write(bytes(input, 'UTF-8'))
         except Exception:
             # fall back on py2 syntax
-            outbuf.write(input)
+            outbuf.write(str_(input))
 
     else:
         # Look for valid utf8 range and write that out
