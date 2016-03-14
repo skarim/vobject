@@ -34,6 +34,35 @@ except NameError:
         """
         return s
 
+if not isinstance(b'', type('')):
+    unicode_type = str
+else:
+    unicode_type = unicode  # noqa
+
+
+def to_unicode(value):
+    """Converts a string argument to a unicode string.
+
+    If the argument is already a unicode string, it is returned
+    unchanged.  Otherwise it must be a byte string and is decoded as utf8.
+    """
+    if isinstance(value, unicode_type):
+        return value
+
+    return value.decode('utf-8')
+
+
+def to_basestring(s):
+    """Converts a string argument to a byte string.
+
+    If the argument is already a byte string, it is returned unchanged.
+    Otherwise it must be a unicode string and is encoded as utf8.
+    """
+    if isinstance(s, bytes):
+        return s
+
+    return s.encode('utf-8')
+
 # ------------------------------------ Logging ---------------------------------
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
@@ -913,28 +942,30 @@ def foldOneLine(outbuf, input, lineLength = 75):
         # Look for valid utf8 range and write that out
         start = 0
         written = 0
-        while written < len(input):
-            # Start max length -1 chars on from where we are
-            offset = start + lineLength - 1
-            if offset >= len(input):
-                line = input[start:]
+        counter = 0  # counts line size in bytes
+        decoded = to_unicode(input)
+        length = len(to_basestring(input))
+        while written < length:
+            s = decoded[start]  # take one char
+            size = len(to_basestring(s))  # calculate it's size in bytes
+            if counter + size > lineLength:
                 try:
-                    outbuf.write(bytes(line, 'UTF-8'))
-                except Exception:
-                    # fall back on py2 syntax
-                    outbuf.write(line)
-                written = len(input)
-            else:
-                line = input[start:offset]
-                try:
-                    outbuf.write(bytes(line, 'UTF-8'))
                     outbuf.write(bytes("\r\n ", 'UTF-8'))
                 except Exception:
                     # fall back on py2 syntax
-                    outbuf.write(line)
                     outbuf.write("\r\n ")
-                written += offset - start
-                start = offset
+
+                counter = 1  # one for space
+
+            if str is unicode_type:
+                outbuf.write(to_unicode(s))
+            else:
+                # fall back on py2 syntax
+                outbuf.write(s.encode('utf-8'))
+
+            written += size
+            counter += size
+            start += 1
     try:
         outbuf.write(bytes("\r\n", 'UTF-8'))
     except Exception:

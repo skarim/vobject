@@ -7,11 +7,12 @@ import dateutil
 import re
 import sys
 import unittest
+import json
 
 from dateutil.tz import tzutc
 from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 
-from vobject import base
+from vobject import base, iCalendar
 from vobject import icalendar
 
 from vobject.base import __behaviorRegistry as behavior_registry
@@ -25,7 +26,7 @@ from vobject.icalendar import MultiDateBehavior, PeriodBehavior, \
 from vobject.icalendar import parseDtstart, stringToTextValues, \
     stringToPeriod, timedeltaToString
 
-two_hours  = datetime.timedelta(hours=2)
+two_hours = datetime.timedelta(hours=2)
 
 
 def get_test_file(path):
@@ -133,6 +134,22 @@ class TestCalendarSerializing(unittest.TestCase):
             request_status.serialize().strip(),
             "REQUEST-STATUS:5.1;Service unavailable"
         )
+
+    @staticmethod
+    def test_unicode_multiline():
+        """
+        Test multiline unicode characters
+        """
+        cal = iCalendar()
+        cal.add('method').value = 'REQUEST'
+        cal.add('vevent')
+        cal.vevent.add('created').value = datetime.datetime.now()
+        cal.vevent.add('summary').value = 'Классное событие'
+        cal.vevent.add('description').value = ('Классное событие Классное событие Классное событие Классное событие '
+                                               'Классное событие Классsdssdное событие')
+
+        # json tries to encode as utf-8 and it would break if some chars could not be encoded
+        json.dumps(cal.serialize())
 
     @staticmethod
     def test_ical_to_hcal():
