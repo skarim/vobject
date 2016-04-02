@@ -607,7 +607,7 @@ class TextBehavior(behavior.Behavior):
         if line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = base64.b64decode(line.value).decode('utf-8')
+                line.value = base64.b64decode(line.value)
             else:
                 line.value = stringToTextValues(line.value)[0]
             line.encoded=False
