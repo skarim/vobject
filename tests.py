@@ -516,8 +516,13 @@ class TestVcards(unittest.TestCase):
         #)
         self.assertEqual(
             card.org.value,
-            "University of Novosibirsk, Department of Octopus Parthenogenesis"
+            ["University of Novosibirsk", "Department of Octopus Parthenogenesis"]
         )
+
+        for _ in range(3):
+            new_card = base.readOne(card.serialize())
+            self.assertEqual(new_card.org.value, card.org.value)
+            card = new_card
 
 
 class TestIcalendar(unittest.TestCase):

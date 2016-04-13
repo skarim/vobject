@@ -338,6 +338,7 @@ class OrgBehavior(VCardBehavior):
         if obj.isNative:
             return obj
         obj.isNative = True
+        obj.value = splitFields(obj.value)
         return obj
 
     @staticmethod
