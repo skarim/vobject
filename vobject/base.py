@@ -334,7 +334,7 @@ class ContentLine(VBase):
             qp = True
             self.singletonparams.remove('QUOTED-PRINTABLE')
         if qp:
-            self.value = codecs.decode(self.value, "quoted-printable").decode(self.params['ENCODING'])
+            self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode(self.params['ENCODING'])
 
     @classmethod
     def duplicate(clz, copyit):
