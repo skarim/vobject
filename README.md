@@ -253,6 +253,7 @@ serializing will add any required computable attributes (like 'VERSION')
 ... BEGIN:VCARD
 ... VERSION:3.0
 ... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org
+... ORG:Open Source Applications Foundation
 ... FN:Jeffrey Harris
 ... N:Harris;Jeffrey;;;
 ... END:VCARD
@@ -260,6 +261,7 @@ serializing will add any required computable attributes (like 'VERSION')
 >>> v = vobject.readOne( s )
 >>> v.prettyPrint()
  VCARD
+    ORG: Open Source Applications Foundation
     VERSION: 3.0
     EMAIL: jeffrey@osafoundation.org
     params for  EMAIL:
