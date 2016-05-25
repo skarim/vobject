@@ -53,7 +53,7 @@ To create an object that already has a behavior defined, run:
 
 ```
 >>> import vobject
->>> &gt; cal = vobject.newFromBehavior('vcalendar')
+>>> cal = vobject.newFromBehavior('vcalendar')
 >>> cal.behavior
 <class 'vobject.icalendar.VCalendar2_0'>
 ```
