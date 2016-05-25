@@ -1,0 +1,14 @@
+Make it more https://tools.ietf.org/html/rfc6350 compliant as vobject does not yet cleanly deal with:
+
+vCard 2.1
+TEL;WORK;VOICE:(111) 555-1212
+TEL;HOME;VOICE:(404) 555-1212
+TEL;PREF;VOICE;ENCODING=8BIT:+44990112233
+TEL;CELL;VOICE;ENCODING=8BIT:+44207361212
+vCard 3.0
+TEL;TYPE=WORK,VOICE:(111) 555-1212
+TEL;TYPE=HOME,VOICE:(404) 555-1212
+vCard 4.0
+TEL;TYPE=work,voice;VALUE=uri:tel:+11115551212
+
+https://en.wikipedia.org/wiki/VCard
