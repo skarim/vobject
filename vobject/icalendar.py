@@ -10,6 +10,11 @@ import string
 
 from dateutil import rrule, tz
 
+import sys
+
+if sys.version_info >= (3,0):
+    from base64 import b64encode
+
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
                     Component, ContentLine, logger, registerBehavior,
@@ -606,7 +611,10 @@ class TextBehavior(behavior.Behavior):
         if line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.decode('base64')
+                if sys.version_info >= (3,0):
+                    line.value = b46encode(bytes(line.value, 'utf-8'))
+                else:
+                    line.value = line.value.decode('base64')
             else:
                 line.value = stringToTextValues(line.value)[0]
             line.encoded=False
@@ -619,7 +627,10 @@ class TextBehavior(behavior.Behavior):
         if not line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.encode('base64').replace('\n', '')
+                if sys.version_info >= (3,0):
+                    line.value = b46encode(bytes(line.value.replace('\n', ''), 'utf-8'))
+                else:
+                    line.value = line.value.encode('base64').replace('\n', '')
             else:
                 line.value = backslashEscape(str_(line.value))
             line.encoded=True

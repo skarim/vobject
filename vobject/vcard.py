@@ -5,6 +5,10 @@ from . import behavior
 from .base import ContentLine, registerBehavior, backslashEscape
 from .icalendar import stringToTextValues
 
+import sys
+
+if sys.version_info >= (3,0):
+    from base64 import b64encode
 
 # Python 3 no longer has a basestring type, so....
 try:
@@ -134,7 +138,10 @@ class VCardTextBehavior(behavior.Behavior):
                 line.encoding_param = cls.base64string
             encoding = getattr(line, 'encoding_param', None)
             if encoding:
-                line.value = line.value.decode('base64')
+                if sys.version_info >= (3,0):
+                    line.value = b46encode(bytes(line.value, 'utf-8'))
+                else:
+                    line.value = line.value.decode('base64')
             else:
                 line.value = stringToTextValues(line.value)[0]
             line.encoded=False
@@ -147,7 +154,10 @@ class VCardTextBehavior(behavior.Behavior):
         if not line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.encode('base64').replace('\n', '')
+                if sys.version_info >= (3,0):
+                    line.value = b46encode(bytes(line.value.replace('\n', ''), 'utf-8'))
+                else:
+                    line.value = line.value.encode('base64').replace('\n', '')
             else:
                 line.value = backslashEscape(line.value)
             line.encoded=True
