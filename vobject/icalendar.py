@@ -10,6 +10,22 @@ import string
 
 from dateutil import rrule, tz
 
+try:
+    import pytz
+except ImportError:
+    class Pytz:
+        """fake pytz module (pytz is not required)"""
+
+        class AmbiguousTimeError(Exception):
+            """pytz error for ambiguous times
+               during transition daylight->standard"""
+
+        class NonExistentTimeError(Exception):
+            """pytz error for non-existent times
+               during transition standard->daylight"""
+
+    pytz = Pytz  # keeps quantifiedcode happy
+
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
                     Component, ContentLine, logger, registerBehavior,
@@ -203,17 +219,26 @@ class TimezoneComponent(Component):
                         working[transitionTo] = None
                 else:
                     # an offset transition was found
-                    old_offset = tzinfo.utcoffset(transition - twoHours)
+                    try:
+                        old_offset = tzinfo.utcoffset(transition - twoHours)
+                        name = tzinfo.tzname(transition)
+                        offset = tzinfo.utcoffset(transition)
+                    except (pytz.AmbiguousTimeError, pytz.NonExistentTimeError):
+                        # guaranteed that tzinfo is a pytz timezone
+                        is_dst = (transitionTo == "daylight")
+                        old_offset = tzinfo.utcoffset(transition - twoHours, is_dst=is_dst)
+                        name = tzinfo.tzname(transition, is_dst=is_dst)
+                        offset = tzinfo.utcoffset(transition, is_dst=is_dst)
                     rule = {'end'     : None,  # None, or an integer year
                             'start'   : transition,  # the datetime of transition
                             'month'   : transition.month,
                             'weekday' : transition.weekday(),
                             'hour'    : transition.hour,
-                            'name'    : tzinfo.tzname(transition),
+                            'name'    : name,
                             'plus'    : int(
                                 (transition.day - 1)/ 7 + 1),  # nth week of the month
                             'minus'   : fromLastWeek(transition),  # nth from last week
-                            'offset'  : tzinfo.utcoffset(transition),
+                            'offset'  : offset,
                             'offsetfrom' : old_offset}
 
                     if oldrule is None:
@@ -1862,9 +1887,21 @@ def getTransition(transitionTo, year, tzinfo):
 
     assert transitionTo in ('daylight', 'standard')
     if transitionTo == 'daylight':
-        def test(dt): return tzinfo.dst(dt) != zeroDelta
+        def test(dt):
+            try:
+                return tzinfo.dst(dt) != zeroDelta
+            except pytz.NonExistentTimeError:
+                return True  # entering daylight time
+            except pytz.AmbiguousTimeError:
+                return False  # entering standard time
     elif transitionTo == 'standard':
-        def test(dt): return tzinfo.dst(dt) == zeroDelta
+        def test(dt):
+            try:
+                return tzinfo.dst(dt) == zeroDelta
+            except pytz.NonExistentTimeError:
+                return False  # entering daylight time
+            except pytz.AmbiguousTimeError:
+                return True  # entering standard time
     newyear = datetime.datetime(year, 1, 1)
     monthDt = firstTransition(generateDates(year), test)
     if monthDt is None:
