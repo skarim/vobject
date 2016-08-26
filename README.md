@@ -217,8 +217,12 @@ attributes are required.
  <EMAIL{}>
 >>> j.email.value = 'jeffrey@osafoundation.org'
 >>> j.email.type_param = 'INTERNET'
+>>> j.add('org')
+ <ORG{}>
+>>> j.org.value = ['Open Source Applications Foundation']
 >>> j.prettyPrint()
  VCARD
+    ORG: ['Open Source Applications Foundation']
     EMAIL: jeffrey@osafoundation.org
     params for  EMAIL:
        TYPE ['INTERNET']
@@ -230,9 +234,10 @@ serializing will add any required computable attributes (like 'VERSION')
 
 ```
 >>> j.serialize()
-'BEGIN:VCARD\r\nVERSION:3.0\r\nEMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r\nFN:Jeffrey Harris\r\nN:Harris;Jeffrey;;;\r\nEND:VCARD\r\n'
+'BEGIN:VCARD\r\nVERSION:3.0\r\nEMAIL;TYPE=INTERNET:jeffrey@osafoundation.org\r\nFN:Jeffrey Harris\r\nN:Harris;Jeffrey;;;\r\nORG:Open Source Applications Foundation\r\nEND:VCARD\r\n'
 >>> j.prettyPrint()
  VCARD
+    ORG: Open Source Applications Foundation
     VERSION: 3.0
     EMAIL: jeffrey@osafoundation.org
     params for  EMAIL:
@@ -248,6 +253,7 @@ serializing will add any required computable attributes (like 'VERSION')
 ... BEGIN:VCARD
 ... VERSION:3.0
 ... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org
+... ORG:Open Source Applications Foundation
 ... FN:Jeffrey Harris
 ... N:Harris;Jeffrey;;;
 ... END:VCARD
@@ -255,6 +261,7 @@ serializing will add any required computable attributes (like 'VERSION')
 >>> v = vobject.readOne( s )
 >>> v.prettyPrint()
  VCARD
+    ORG: Open Source Applications Foundation
     VERSION: 3.0
     EMAIL: jeffrey@osafoundation.org
     params for  EMAIL:
