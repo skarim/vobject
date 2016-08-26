@@ -2,14 +2,14 @@
 
 from __future__ import print_function
 
+import codecs
 import datetime
 import random  # for generating a UID
-import six
 import socket
 import string
-import codecs
 
 from dateutil import rrule, tz
+import six
 
 try:
     import pytz
@@ -29,8 +29,8 @@ except ImportError:
 
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
-                    Component, ContentLine, logger, registerBehavior,
-                    backslashEscape, foldOneLine, str_)
+                   Component, ContentLine, logger, registerBehavior,
+                   backslashEscape, foldOneLine, str_)
 
 
 # ------------------------------- Constants ------------------------------------
