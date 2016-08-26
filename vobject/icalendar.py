@@ -2,14 +2,15 @@
 
 from __future__ import print_function
 
+import codecs
 import datetime
+import logging
 import random  # for generating a UID
-import six
 import socket
 import string
-import codecs
 
 from dateutil import rrule, tz
+import six
 
 try:
     import pytz
@@ -29,8 +30,8 @@ except ImportError:
 
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
-                    Component, ContentLine, logger, registerBehavior,
-                    backslashEscape, foldOneLine, str_)
+                   Component, ContentLine, logger, registerBehavior,
+                   backslashEscape, foldOneLine, str_)
 
 
 # ------------------------------- Constants ------------------------------------
@@ -76,9 +77,9 @@ def getTzid(tzid, smart=True):
                 tz = timezone(tzid)
                 registerTzid(toUnicode(tzid), tz)
             except UnknownTimeZoneError as e:
-                print("Error: {0}".format(e))
+                logging.error(e)
         except ImportError as e:
-            print("Error: {0}".format(e))
+            logging.error(e)
     return tz
 
 utc = tz.tzutc()
@@ -428,11 +429,11 @@ class RecurringComponent(Component):
                                 dtstart = self.due.value
                             else:
                                 # if there's no dtstart, just return None
-                                print('failed to get dtstart with VTODO')
+                                logging.error('failed to get dtstart with VTODO')
                                 return None
                         except (AttributeError, KeyError):
                             # if there's no due, just return None
-                            print('failed to find DUE at all.')
+                            logging.error('failed to find DUE at all.')
                             return None
 
                     # a Ruby iCalendar library escapes semi-colons in rrules,
@@ -1646,7 +1647,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
         if strict:
             raise ParseError(msg)
         else:
-            print(msg)
+            logging.error(msg)
 
     # vars which control state machine
     charIterator = enumerate(s)
@@ -1698,7 +1699,8 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '{0!s}' reached in {1!s}".format(state, s))
+            error("unknown state: '{0!s}' reached in {1!s}".format(state, s))
+
 
 def stringToDurations(s, strict=False):
     """
@@ -1815,7 +1817,8 @@ def stringToDurations(s, strict=False):
 
         else:
             state = "error"
-            error("error: unknown state: '{0!s}' reached in {1!s}".format(state, s))
+            error("unknown state: '{0!s}' reached in {1!s}".format(state, s))
+
 
 def parseDtstart(contentline, allowSignatureMismatch=False):
     """
