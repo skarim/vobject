@@ -7,6 +7,7 @@ import random  # for generating a UID
 import six
 import socket
 import string
+import codecs
 
 from dateutil import rrule, tz
 
@@ -606,7 +607,7 @@ class TextBehavior(behavior.Behavior):
         if line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.decode('base64')
+                line.value = codecs.decode(self.value.encode("utf-8"), "base64").decode(encoding)
             else:
                 line.value = stringToTextValues(line.value)[0]
             line.encoded=False
@@ -619,7 +620,7 @@ class TextBehavior(behavior.Behavior):
         if not line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = line.value.encode('base64').replace('\n', '')
+                line.value = codecs.encode(self.value.encode(encoding), "base64").decode("utf-8")
             else:
                 line.value = backslashEscape(str_(line.value))
             line.encoded=True
