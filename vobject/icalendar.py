@@ -412,7 +412,7 @@ class RecurringComponent(Component):
 
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
-                        map(addfunc, line.value)
+                        list(map(addfunc, line.value))
                     elif type(line.value[0]) == datetime.date:
                         for dt in line.value:
                             addfunc(datetime.datetime(dt.year, dt.month, dt.day))
