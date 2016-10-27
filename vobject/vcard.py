@@ -1,7 +1,6 @@
 """Definitions and behavior for vCard 3.0"""
 
 import codecs
-import base64
 
 from . import behavior
 
@@ -138,7 +137,7 @@ class VCardTextBehavior(behavior.Behavior):
             encoding = getattr(line, 'encoding_param', None)
             if encoding:
                 if isinstance(line.value, bytes):
-                    line.value = base64.b64decode(line.value)
+                    line.value = codecs.decode(line.value, "base64")
                 else:
                     line.value = codecs.decode(line.value.encode("utf-8"), "base64")
             else:
@@ -154,7 +153,7 @@ class VCardTextBehavior(behavior.Behavior):
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
                 if isinstance(line.value, bytes):
-                    line.value = base64.b64encode(line.value)
+                    line.value = codecs.encode(line.value, "base64").decode("utf-8").replace('\n', '')
                 else:
                     line.value = codecs.encode(line.value.encode(coding), "base64").decode("utf-8")
             else:
