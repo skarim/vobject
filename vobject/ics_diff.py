@@ -42,7 +42,7 @@ def deleteExtraneous(component, ignore_dtstamp=False):
     for comp in component.components():
         deleteExtraneous(comp, ignore_dtstamp)
     for line in component.lines():
-        if line.params.has_key('X-VOBJ-ORIGINAL-TZID'):
+        if 'X-VOBJ-ORIGINAL-TZID' in line.params:
             del line.params['X-VOBJ-ORIGINAL-TZID']
     if ignore_dtstamp and hasattr(component, 'dtstamp_list'):
         del component.dtstamp_list
