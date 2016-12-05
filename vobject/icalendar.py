@@ -45,11 +45,12 @@ FREQUENCIES = ('YEARLY', 'MONTHLY', 'WEEKLY', 'DAILY', 'HOURLY', 'MINUTELY',
                'SECONDLY')
 
 zeroDelta = datetime.timedelta(0)
-twoHours  = datetime.timedelta(hours=2)
+twoHours = datetime.timedelta(hours=2)
 
 
 # ---------------------------- TZID registry -----------------------------------
-__tzidMap={}
+__tzidMap = {}
+
 
 def toUnicode(s):
     """
@@ -59,11 +60,13 @@ def toUnicode(s):
         s = s.decode('utf-8')
     return s
 
+
 def registerTzid(tzid, tzinfo):
     """
     Register a tzid -> tzinfo mapping.
     """
-    __tzidMap[toUnicode(tzid)]=tzinfo
+    __tzidMap[toUnicode(tzid)] = tzinfo
+
 
 def getTzid(tzid, smart=True):
     """
@@ -107,7 +110,7 @@ class TimezoneComponent(Component):
         Accept an existing Component or a tzinfo class.
         """
         super(TimezoneComponent, self).__init__(*args, **kwds)
-        self.isNative=True
+        self.isNative = True
         # hack to make sure a behavior is assigned
         if self.behavior is None:
             self.behavior = VTimezone
@@ -136,6 +139,7 @@ class TimezoneComponent(Component):
         # allow empty VTIMEZONEs
         if len(self.contents) == 0:
             return None
+
         def customSerialize(obj):
             if isinstance(obj, Component):
                 foldOneLine(buffer, u"BEGIN:" + obj.name)
@@ -177,10 +181,10 @@ class TimezoneComponent(Component):
             return n
 
         # lists of dictionaries defining rules which are no longer in effect
-        completed = {'daylight' : [], 'standard' : []}
+        completed = {'daylight': [], 'standard': []}
 
         # dictionary defining rules which are currently in effect
-        working   = {'daylight' : None, 'standard' : None}
+        working = {'daylight': None, 'standard': None}
 
         # rule may be based on nth week of the month or the nth from the last
         for year in range(start, end + 1):
@@ -206,8 +210,7 @@ class TimezoneComponent(Component):
                         working[transitionTo] = rule
                     else:
                         # transitionTo was already in effect
-                        if (oldrule['offset'] !=
-                            tzinfo.utcoffset(newyear)):
+                        if (oldrule['offset'] != tzinfo.utcoffset(newyear)):
                             # old rule was different, it shouldn't continue
                             oldrule['end'] = year - 1
                             completed[transitionTo].append(oldrule)
@@ -246,7 +249,7 @@ class TimezoneComponent(Component):
                     if oldrule is None:
                         working[transitionTo] = rule
                     else:
-                        plusMatch  = rule['plus']  == oldrule['plus']
+                        plusMatch = rule['plus'] == oldrule['plus']
                         minusMatch = rule['minus'] == oldrule['minus']
                         truth = plusMatch or minusMatch
                         for key in 'month', 'weekday', 'hour', 'offset':
@@ -280,7 +283,7 @@ class TimezoneComponent(Component):
                 dtstart = comp.add('dtstart')
                 dtstart.value = rule['start']
                 if rule['name'] is not None:
-                    comp.add('tzname').value  = rule['name']
+                    comp.add('tzname').value = rule['name']
                 line = comp.add('tzoffsetto')
                 line.value = deltaToOffset(rule['offset'])
                 line = comp.add('tzoffsetfrom')
@@ -303,13 +306,14 @@ class TimezoneComponent(Component):
                     else:
                         weekday = rrule.weekday(rule['weekday'], num)
                         du_rule = rrule.rrule(rrule.YEARLY,
-                                   bymonth = rule['month'],byweekday = weekday,
-                                   dtstart = datetime.datetime(
-                                       rule['end'], 1, 1, rule['hour'])
-                                  )
+                            bymonth=rule['month'], byweekday=weekday,
+                            dtstart=datetime.datetime(
+                               rule['end'], 1, 1, rule['hour']
+                            )
+                        )
                         endDate = du_rule[0]
-                    endDate = endDate.replace(tzinfo = utc) - rule['offsetfrom']
-                    endString = ";UNTIL="+ dateTimeToString(endDate)
+                    endDate = endDate.replace(tzinfo=utc) - rule['offsetfrom']
+                    endString = ";UNTIL=" + dateTimeToString(endDate)
                 else:
                     endString = ''
                 new_rule = "FREQ=YEARLY{0!s};BYMONTH={1!s}{2!s}"\
@@ -386,9 +390,9 @@ class RecurringComponent(Component):
     def __init__(self, *args, **kwds):
         super(RecurringComponent, self).__init__(*args, **kwds)
 
-        self.isNative=True
+        self.isNative = True
 
-    def getrruleset(self, addRDate = False):
+    def getrruleset(self, addRDate=False):
         """
         Get an rruleset created from self.
 
@@ -501,7 +505,7 @@ class RecurringComponent(Component):
                         except IndexError:
                             # it's conceivable that an rrule has 0 datetimes
                             added = False
-                        if added and rruleset._rrule[-1]._count != None:
+                        if added and rruleset._rrule[-1]._count is not None:
                             rruleset._rrule[-1]._count -= 1
         return rruleset
 
@@ -517,7 +521,7 @@ class RecurringComponent(Component):
 
         isDate = datetime.date == type(dtstart)
         if isDate:
-            dtstart = datetime.datetime(dtstart.year,dtstart.month, dtstart.day)
+            dtstart = datetime.datetime(dtstart.year, dtstart.month, dtstart.day)
             untilSerialize = dateToString
         else:
             # make sure to convert time zones to UTC
@@ -528,7 +532,7 @@ class RecurringComponent(Component):
                 del self.contents[name]
             setlist = getattr(rruleset, '_' + name)
             if name in DATENAMES:
-                setlist = list(setlist) # make a copy of the list
+                setlist = list(setlist)  # make a copy of the list
                 if name == 'rdate' and dtstart in setlist:
                     setlist.remove(dtstart)
                 if isDate:
@@ -545,7 +549,7 @@ class RecurringComponent(Component):
 
                     if rule._interval != 1:
                         values['INTERVAL'] = [str(rule._interval)]
-                    if rule._wkst != 0: # wkst defaults to Monday
+                    if rule._wkst != 0:  # wkst defaults to Monday
                         values['WKST'] = [WEEKDAYS[rule._wkst]]
                     if rule._bysetpos is not None:
                         values['BYSETPOS'] = [str(i) for i in rule._bysetpos]
@@ -623,7 +627,7 @@ class TextBehavior(behavior.Behavior):
     TextBehavior also deals with base64 encoding if the ENCODING parameter is
     explicitly set to BASE64.
     """
-    base64string = 'BASE64' # vCard uses B
+    base64string = 'BASE64'  # vCard uses B
 
     @classmethod
     def decode(cls, line):
@@ -633,10 +637,11 @@ class TextBehavior(behavior.Behavior):
         if line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
+                # shouldn't be calling `self` in a classmethod?
                 line.value = codecs.decode(self.value.encode("utf-8"), "base64").decode(encoding)
             else:
                 line.value = stringToTextValues(line.value)[0]
-            line.encoded=False
+            line.encoded = False
 
     @classmethod
     def encode(cls, line):
@@ -646,10 +651,11 @@ class TextBehavior(behavior.Behavior):
         if not line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
+                # shouldn't be calling `self` in a classmethod?
                 line.value = codecs.encode(self.value.encode(encoding), "base64").decode("utf-8")
             else:
                 line.value = backslashEscape(str_(line.value))
-            line.encoded=True
+            line.encoded = True
 
 
 class VCalendarComponentBehavior(behavior.Behavior):
@@ -712,12 +718,14 @@ class DateTimeBehavior(behavior.Behavior):
         a file, real floating times are noted by setting to 'TRUE' the
         X-VOBJ-FLOATINGTIME-ALLOWED parameter.
         """
-        if obj.isNative: return obj
+        if obj.isNative:
+            return obj
         obj.isNative = True
-        if obj.value == '': return obj
-        obj.value=obj.value
+        if obj.value == '':
+            return obj
+        obj.value = obj.value
         # we're cheating a little here, parseDtstart allows DATE
-        obj.value=parseDtstart(obj)
+        obj.value = parseDtstart(obj)
         if obj.value.tzinfo is None:
             obj.params['X-VOBJ-FLOATINGTIME-ALLOWED'] = ['TRUE']
         if obj.params.get('TZID'):
@@ -768,8 +776,8 @@ class DateOrDateTimeBehavior(behavior.Behavior):
         obj.isNative = True
         if obj.value == '':
             return obj
-        obj.value=obj.value
-        obj.value=parseDtstart(obj, allowSignatureMismatch=True)
+        obj.value = obj.value
+        obj.value = parseDtstart(obj, allowSignatureMismatch=True)
         if getattr(obj, 'value_param', 'DATE-TIME').upper() == 'DATE-TIME':
             if hasattr(obj, 'tzid_param'):
                 # Keep a copy of the original TZID around
@@ -863,8 +871,8 @@ class MultiTextBehavior(behavior.Behavior):
         """
         if line.encoded:
             line.value = stringToTextValues(line.value,
-                listSeparator=cls.listSeparator)
-            line.encoded=False
+                                            listSeparator=cls.listSeparator)
+            line.encoded = False
 
     @classmethod
     def encode(cls, line):
@@ -874,7 +882,7 @@ class MultiTextBehavior(behavior.Behavior):
         if not line.encoded:
             line.value = cls.listSeparator.join(backslashEscape(val)
                                                 for val in line.value)
-            line.encoded=True
+            line.encoded = True
 
 
 class SemicolonMultiTextBehavior(MultiTextBehavior):
@@ -890,17 +898,18 @@ class VCalendar2_0(VCalendarComponentBehavior):
     description = 'vCalendar 2.0, also known as iCalendar.'
     versionString = '2.0'
     sortFirst = ('version', 'calscale', 'method', 'prodid', 'vtimezone')
-    knownChildren = {'CALSCALE':      (0, 1, None),  # min, max, behaviorRegistry id
-                     'METHOD':        (0, 1, None),
-                     'VERSION':       (0, 1, None),  # required, but auto-generated
-                     'PRODID':        (1, 1, None),
-                     'VTIMEZONE':     (0, None, None),
-                     'VEVENT':        (0, None, None),
-                     'VTODO':         (0, None, None),
-                     'VJOURNAL':      (0, None, None),
-                     'VFREEBUSY':     (0, None, None),
-                     'VAVAILABILITY': (0, None, None),
-                    }
+    knownChildren = {
+        'CALSCALE':      (0, 1, None),  # min, max, behaviorRegistry id
+        'METHOD':        (0, 1, None),
+        'VERSION':       (0, 1, None),  # required, but auto-generated
+        'PRODID':        (1, 1, None),
+        'VTIMEZONE':     (0, None, None),
+        'VEVENT':        (0, None, None),
+        'VTODO':         (0, None, None),
+        'VJOURNAL':      (0, None, None),
+        'VFREEBUSY':     (0, None, None),
+        'VAVAILABILITY': (0, None, None),
+    }
 
     @classmethod
     def generateImplicitParameters(cls, obj):
@@ -957,12 +966,13 @@ class VTimezone(VCalendarComponentBehavior):
     hasNative = True
     description = 'A grouping of component properties that defines a time zone.'
     sortFirst = ('tzid', 'last-modified', 'tzurl', 'standard', 'daylight')
-    knownChildren = {'TZID':         (1, 1, None),  # min, max, behaviorRegistry id
-                     'LAST-MODIFIED':(0, 1, None),
-                     'TZURL':        (0, 1, None),
-                     'STANDARD':     (0, None, None),  # NOTE: One of Standard or
-                     'DAYLIGHT':     (0, None, None)  # Daylight must appear
-                    }
+    knownChildren = {
+        'TZID':          (1, 1, None),  # min, max, behaviorRegistry id
+        'LAST-MODIFIED': (0, 1, None),
+        'TZURL':         (0, 1, None),
+        'STANDARD':      (0, None, None),  # NOTE: One of Standard or
+        'DAYLIGHT':      (0, None, None)  # Daylight must appear
+    }
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
@@ -979,7 +989,6 @@ class VTimezone(VCalendarComponentBehavior):
                      component"
                 raise ValidateError(m)
             return False
-
 
     @staticmethod
     def transformToNative(obj):
@@ -1021,45 +1030,46 @@ class VEvent(RecurringBehavior):
     """
     Event behavior.
     """
-    name='VEVENT'
+    name = 'VEVENT'
     sortFirst = ('uid', 'recurrence-id', 'dtstart', 'duration', 'dtend')
 
-    description='A grouping of component properties, and possibly including \
-                 "VALARM" calendar components, that represents a scheduled \
-                 amount of time on a calendar.'
-    knownChildren = {'DTSTART':      (0, 1, None),  # min, max, behaviorRegistry id
-                     'CLASS':        (0, 1, None),
-                     'CREATED':      (0, 1, None),
-                     'DESCRIPTION':  (0, 1, None),
-                     'GEO':          (0, 1, None),
-                     'LAST-MODIFIED':(0, 1, None),
-                     'LOCATION':     (0, 1, None),
-                     'ORGANIZER':    (0, 1, None),
-                     'PRIORITY':     (0, 1, None),
-                     'DTSTAMP':      (0, 1, None),
-                     'SEQUENCE':     (0, 1, None),
-                     'STATUS':       (0, 1, None),
-                     'SUMMARY':      (0, 1, None),
-                     'TRANSP':       (0, 1, None),
-                     'UID':          (1, 1, None),
-                     'URL':          (0, 1, None),
-                     'RECURRENCE-ID':(0, 1, None),
-                     'DTEND':        (0, 1, None),  # NOTE: Only one of DtEnd or
-                     'DURATION':     (0, 1, None),  # Duration can appear
-                     'ATTACH':       (0, None, None),
-                     'ATTENDEE':     (0, None, None),
-                     'CATEGORIES':   (0, None, None),
-                     'COMMENT':      (0, None, None),
-                     'CONTACT':      (0, None, None),
-                     'EXDATE':       (0, None, None),
-                     'EXRULE':       (0, None, None),
-                     'REQUEST-STATUS': (0, None, None),
-                     'RELATED-TO':   (0, None, None),
-                     'RESOURCES':    (0, None, None),
-                     'RDATE':        (0, None, None),
-                     'RRULE':        (0, None, None),
-                     'VALARM':       (0, None, None)
-                    }
+    description = 'A grouping of component properties, and possibly including \
+                   "VALARM" calendar components, that represents a scheduled \
+                   amount of time on a calendar.'
+    knownChildren = {
+        'DTSTART':        (0, 1, None),  # min, max, behaviorRegistry id
+        'CLASS':          (0, 1, None),
+        'CREATED':        (0, 1, None),
+        'DESCRIPTION':    (0, 1, None),
+        'GEO':            (0, 1, None),
+        'LAST-MODIFIED':  (0, 1, None),
+        'LOCATION':       (0, 1, None),
+        'ORGANIZER':      (0, 1, None),
+        'PRIORITY':       (0, 1, None),
+        'DTSTAMP':        (0, 1, None),
+        'SEQUENCE':       (0, 1, None),
+        'STATUS':         (0, 1, None),
+        'SUMMARY':        (0, 1, None),
+        'TRANSP':         (0, 1, None),
+        'UID':            (1, 1, None),
+        'URL':            (0, 1, None),
+        'RECURRENCE-ID':  (0, 1, None),
+        'DTEND':          (0, 1, None),  # NOTE: Only one of DtEnd or
+        'DURATION':       (0, 1, None),  # Duration can appear
+        'ATTACH':         (0, None, None),
+        'ATTENDEE':       (0, None, None),
+        'CATEGORIES':     (0, None, None),
+        'COMMENT':        (0, None, None),
+        'CONTACT':        (0, None, None),
+        'EXDATE':         (0, None, None),
+        'EXRULE':         (0, None, None),
+        'REQUEST-STATUS': (0, None, None),
+        'RELATED-TO':     (0, None, None),
+        'RESOURCES':      (0, None, None),
+        'RDATE':          (0, None, None),
+        'RRULE':          (0, None, None),
+        'VALARM':         (0, None, None)
+    }
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
@@ -1079,44 +1089,45 @@ class VTodo(RecurringBehavior):
     """
     To-do behavior.
     """
-    name='VTODO'
-    description='A grouping of component properties and possibly "VALARM" \
-                 calendar components that represent an action-item or \
-                 assignment.'
-    knownChildren = {'DTSTART':      (0, 1, None),  # min, max, behaviorRegistry id
-                     'CLASS':        (0, 1, None),
-                     'COMPLETED':    (0, 1, None),
-                     'CREATED':      (0, 1, None),
-                     'DESCRIPTION':  (0, 1, None),
-                     'GEO':          (0, 1, None),
-                     'LAST-MODIFIED':(0, 1, None),
-                     'LOCATION':     (0, 1, None),
-                     'ORGANIZER':    (0, 1, None),
-                     'PERCENT':      (0, 1, None),
-                     'PRIORITY':     (0, 1, None),
-                     'DTSTAMP':      (0, 1, None),
-                     'SEQUENCE':     (0, 1, None),
-                     'STATUS':       (0, 1, None),
-                     'SUMMARY':      (0, 1, None),
-                     'UID':          (0, 1, None),
-                     'URL':          (0, 1, None),
-                     'RECURRENCE-ID':(0, 1, None),
-                     'DUE':          (0, 1, None),  # NOTE: Only one of Due or
-                     'DURATION':     (0, 1, None),  # Duration can appear
-                     'ATTACH':       (0, None, None),
-                     'ATTENDEE':     (0, None, None),
-                     'CATEGORIES':   (0, None, None),
-                     'COMMENT':      (0, None, None),
-                     'CONTACT':      (0, None, None),
-                     'EXDATE':       (0, None, None),
-                     'EXRULE':       (0, None, None),
-                     'REQUEST-STATUS': (0, None, None),
-                     'RELATED-TO':   (0, None, None),
-                     'RESOURCES':    (0, None, None),
-                     'RDATE':        (0, None, None),
-                     'RRULE':        (0, None, None),
-                     'VALARM':       (0, None, None)
-                    }
+    name = 'VTODO'
+    description = 'A grouping of component properties and possibly "VALARM" \
+                   calendar components that represent an action-item or \
+                   assignment.'
+    knownChildren = {
+        'DTSTART':        (0, 1, None),  # min, max, behaviorRegistry id
+        'CLASS':          (0, 1, None),
+        'COMPLETED':      (0, 1, None),
+        'CREATED':        (0, 1, None),
+        'DESCRIPTION':    (0, 1, None),
+        'GEO':            (0, 1, None),
+        'LAST-MODIFIED':  (0, 1, None),
+        'LOCATION':       (0, 1, None),
+        'ORGANIZER':      (0, 1, None),
+        'PERCENT':        (0, 1, None),
+        'PRIORITY':       (0, 1, None),
+        'DTSTAMP':        (0, 1, None),
+        'SEQUENCE':       (0, 1, None),
+        'STATUS':         (0, 1, None),
+        'SUMMARY':        (0, 1, None),
+        'UID':            (0, 1, None),
+        'URL':            (0, 1, None),
+        'RECURRENCE-ID':  (0, 1, None),
+        'DUE':            (0, 1, None),  # NOTE: Only one of Due or
+        'DURATION':       (0, 1, None),  # Duration can appear
+        'ATTACH':         (0, None, None),
+        'ATTENDEE':       (0, None, None),
+        'CATEGORIES':     (0, None, None),
+        'COMMENT':        (0, None, None),
+        'CONTACT':        (0, None, None),
+        'EXDATE':         (0, None, None),
+        'EXRULE':         (0, None, None),
+        'REQUEST-STATUS': (0, None, None),
+        'RELATED-TO':     (0, None, None),
+        'RESOURCES':      (0, None, None),
+        'RDATE':          (0, None, None),
+        'RRULE':          (0, None, None),
+        'VALARM':         (0, None, None)
+    }
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
@@ -1136,32 +1147,33 @@ class VJournal(RecurringBehavior):
     """
     Journal entry behavior.
     """
-    name='VJOURNAL'
-    knownChildren = {'DTSTART':      (0, 1, None),  # min, max, behaviorRegistry id
-                     'CLASS':        (0, 1, None),
-                     'CREATED':      (0, 1, None),
-                     'DESCRIPTION':  (0, 1, None),
-                     'LAST-MODIFIED':(0, 1, None),
-                     'ORGANIZER':    (0, 1, None),
-                     'DTSTAMP':      (0, 1, None),
-                     'SEQUENCE':     (0, 1, None),
-                     'STATUS':       (0, 1, None),
-                     'SUMMARY':      (0, 1, None),
-                     'UID':          (0, 1, None),
-                     'URL':          (0, 1, None),
-                     'RECURRENCE-ID':(0, 1, None),
-                     'ATTACH':       (0, None, None),
-                     'ATTENDEE':     (0, None, None),
-                     'CATEGORIES':   (0, None, None),
-                     'COMMENT':      (0, None, None),
-                     'CONTACT':      (0, None, None),
-                     'EXDATE':       (0, None, None),
-                     'EXRULE':       (0, None, None),
-                     'REQUEST-STATUS': (0, None, None),
-                     'RELATED-TO':   (0, None, None),
-                     'RDATE':        (0, None, None),
-                     'RRULE':        (0, None, None)
-                    }
+    name = 'VJOURNAL'
+    knownChildren = {
+        'DTSTART':        (0, 1, None),  # min, max, behaviorRegistry id
+        'CLASS':          (0, 1, None),
+        'CREATED':        (0, 1, None),
+        'DESCRIPTION':    (0, 1, None),
+        'LAST-MODIFIED':  (0, 1, None),
+        'ORGANIZER':      (0, 1, None),
+        'DTSTAMP':        (0, 1, None),
+        'SEQUENCE':       (0, 1, None),
+        'STATUS':         (0, 1, None),
+        'SUMMARY':        (0, 1, None),
+        'UID':            (0, 1, None),
+        'URL':            (0, 1, None),
+        'RECURRENCE-ID':  (0, 1, None),
+        'ATTACH':         (0, None, None),
+        'ATTENDEE':       (0, None, None),
+        'CATEGORIES':     (0, None, None),
+        'COMMENT':        (0, None, None),
+        'CONTACT':        (0, None, None),
+        'EXDATE':         (0, None, None),
+        'EXRULE':         (0, None, None),
+        'REQUEST-STATUS': (0, None, None),
+        'RELATED-TO':     (0, None, None),
+        'RDATE':          (0, None, None),
+        'RRULE':          (0, None, None)
+    }
 registerBehavior(VJournal)
 
 
@@ -1169,24 +1181,26 @@ class VFreeBusy(VCalendarComponentBehavior):
     """
     Free/busy state behavior.
     """
-    name='VFREEBUSY'
-    description='A grouping of component properties that describe either a \
-                 request for free/busy time, describe a response to a request \
-                 for free/busy time or describe a published set of busy time.'
+    name = 'VFREEBUSY'
+    description = 'A grouping of component properties that describe either a \
+                   request for free/busy time, describe a response to a request \
+                   for free/busy time or describe a published set of busy time.'
     sortFirst = ('uid', 'dtstart', 'duration', 'dtend')
-    knownChildren = {'DTSTART':      (0, 1, None),  # min, max, behaviorRegistry id
-                     'CONTACT':      (0, 1, None),
-                     'DTEND':        (0, 1, None),
-                     'DURATION':     (0, 1, None),
-                     'ORGANIZER':    (0, 1, None),
-                     'DTSTAMP':      (0, 1, None),
-                     'UID':          (0, 1, None),
-                     'URL':          (0, 1, None),
-                     'ATTENDEE':     (0, None, None),
-                     'COMMENT':      (0, None, None),
-                     'FREEBUSY':     (0, None, None),
-                     'REQUEST-STATUS': (0, None, None)
-                    }
+    knownChildren = {
+        'DTSTART':        (0, 1, None),  # min, max, behaviorRegistry id
+        'CONTACT':        (0, 1, None),
+        'DTEND':          (0, 1, None),
+        'DURATION':       (0, 1, None),
+        'ORGANIZER':      (0, 1, None),
+        'DTSTAMP':        (0, 1, None),
+        'UID':            (0, 1, None),
+        'URL':            (0, 1, None),
+        'ATTENDEE':       (0, None, None),
+        'COMMENT':        (0, None, None),
+        'FREEBUSY':       (0, None, None),
+        'REQUEST-STATUS': (0, None, None)
+    }
+
 registerBehavior(VFreeBusy)
 
 
@@ -1194,15 +1208,16 @@ class VAlarm(VCalendarComponentBehavior):
     """
     Alarm behavior.
     """
-    name='VALARM'
-    description='Alarms describe when and how to provide alerts about events \
-                 and to-dos.'
-    knownChildren = {'ACTION':       (1, 1, None),  # min, max, behaviorRegistry id
-                     'TRIGGER':      (1, 1, None),
-                     'DURATION':     (0, 1, None),
-                     'REPEAT':       (0, 1, None),
-                     'DESCRIPTION':  (0, 1, None)
-                    }
+    name = 'VALARM'
+    description = 'Alarms describe when and how to provide alerts about events \
+                   and to-dos.'
+    knownChildren = {
+        'ACTION':       (1, 1, None),  # min, max, behaviorRegistry id
+        'TRIGGER':      (1, 1, None),
+        'DURATION':     (0, 1, None),
+        'REPEAT':       (0, 1, None),
+        'DESCRIPTION':  (0, 1, None)
+    }
 
     @staticmethod
     def generateImplicitParameters(obj):
@@ -1218,7 +1233,6 @@ class VAlarm(VCalendarComponentBehavior):
         except AttributeError:
             obj.add('trigger').value = datetime.timedelta(0)
 
-
     @classmethod
     def validate(cls, obj, raiseException, *args):
         """
@@ -1233,6 +1247,7 @@ class VAlarm(VCalendarComponentBehavior):
             return super(VEvent, cls).validate(obj, raiseException, *args)
         """
         return True
+
 registerBehavior(VAlarm)
 
 
@@ -1242,26 +1257,27 @@ class VAvailability(VCalendarComponentBehavior):
 
     Used to represent user's available time slots.
     """
-    name='VAVAILABILITY'
-    description='A component used to represent a user\'s available time slots.'
+    name = 'VAVAILABILITY'
+    description = 'A component used to represent a user\'s available time slots.'
     sortFirst = ('uid', 'dtstart', 'duration', 'dtend')
-    knownChildren = {'UID':           (1, 1, None),  # min, max, behaviorRegistry id
-                     'DTSTAMP':       (1, 1, None),
-                     'BUSYTYPE':      (0, 1, None),
-                     'CREATED':       (0, 1, None),
-                     'DTSTART':       (0, 1, None),
-                     'LAST-MODIFIED': (0, 1, None),
-                     'ORGANIZER':     (0, 1, None),
-                     'SEQUENCE':      (0, 1, None),
-                     'SUMMARY':       (0, 1, None),
-                     'URL':           (0, 1, None),
-                     'DTEND':         (0, 1, None),
-                     'DURATION':      (0, 1, None),
-                     'CATEGORIES':    (0, None, None),
-                     'COMMENT':       (0, None, None),
-                     'CONTACT':       (0, None, None),
-                     'AVAILABLE':     (0, None, None),
-                    }
+    knownChildren = {
+        'UID':           (1, 1, None),  # min, max, behaviorRegistry id
+        'DTSTAMP':       (1, 1, None),
+        'BUSYTYPE':      (0, 1, None),
+        'CREATED':       (0, 1, None),
+        'DTSTART':       (0, 1, None),
+        'LAST-MODIFIED': (0, 1, None),
+        'ORGANIZER':     (0, 1, None),
+        'SEQUENCE':      (0, 1, None),
+        'SUMMARY':       (0, 1, None),
+        'URL':           (0, 1, None),
+        'DTEND':         (0, 1, None),
+        'DURATION':      (0, 1, None),
+        'CATEGORIES':    (0, None, None),
+        'COMMENT':       (0, None, None),
+        'CONTACT':       (0, None, None),
+        'AVAILABLE':     (0, None, None),
+    }
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
@@ -1272,6 +1288,7 @@ class VAvailability(VCalendarComponentBehavior):
             return False
         else:
             return super(VAvailability, cls).validate(obj, raiseException, *args)
+
 registerBehavior(VAvailability)
 
 
@@ -1279,26 +1296,26 @@ class Available(RecurringBehavior):
     """
     Event behavior.
     """
-    name='AVAILABLE'
+    name = 'AVAILABLE'
     sortFirst = ('uid', 'recurrence-id', 'dtstart', 'duration', 'dtend')
-
-    description='Defines a period of time in which a user is normally available.'
-    knownChildren = {'DTSTAMP':      (1, 1, None),  # min, max, behaviorRegistry id
-                     'DTSTART':      (1, 1, None),
-                     'UID':          (1, 1, None),
-                     'DTEND':        (0, 1, None),  # NOTE: One of DtEnd or
-                     'DURATION':     (0, 1, None),  # Duration must appear, but not both
-                     'CREATED':      (0, 1, None),
-                     'LAST-MODIFIED':(0, 1, None),
-                     'RECURRENCE-ID':(0, 1, None),
-                     'RRULE':        (0, 1, None),
-                     'SUMMARY':      (0, 1, None),
-                     'CATEGORIES':   (0, None, None),
-                     'COMMENT':      (0, None, None),
-                     'CONTACT':      (0, None, None),
-                     'EXDATE':       (0, None, None),
-                     'RDATE':        (0, None, None),
-                    }
+    description = 'Defines a period of time in which a user is normally available.'
+    knownChildren = {
+        'DTSTAMP':       (1, 1, None),  # min, max, behaviorRegistry id
+        'DTSTART':       (1, 1, None),
+        'UID':           (1, 1, None),
+        'DTEND':         (0, 1, None),  # NOTE: One of DtEnd or
+        'DURATION':      (0, 1, None),  # Duration must appear, but not both
+        'CREATED':       (0, 1, None),
+        'LAST-MODIFIED': (0, 1, None),
+        'RECURRENCE-ID': (0, 1, None),
+        'RRULE':         (0, 1, None),
+        'SUMMARY':       (0, 1, None),
+        'CATEGORIES':    (0, None, None),
+        'COMMENT':       (0, None, None),
+        'CONTACT':       (0, None, None),
+        'EXDATE':        (0, None, None),
+        'RDATE':         (0, None, None),
+    }
 
     @classmethod
     def validate(cls, obj, raiseException, *args):
@@ -1318,6 +1335,7 @@ class Available(RecurringBehavior):
             return False
         else:
             return super(Available, cls).validate(obj, raiseException, *args)
+
 registerBehavior(Available)
 
 
@@ -1336,11 +1354,11 @@ class Duration(behavior.Behavior):
         if obj.isNative:
             return obj
         obj.isNative = True
-        obj.value=obj.value
+        obj.value = obj.value
         if obj.value == '':
             return obj
         else:
-            deltalist=stringToDurations(obj.value)
+            deltalist = stringToDurations(obj.value)
             # When can DURATION have multiple durations?  For now:
             if len(deltalist) == 1:
                 obj.value = deltalist[0]
@@ -1358,6 +1376,7 @@ class Duration(behavior.Behavior):
         obj.isNative = False
         obj.value = timedeltaToString(obj.value)
         return obj
+
 registerBehavior(Duration)
 
 
@@ -1365,8 +1384,8 @@ class Trigger(behavior.Behavior):
     """
     DATE-TIME or DURATION
     """
-    name='TRIGGER'
-    description='This property specifies when an alarm will trigger.'
+    name = 'TRIGGER'
+    description = 'This property specifies when an alarm will trigger.'
     hasNative = True
     forceUTC = True
 
@@ -1383,13 +1402,13 @@ class Trigger(behavior.Behavior):
         if obj.value == '':
             obj.isNative = True
             return obj
-        elif value  == 'DURATION':
+        elif value == 'DURATION':
             try:
                 return Duration.transformToNative(obj)
             except ParseError:
                 logger.warning("TRIGGER not recognized as DURATION, trying "
-                             "DATE-TIME, because iCal sometimes exports "
-                             "DATE-TIMEs without setting VALUE=DATE-TIME")
+                               "DATE-TIME, because iCal sometimes exports "
+                               "DATE-TIMEs without setting VALUE=DATE-TIME")
                 try:
                     obj.isNative = False
                     dt = DateTimeBehavior.transformToNative(obj)
@@ -1508,9 +1527,10 @@ def numToDigits(num, places):
     if len(s) < places:
         return ("0" * (places - len(s))) + s
     elif len(s) > places:
-        return s[len(s)-places: ]
+        return s[len(s)-places:]
     else:
         return s
+
 
 def timedeltaToString(delta):
     """
@@ -1544,6 +1564,7 @@ def timedeltaToString(delta):
         output += '{}S'.format(seconds)
     return output
 
+
 def timeToString(dateOrDateTime):
     """
     Wraps dateToString and dateTimeToString, returning the results
@@ -1553,11 +1574,13 @@ def timeToString(dateOrDateTime):
         return dateTimeToString(dateOrDateTime)
     return dateToString(dateOrDateTime)
 
+
 def dateToString(date):
-    year  = numToDigits( date.year,  4 )
-    month = numToDigits( date.month, 2 )
-    day   = numToDigits( date.day,   2 )
+    year = numToDigits(date.year,  4)
+    month = numToDigits(date.month, 2)
+    day = numToDigits(date.day,   2)
     return year + month + day
+
 
 def dateTimeToString(dateTime, convertToUTC=False):
     """
@@ -1567,27 +1590,29 @@ def dateTimeToString(dateTime, convertToUTC=False):
         dateTime = dateTime.astimezone(utc)
 
     datestr = "{0}{1}{2}T{3}{4}{5}".format(
-        numToDigits( dateTime.year, 4),
-        numToDigits( dateTime.month, 2),
-        numToDigits( dateTime.day, 2),
-        numToDigits( dateTime.hour, 2),
-        numToDigits( dateTime.minute, 2),
-        numToDigits( dateTime.second, 2),
+        numToDigits(dateTime.year, 4),
+        numToDigits(dateTime.month, 2),
+        numToDigits(dateTime.day, 2),
+        numToDigits(dateTime.hour, 2),
+        numToDigits(dateTime.minute, 2),
+        numToDigits(dateTime.second, 2),
     )
     if tzinfo_eq(dateTime.tzinfo, utc):
         datestr += "Z"
     return datestr
 
+
 def deltaToOffset(delta):
     absDelta = abs(delta)
     hours = int(absDelta.seconds / 3600)
-    hoursString      = numToDigits(hours, 2)
-    minutesString    = '00'
+    hoursString = numToDigits(hours, 2)
+    minutesString = '00'
     if absDelta == delta:
         signString = "+"
     else:
         signString = "-"
     return signString + hoursString + minutesString
+
 
 def periodToString(period, convertToUTC=False):
     txtstart = dateTimeToString(period[0], convertToUTC)
@@ -1603,23 +1628,25 @@ def isDuration(s):
     s = s.upper()
     return (s.find("P") != -1) and (s.find("P") < 2)
 
+
 def stringToDate(s):
-    year  = int( s[0:4] )
-    month = int( s[4:6] )
-    day   = int( s[6:8] )
-    return datetime.date(year,month,day)
+    year = int(s[0:4])
+    month = int(s[4:6])
+    day = int(s[6:8])
+    return datetime.date(year, month, day)
+
 
 def stringToDateTime(s, tzinfo=None):
     """
     Returns datetime.datetime object.
     """
     try:
-        year   = int( s[0:4] )
-        month  = int( s[4:6] )
-        day    = int( s[6:8] )
-        hour   = int( s[9:11] )
-        minute = int( s[11:13] )
-        second = int( s[13:15] )
+        year = int(s[0:4])
+        month = int(s[4:6])
+        day = int(s[6:8])
+        hour = int(s[9:11])
+        minute = int(s[11:13])
+        second = int(s[13:15])
         if len(s) > 15:
             if s[15] == 'Z':
                 tzinfo = utc
@@ -1633,6 +1660,7 @@ def stringToDateTime(s, tzinfo=None):
 # although it isn't actually supposed to be escaped according to rfc2445 TEXT
 escapableCharList = '\\;,Nn"'
 
+
 def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
     """
     Returns list of strings.
@@ -1640,7 +1668,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
     if charList is None:
         charList = escapableCharList
 
-    def escapableChar (c):
+    def escapableChar(c):
         return c in charList
 
     def error(msg):
@@ -1651,7 +1679,7 @@ def stringToTextValues(s, listSeparator=',', charList=None, strict=False):
 
     # vars which control state machine
     charIterator = enumerate(s)
-    state        = "read normal"
+    state = "read normal"
 
     current = []
     results = []
@@ -1707,8 +1735,10 @@ def stringToDurations(s, strict=False):
     Returns list of timedelta objects.
     """
     def makeTimedelta(sign, week, day, hour, minute, sec):
-        if sign == "-": sign = -1
-        else: sign = 1
+        if sign == "-":
+            sign = -1
+        else:
+            sign = 1
         week = int(week)
         day = int(day)
         hour = int(hour)
@@ -1725,7 +1755,7 @@ def stringToDurations(s, strict=False):
 
     # vars which control state machine
     charIterator = enumerate(s)
-    state  = "start"
+    state = "start"
 
     durations = []
     current = ""
@@ -1770,23 +1800,23 @@ def stringToDurations(s, strict=False):
                 state = "read field"
             elif char.upper() == 'W':
                 state = "read field"
-                week    = current
+                week = current
                 current = ""
             elif char.upper() == 'D':
                 state = "read field"
-                day     = current
+                day = current
                 current = ""
             elif char.upper() == 'H':
                 state = "read field"
-                hour    = current
+                hour = current
                 current = ""
             elif char.upper() == 'M':
                 state = "read field"
-                minute  = current
+                minute = current
                 current = ""
             elif char.upper() == 'S':
                 state = "read field"
-                sec     = current
+                sec = current
                 current = ""
             elif char == ",":
                 state = "start"
@@ -1841,10 +1871,11 @@ def parseDtstart(contentline, allowSignatureMismatch=False):
             else:
                 raise
 
+
 def stringToPeriod(s, tzinfo=None):
     values = s.split("/")
     start = stringToDateTime(values[0], tzinfo)
-    valEnd   = values[1]
+    valEnd = values[1]
     if isDuration(valEnd):  # period-start = date-time "/" dur-value
         delta = stringToDurations(valEnd)[0]
         return (start, delta)
@@ -1867,15 +1898,15 @@ def getTransition(transitionTo, year, tzinfo):
             else:
                 if success is not None:
                     return success
-        return success # may be None
+        return success  # may be None
 
     def generateDates(year, month=None, day=None):
         """
         Iterate over possible dates with unspecified values.
         """
         months = range(1, 13)
-        days   = range(1, 32)
-        hours  = range(0, 24)
+        days = range(1, 32)
+        hours = range(0, 24)
         if month is None:
             for month in months:
                 yield datetime.datetime(year, month, 1)
@@ -1915,7 +1946,7 @@ def getTransition(transitionTo, year, tzinfo):
     else:
         # there was a good transition somewhere in a non-December month
         month = monthDt.month
-        day         = firstTransition(generateDates(year, month), test).day
+        day = firstTransition(generateDates(year, month), test).day
         uncorrected = firstTransition(generateDates(year, month, day), test)
         if transitionTo == 'standard':
             # assuming tzinfo.dst returns a new offset for the first
@@ -1926,7 +1957,8 @@ def getTransition(transitionTo, year, tzinfo):
         else:
             return uncorrected + datetime.timedelta(hours=1)
 
-def tzinfo_eq(tzinfo1, tzinfo2, startYear = 2000, endYear=2020):
+
+def tzinfo_eq(tzinfo1, tzinfo2, startYear=2000, endYear=2020):
     """
     Compare offsets and DST transitions from startYear to endYear.
     """
@@ -1944,8 +1976,8 @@ def tzinfo_eq(tzinfo1, tzinfo2, startYear = 2000, endYear=2020):
         return False
     for year in range(startYear, endYear):
         for transitionTo in 'daylight', 'standard':
-            t1=getTransition(transitionTo, year, tzinfo1)
-            t2=getTransition(transitionTo, year, tzinfo2)
+            t1 = getTransition(transitionTo, year, tzinfo1)
+            t2 = getTransition(transitionTo, year, tzinfo2)
             if t1 != t2 or not dt_test(t1):
                 return False
     return True

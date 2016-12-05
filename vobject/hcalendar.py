@@ -46,7 +46,7 @@ class HCalendar(VCalendar2_0):
         """
 
         outbuf = buf or six.StringIO()
-        level = 0 # holds current indentation level
+        level = 0  # holds current indentation level
         tabwidth = 3
 
         def indent():
@@ -123,7 +123,7 @@ class HCalendar(VCalendar2_0):
                 out('</a>' + CRLF)
 
             level -= 1
-            out('</span>' + CRLF) # close vevent
+            out('</span>' + CRLF)  # close vevent
 
         return buf or outbuf.getvalue()
 
