@@ -329,7 +329,7 @@ class ContentLine(VBase):
             if 'QUOTED-PRINTABLE' in self.params['ENCODING']:
                 qp = True
                 self.params['ENCODING'].remove('QUOTED-PRINTABLE')
-                if 0 == len(self.params['ENCODING']):
+                if len(self.params['ENCODING']) == 0:
                     del self.params['ENCODING']
         if 'QUOTED-PRINTABLE' in self.singletonparams:
             qp = True
@@ -356,7 +356,7 @@ class ContentLine(VBase):
 
     def __eq__(self, other):
         try:
-            return (self.name == other.name) and (self.params == other.params) \
+            return (self.name == other.name) and (self.params == other.params)\
                    and (self.value == other.value)
         except Exception:
             return False
