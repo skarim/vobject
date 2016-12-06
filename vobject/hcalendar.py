@@ -79,10 +79,10 @@ class HCalendar(VCalendar2_0):
             if dtstart:
                 if type(dtstart) == date:
                     timeformat = "%A, %B %e"
-                    machine    = "%Y%m%d"
+                    machine = "%Y%m%d"
                 elif type(dtstart) == datetime:
                     timeformat = "%A, %B %e, %H:%M"
-                    machine    = "%Y%m%dT%H%M%S%z"
+                    machine = "%Y%m%dT%H%M%S%z"
 
                 #TODO: Handle non-datetime formats?
                 #TODO: Spec says we should handle when dtstart isn't included
