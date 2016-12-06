@@ -7,7 +7,7 @@ import logging
 import re
 import six
 import sys
-import codecs
+import quopri
 
 # ------------------------------------ Python 2/3 compatibility challenges  ----
 # Python 3 no longer has a basestring type, so....
@@ -336,7 +336,7 @@ class ContentLine(VBase):
             qp = True
             self.singletonparams.remove('QUOTED-PRINTABLE')
         if qp:
-            self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode(self.params['ENCODING'])
+            self.value = quopri.decodestring(self.value).decode('utf-8')
 
     @classmethod
     def duplicate(clz, copyit):
