@@ -3,11 +3,11 @@
 from __future__ import print_function
 
 import copy
+import codecs
 import logging
 import re
 import six
 import sys
-import quopri
 
 # ------------------------------------ Python 2/3 compatibility challenges  ----
 # Python 3 no longer has a basestring type, so....
@@ -180,6 +180,7 @@ class VBase(object):
         if self.isNative or not self.behavior or not self.behavior.hasNative:
             return self
         else:
+            self_orig = copy.deepcopy(self)
             try:
                 return self.behavior.transformToNative(self)
             except Exception as e:
@@ -195,6 +196,7 @@ class VBase(object):
                           "line %s: %s: %s"
                     msg = msg % (lineNumber, sys.exc_info()[0],
                                  sys.exc_info()[1])
+                    msg = msg + " (" + str(self_orig) + ")"
                     raise ParseError(msg, lineNumber)
 
     def transformFromNative(self):
@@ -335,7 +337,13 @@ class ContentLine(VBase):
             qp = True
             self.singletonparams.remove('QUOTED-PRINTABLE')
         if qp:
-            self.value = quopri.decodestring(self.value).decode('utf-8')
+            if 'ENCODING' in self.params:
+                self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode(self.params['ENCODING'])
+            else:
+                if 'CHARSET' in self.params:
+                    self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode(self.params['CHARSET'][0])
+                else:
+                    self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode()
 
     @classmethod
     def duplicate(clz, copyit):
