@@ -136,7 +136,10 @@ class VCardTextBehavior(behavior.Behavior):
                 line.encoding_param = cls.base64string
             encoding = getattr(line, 'encoding_param', None)
             if encoding:
-                line.value = codecs.decode(line.value.encode("utf-8"), "base64")
+                if isinstance(line.value, bytes):
+                    line.value = codecs.decode(line.value, "base64")
+                else:
+                    line.value = codecs.decode(line.value.encode("utf-8"), "base64")
             else:
                 line.value = stringToTextValues(line.value)[0]
             line.encoded=False
@@ -149,7 +152,10 @@ class VCardTextBehavior(behavior.Behavior):
         if not line.encoded:
             encoding = getattr(line, 'encoding_param', None)
             if encoding and encoding.upper() == cls.base64string:
-                line.value = codecs.encode(line.value.encode(coding), "base64").decode("utf-8")
+                if isinstance(line.value, bytes):
+                    line.value = codecs.encode(line.value, "base64").decode("utf-8").replace('\n', '')
+                else:
+                    line.value = codecs.encode(line.value.encode(coding), "base64").decode("utf-8")
             else:
                 line.value = backslashEscape(line.value)
             line.encoded=True
