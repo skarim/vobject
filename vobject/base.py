@@ -69,7 +69,7 @@ def to_basestring(s):
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
     handler = logging.StreamHandler()
-    formatter = logging.Formatter('%(name)s %(levelname)s %(message)s')
+    formatter = logging.Formatter('{name} {levelname} {message}')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 logger.setLevel(logging.ERROR)  # Log errors
@@ -192,10 +192,8 @@ class VBase(object):
                         e.lineNumber = lineNumber
                     raise
                 else:
-                    msg = "In transformToNative, unhandled exception on " \
-                          "line %s: %s: %s"
-                    msg = msg % (lineNumber, sys.exc_info()[0],
-                                 sys.exc_info()[1])
+                    msg = "In transformToNative, unhandled exception on line {0}: {1}: {2}"
+                    msg = msg.format(lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     msg = msg + " (" + str(self_orig) + ")"
                     raise ParseError(msg, lineNumber)
 
@@ -223,10 +221,8 @@ class VBase(object):
                         e.lineNumber = lineNumber
                     raise
                 else:
-                    msg = "In transformFromNative, unhandled exception " \
-                          "on line %s %s: %s"
-                    msg = msg % (lineNumber, sys.exc_info()[0],
-                                 sys.exc_info()[1])
+                    msg = "In transformFromNative, unhandled exception on line {0} {1}: {2}"
+                    msg = msg.format(lineNumber, sys.exc_info()[0], sys.exc_info()[1])
                     raise NativeError(msg, lineNumber)
         else:
             return self
@@ -737,7 +733,7 @@ patterns['safe_char'] = '[^";:,]'
 patterns['qsafe_char'] = '[^"]'
 
 # the combined Python string replacement and regex syntax is a little confusing;
-# remember that %(foobar)s is replaced with patterns['foobar'], so for instance
+# remember that {foobar} is replaced with patterns['foobar'], so for instance
 # param_value is any number of safe_chars or any number of qsaf_chars surrounded
 # by double quotes.
 
@@ -777,12 +773,12 @@ patterns['line'] = r"""
 : (?P<value> .* )$                             # value group
 """.format(**patterns)
 
-' "%(qsafe_char)s*" | %(safe_char)s* '
+' "%(qsafe_char)s*" | %(safe_char)s* '  # what is this line?? - never assigned?
 
 param_values_re = re.compile(patterns['param_value_grouped'], re.VERBOSE)
-params_re       = re.compile(patterns['params_grouped'],      re.VERBOSE)
-line_re         = re.compile(patterns['line'],    re.DOTALL | re.VERBOSE)
-begin_re        = re.compile('BEGIN', re.IGNORECASE)
+params_re = re.compile(patterns['params_grouped'], re.VERBOSE)
+line_re = re.compile(patterns['line'], re.DOTALL | re.VERBOSE)
+begin_re = re.compile('BEGIN', re.IGNORECASE)
 
 
 def parseParams(string):
@@ -828,7 +824,7 @@ patterns['logicallines'] = r"""
 
 patterns['wraporend'] = r'({wrap!s} | {lineend!s} )'.format(**patterns)
 
-wrap_re          = re.compile(patterns['wraporend'],    re.VERBOSE)
+wrap_re = re.compile(patterns['wraporend'], re.VERBOSE)
 logical_lines_re = re.compile(patterns['logicallines'], re.VERBOSE)
 
 testLines = """
@@ -1085,11 +1081,10 @@ def readComponents(streamOrString, validate=False, transform=True,
                     vline = textLineToContentLine(line, n)
                 except VObjectError as e:
                     if e.lineNumber is not None:
-                        msg = "Skipped line %(lineNumber)s, message: %(msg)s"
+                        msg = "Skipped line {lineNumber}, message: {msg}"
                     else:
-                        msg = "Skipped a line, message: %(msg)s"
-                    logger.error(msg % {'lineNumber': e.lineNumber,
-                                        'msg': str(e)})
+                        msg = "Skipped a line, message: {msg}"
+                    logger.error(msg.format(**{'lineNumber': e.lineNumber, 'msg': str(e)}))
                     continue
             else:
                 vline = textLineToContentLine(line, n)
@@ -1104,9 +1099,8 @@ def readComponents(streamOrString, validate=False, transform=True,
                 stack.top().setProfile(vline.value)
             elif vline.name == "END":
                 if len(stack) == 0:
-                    err = "Attempted to end the %s component but it was " \
-                          "never opened" % vline.value
-                    raise ParseError(err, n)
+                    err = "Attempted to end the {0} component but it was never opened"
+                    raise ParseError(err.format(vline.value), n)
 
                 if vline.value.upper() == stack.topName():  # START matches END
                     if len(stack) == 1:
@@ -1125,8 +1119,8 @@ def readComponents(streamOrString, validate=False, transform=True,
                     else:
                         stack.modifyTop(stack.pop())
                 else:
-                    err = "%s component wasn't closed"
-                    raise ParseError(err % stack.topName(), n)
+                    err = "{0} component wasn't closed"
+                    raise ParseError(err.format(stack.topName()), n)
             else:
                 stack.modifyTop(vline)  # not a START or END line
         if stack.top():

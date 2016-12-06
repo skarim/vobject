@@ -89,13 +89,13 @@ class Behavior(object):
             for key, val in cls.knownChildren.items():
                 if count.get(key, 0) < val[0]:
                     if raiseException:
-                        m = "%s components must contain at least %i %s"
-                        raise base.ValidateError(m % (cls.name, val[0], key))
+                        m = "{0} components must contain at least {1} {2}"
+                        raise base.ValidateError(m .format(cls.name, val[0], key))
                     return False
                 if val[1] and count.get(key, 0) > val[1]:
                     if raiseException:
-                        m = "%s components cannot contain more than %i %s"
-                        raise base.ValidateError(m % (cls.name, val[1], key))
+                        m = "{0} components cannot contain more than {1} {2}"
+                        raise base.ValidateError(m.format(cls.name, val[1], key))
                     return False
             return True
         else:
