@@ -180,6 +180,7 @@ class VBase(object):
         if self.isNative or not self.behavior or not self.behavior.hasNative:
             return self
         else:
+            self_orig = copy.deepcopy(self)
             try:
                 return self.behavior.transformToNative(self)
             except Exception as e:
@@ -193,6 +194,7 @@ class VBase(object):
                 else:
                     msg = "In transformToNative, unhandled exception on line {0}: {1}: {2}"
                     msg = msg.format(lineNumber, sys.exc_info()[0], sys.exc_info()[1])
+                    msg = msg + " (" + str(self_orig) + ")"
                     raise ParseError(msg, lineNumber)
 
     def transformFromNative(self):

@@ -1649,10 +1649,12 @@ def stringToDateTime(s, tzinfo=None):
         second = int(s[13:15])
         if len(s) > 15:
             if s[15] == 'Z':
-                tzinfo = utc
+                tzinfo = getTzid('UTC')
     except:
         raise ParseError("'{0!s}' is not a valid DATE-TIME".format(s))
     year = year and year or 2000
+    if tzinfo is not None and hasattr(tzinfo,'localize'):  # PyTZ case
+        return tzinfo.localize(datetime.datetime(year, month, day, hour, minute, second))
     return datetime.datetime(year, month, day, hour, minute, second, 0, tzinfo)
 
 
