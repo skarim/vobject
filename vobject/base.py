@@ -1076,7 +1076,7 @@ def readComponents(streamOrString, validate=False, transform=True,
                         msg = "Skipped line {lineNumber}, message: {msg}"
                     else:
                         msg = "Skipped a line, message: {msg}"
-                    logger.error(msg.format({'lineNumber': e.lineNumber, 'msg': str(e)}))
+                    logger.error(msg.format({'lineNumber': e.lineNumber or None, 'msg': str(e)}))
                     continue
             else:
                 vline = textLineToContentLine(line, n)
