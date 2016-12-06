@@ -1,5 +1,6 @@
 from . import base
 
+
 #------------------------ Abstract class for behavior --------------------------
 class Behavior(object):
     """
@@ -42,20 +43,20 @@ class Behavior(object):
     @cvar allowGroup:
         Whether or not vCard style group prefixes are allowed.
     """
-    name=''
-    description=''
-    versionString=''
+    name = ''
+    description = ''
+    versionString = ''
     knownChildren = {}
     quotedPrintable = False
     defaultBehavior = None
-    hasNative= False
+    hasNative = False
     isComponent = False
     allowGroup = False
     forceUTC = False
     sortFirst = []
 
     def __init__(self):
-        err="Behavior subclasses are not meant to be instantiated"
+        err = "Behavior subclasses are not meant to be instantiated"
         raise base.VObjectError(err)
 
     @classmethod
@@ -83,18 +84,18 @@ class Behavior(object):
             for child in obj.getChildren():
                 if not child.validate(raiseException, complainUnrecognized):
                     return False
-                name=child.name.upper()
+                name = child.name.upper()
                 count[name] = count.get(name, 0) + 1
             for key, val in cls.knownChildren.items():
-                if count.get(key,0) < val[0]:
+                if count.get(key, 0) < val[0]:
                     if raiseException:
-                        m = "%s components must contain at least %i %s"
-                        raise base.ValidateError(m % (cls.name, val[0], key))
+                        m = "{0} components must contain at least {1} {2}"
+                        raise base.ValidateError(m .format(cls.name, val[0], key))
                     return False
-                if val[1] and count.get(key,0) > val[1]:
+                if val[1] and count.get(key, 0) > val[1]:
                     if raiseException:
-                        m = "%s components cannot contain more than %i %s"
-                        raise base.ValidateError(m % (cls.name, val[1], key))
+                        m = "{0} components cannot contain more than {1} {2}"
+                        raise base.ValidateError(m.format(cls.name, val[1], key))
                     return False
             return True
         else:
@@ -108,11 +109,13 @@ class Behavior(object):
 
     @classmethod
     def decode(cls, line):
-        if line.encoded: line.encoded=0
+        if line.encoded:
+            line.encoded = 0
 
     @classmethod
     def encode(cls, line):
-        if not line.encoded: line.encoded=1
+        if not line.encoded:
+            line.encoded = 1
 
     @classmethod
     def transformToNative(cls, obj):
@@ -150,7 +153,8 @@ class Behavior(object):
         """
 
         cls.generateImplicitParameters(obj)
-        if validate: cls.validate(obj, raiseException=True)
+        if validate:
+            cls.validate(obj, raiseException=True)
 
         if obj.isNative:
             transformed = obj.transformFromNative()
@@ -165,6 +169,6 @@ class Behavior(object):
         return out
 
     @classmethod
-    def valueRepr( cls, line ):
+    def valueRepr(cls, line):
         """return the representation of the given content line value"""
         return line.value

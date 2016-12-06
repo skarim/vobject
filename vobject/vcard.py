@@ -12,21 +12,22 @@ from .icalendar import stringToTextValues
 try:
     basestring = basestring
 except NameError:
-    basestring = (str,bytes)
+    basestring = (str, bytes)
 
 # ------------------------ vCard structs ---------------------------------------
 
+
 class Name(object):
-    def __init__(self, family = '', given = '', additional = '', prefix = '',
-                 suffix = ''):
+    def __init__(self, family='', given='', additional='', prefix='',
+                 suffix=''):
         """
         Each name attribute can be a string or a list of strings.
         """
-        self.family     = family
-        self.given      = given
+        self.family = family
+        self.given = given
         self.additional = additional
-        self.prefix     = prefix
-        self.suffix     = suffix
+        self.prefix = prefix
+        self.suffix = suffix
 
     @staticmethod
     def toString(val):
@@ -57,18 +58,18 @@ class Name(object):
 
 
 class Address(object):
-    def __init__(self, street = '', city = '', region = '', code = '',
-                 country = '', box = '', extended = ''):
+    def __init__(self, street='', city='', region='', code='',
+                 country='', box='', extended=''):
         """
         Each name attribute can be a string or a list of strings.
         """
-        self.box      = box
+        self.box = box
         self.extended = extended
-        self.street   = street
-        self.city     = city
-        self.region   = region
-        self.code     = code
-        self.country  = country
+        self.street = street
+        self.city = city
+        self.region = region
+        self.code = code
+        self.country = country
 
     @staticmethod
     def toString(val, join_char='\n'):
@@ -142,7 +143,7 @@ class VCardTextBehavior(behavior.Behavior):
                     line.value = codecs.decode(line.value.encode("utf-8"), "base64")
             else:
                 line.value = stringToTextValues(line.value)[0]
-            line.encoded=False
+            line.encoded = False
 
     @classmethod
     def encode(cls, line):
@@ -158,7 +159,7 @@ class VCardTextBehavior(behavior.Behavior):
                     line.value = codecs.encode(line.value.encode(coding), "base64").decode("utf-8")
             else:
                 line.value = backslashEscape(line.value)
-            line.encoded=True
+            line.encoded = True
 
 
 class VCardBehavior(behavior.Behavior):
@@ -175,17 +176,18 @@ class VCard3_0(VCardBehavior):
     versionString = '3.0'
     isComponent = True
     sortFirst = ('version', 'prodid', 'uid')
-    knownChildren = {'N':         (1, 1, None),  # min, max, behaviorRegistry id
-                     'FN':        (1, 1, None),
-                     'VERSION':   (1, 1, None),  # required, auto-generated
-                     'PRODID':    (0, 1, None),
-                     'LABEL':     (0, None, None),
-                     'UID':       (0, None, None),
-                     'ADR':       (0, None, None),
-                     'ORG':       (0, None, None),
-                     'PHOTO':     (0, None, None),
-                     'CATEGORIES':(0, None, None)
-                    }
+    knownChildren = {
+        'N':          (1, 1, None),  # min, max, behaviorRegistry id
+        'FN':         (1, 1, None),
+        'VERSION':    (1, 1, None),  # required, auto-generated
+        'PRODID':     (0, 1, None),
+        'LABEL':      (0, None, None),
+        'UID':        (0, None, None),
+        'ADR':        (0, None, None),
+        'ORG':        (0, None, None),
+        'PHOTO':      (0, None, None),
+        'CATEGORIES': (0, None, None)
+    }
 
     @classmethod
     def generateImplicitParameters(cls, obj):
@@ -205,6 +207,7 @@ class FN(VCardTextBehavior):
     description = 'Formatted name'
 registerBehavior(FN)
 
+
 class Label(VCardTextBehavior):
     name = "Label"
     description = 'Formatted address'
@@ -217,9 +220,10 @@ REALLY_LARGE = 1E50
 class Photo(VCardTextBehavior):
     name = "Photo"
     description = 'Photograph'
+
     @classmethod
-    def valueRepr( cls, line ):
-        return " (BINARY PHOTO DATA at 0x{0!s}) ".format(id( line.value ))
+    def valueRepr(cls, line):
+        return " (BINARY PHOTO DATA at 0x{0!s}) ".format(id(line.value))
 
     @classmethod
     def serialize(cls, obj, buf, lineLength, validate):
@@ -234,12 +238,14 @@ class Photo(VCardTextBehavior):
 
 registerBehavior(Photo)
 
+
 def toListOrString(string):
     stringList = stringToTextValues(string)
     if len(stringList) == 1:
         return stringList[0]
     else:
         return stringList
+
 
 def splitFields(string):
     """
@@ -248,10 +254,12 @@ def splitFields(string):
     return [toListOrString(i) for i in
             stringToTextValues(string, listSeparator=';', charList=';')]
 
+
 def toList(stringOrList):
     if isinstance(stringOrList, basestring):
         return [stringOrList]
     return stringOrList
+
 
 def serializeFields(obj, order=None):
     """
