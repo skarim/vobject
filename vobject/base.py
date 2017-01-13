@@ -342,8 +342,8 @@ class ContentLine(VBase):
                     self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode()
 
     @classmethod
-    def duplicate(clz, copyit):
-        newcopy = clz('', {}, '')
+    def duplicate(cls, copyit):
+        newcopy = cls('', {}, '')
         newcopy.copy(copyit)
         return newcopy
 
@@ -473,8 +473,8 @@ class Component(VBase):
         self.autoBehavior()
 
     @classmethod
-    def duplicate(clz, copyit):
-        newcopy = clz()
+    def duplicate(cls, copyit):
+        newcopy = cls()
         newcopy.copy(copyit)
         return newcopy
 

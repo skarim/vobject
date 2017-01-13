@@ -122,11 +122,11 @@ class TimezoneComponent(Component):
             self.useBegin = True
 
     @classmethod
-    def registerTzinfo(obj, tzinfo):
+    def registerTzinfo(cls, tzinfo):
         """
         Register tzinfo if it's not already registered, return its tzid.
         """
-        tzid = obj.pickTzid(tzinfo)
+        tzid = cls.pickTzid(tzinfo)
         if tzid and not getTzid(tzid, False):
             registerTzid(tzid, tzinfo)
         return tzid
