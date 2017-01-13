@@ -73,7 +73,7 @@ def getTzid(tzid, smart=True):
     """
     Return the tzid if it exists, or None.
     """
-    tz = __tzidMap.get(toUnicode(tzid), None)
+    tz = __tzidMap.get(toUnicode(tzid))
     if smart and tzid and not tz:
         try:
             from pytz import timezone, UnknownTimeZoneError

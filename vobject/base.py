@@ -147,7 +147,7 @@ class VBase(object):
         """
         parentBehavior = self.parentBehavior
         if parentBehavior is not None:
-            knownChildTup = parentBehavior.knownChildren.get(self.name, None)
+            knownChildTup = parentBehavior.knownChildren.get(self.name)
             if knownChildTup is not None:
                 behavior = getBehavior(self.name, knownChildTup[2])
                 if behavior is not None:
