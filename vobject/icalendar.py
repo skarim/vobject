@@ -1526,7 +1526,7 @@ def numToDigits(num, places):
     if len(s) < places:
         return ("0" * (places - len(s))) + s
     elif len(s) > places:
-        return s[len(s)-places:]
+        return s[-places:]
     else:
         return s
 
