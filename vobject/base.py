@@ -323,12 +323,12 @@ class ContentLine(VBase):
         list(map(updateTable, params))
 
         qp = False
-        if 'ENCODING' in self.params:
-            if 'QUOTED-PRINTABLE' in self.params['ENCODING']:
-                qp = True
-                self.params['ENCODING'].remove('QUOTED-PRINTABLE')
-                if len(self.params['ENCODING']) == 0:
-                    del self.params['ENCODING']
+        if 'ENCODING' in self.params and \
+                'QUOTED-PRINTABLE' in self.params['ENCODING']:
+            qp = True
+            self.params['ENCODING'].remove('QUOTED-PRINTABLE')
+            if len(self.params['ENCODING']) == 0:
+                del self.params['ENCODING']
         if 'QUOTED-PRINTABLE' in self.singletonparams:
             qp = True
             self.singletonparams.remove('QUOTED-PRINTABLE')
@@ -600,9 +600,9 @@ class Component(VBase):
                 obj = obj.transformToNative()
             except (KeyError, AttributeError):
                 obj = ContentLine(objOrName, [], '', group)
-            if obj.behavior is None and self.behavior is not None:
-                if isinstance(obj, ContentLine):
-                    obj.behavior = self.behavior.defaultBehavior
+            if obj.behavior is None and self.behavior is not None and \
+                    isinstance(obj, ContentLine):
+                obj.behavior = self.behavior.defaultBehavior
         self.contents.setdefault(obj.name.lower(), []).append(obj)
         return obj
 
