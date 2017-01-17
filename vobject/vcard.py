@@ -156,7 +156,7 @@ class VCardTextBehavior(behavior.Behavior):
                 if isinstance(line.value, bytes):
                     line.value = codecs.encode(line.value, "base64").decode("utf-8").replace('\n', '')
                 else:
-                    line.value = codecs.encode(line.value.encode(coding), "base64").decode("utf-8")
+                    line.value = codecs.encode(line.value.encode(encoding), "base64").decode("utf-8")
             else:
                 line.value = backslashEscape(line.value)
             line.encoded = True
