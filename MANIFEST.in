@@ -1,2 +1,2 @@
-include README.md ACKNOWLEDGEMENTS.txt LICENSE-2.0.txt
+include README.md ACKNOWLEDGEMENTS.txt LICENSE-2.0.txt tests.py
 recursive-include test_files *.ics
