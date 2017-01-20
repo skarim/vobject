@@ -15,11 +15,11 @@ Requires python 2.7 or later, dateutil 2.4.0 or later.
 
 Recent changes
 --------------
-   - Python 3 compatible
-   - Updated version of dateutil (2.4.0 and above)
-   - More comprehensive unit tests available in tests.py
-   - Performance improvements in iteration
-   - Test files are included in PyPI download package
+   - Improved PEP8 compliance
+   - Improved Python 3 compatibility
+   - Improved encoding/decoding
+   - Correct handling of pytz timezones
+   - Added tests.py to the PyPi package
 
 For older changes, see
    - http://eventable.github.io/vobject/#release-history or
