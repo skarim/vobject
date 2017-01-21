@@ -180,7 +180,7 @@ class VBase(object):
         if self.isNative or not self.behavior or not self.behavior.hasNative:
             return self
         else:
-            self_orig = copy.deepcopy(self)
+            self_orig = copy.copy(self)
             try:
                 return self.behavior.transformToNative(self)
             except Exception as e:
