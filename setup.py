@@ -15,11 +15,7 @@ Requires python 2.7 or later, dateutil 2.4.0 or later.
 
 Recent changes
 --------------
-   - Improved PEP8 compliance
-   - Improved Python 3 compatibility
-   - Improved encoding/decoding
-   - Correct handling of pytz timezones
-   - Added tests.py to the PyPi package
+   - Pickling/deepcopy hotfix
 
 For older changes, see
    - http://eventable.github.io/vobject/#release-history or
@@ -31,7 +27,7 @@ from setuptools import setup, find_packages
 doclines = (__doc__ or '').splitlines()
 
 setup(name = "vobject",
-      version = "0.9.4",
+      version = "0.9.4.1",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       maintainer = "Sameen Karim",
@@ -39,7 +35,7 @@ setup(name = "vobject",
       license = "Apache",
       zip_safe = True,
       url = "http://eventable.github.io/vobject/",
-      download_url = 'https://github.com/eventable/vobject/tarball/0.9.4',
+      download_url = 'https://github.com/eventable/vobject/tarball/0.9.4.1',
       bugtrack_url = "https://github.com/eventable/vobject/issues",
       entry_points = {
             'console_scripts': [
