@@ -51,6 +51,7 @@ setup(name = "vobject",
                     "iCalendar and vCard files",
       long_description = "\n".join(doclines[2:]),
       keywords = ['vobject', 'icalendar', 'vcard', 'ics', 'vcs', 'hcalendar'],
+      test_suite="tests",
       classifiers =  """
       Development Status :: 5 - Production/Stable
       Environment :: Console
