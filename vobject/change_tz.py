@@ -64,9 +64,9 @@ def main():
         out_name = ics_file + '.converted'
         print("... Writing {0!s}".format(out_name))
 
-        out = file(out_name, 'wb')
-        cal.serialize(out)
-        print("Done")
+        with open(out_name, 'wb') as out:
+            cal.serialize(out)
+            print("Done")
 
 
 version = "0.1"
