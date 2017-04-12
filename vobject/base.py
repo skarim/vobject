@@ -23,7 +23,7 @@ try:
 
     def str_(s):
         """
-        Return string with correct encoding
+        Return byte string with correct encoding
         """
         if type(s) == unicode:
             return s.encode('utf-8')
@@ -34,7 +34,7 @@ except NameError:
         """
         Return string
         """
-        return s
+        return bytes(s)
 
 if not isinstance(b'', type('')):
     unicode_type = str
@@ -76,11 +76,11 @@ logger.setLevel(logging.ERROR)  # Log errors
 DEBUG = False  # Don't waste time on debug calls
 
 # ----------------------------------- Constants --------------------------------
-CR     = '\r'
-LF     = '\n'
-CRLF   = CR + LF
-SPACE  = ' '
-TAB    = '\t'
+CR = '\r'
+LF = '\n'
+CRLF = CR + LF
+SPACE = ' '
+TAB = '\t'
 SPACEORTAB = SPACE + TAB
 
 # --------------------------------- Main classes -------------------------------
@@ -360,8 +360,7 @@ class ContentLine(VBase):
 
     def __eq__(self, other):
         try:
-            return (self.name == other.name) and (self.params == other.params)\
-                   and (self.value == other.value)
+            return (self.name == other.name) and (self.params == other.params) and (self.value == other.value)
         except Exception:
             return False
 
@@ -433,6 +432,9 @@ class ContentLine(VBase):
     def __repr__(self):
         return self.__str__()
 
+    def __unicode__(self):
+        return u"<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
+
     def prettyPrint(self, level=0, tabwidth=3):
         pre = ' ' * level * tabwidth
         print(pre, self.name + ":", self.valueRepr())
@@ -473,8 +475,8 @@ class Component(VBase):
         self.autoBehavior()
 
     @classmethod
-    def duplicate(clz, copyit):
-        newcopy = clz()
+    def duplicate(cls, copyit):
+        newcopy = cls()
         newcopy.copy(copyit)
         return newcopy
 
@@ -1009,7 +1011,8 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.behavior and not startedEncoded:
             obj.behavior.encode(obj)
 
-        s = six.StringIO()
+        x = six.StringIO()
+        s = codecs.EncodedFile(x, data_encoding='utf-8', file_encoding='utf-8')
 
         if obj.group is not None:
             s.write(obj.group + '.')
@@ -1018,7 +1021,7 @@ def defaultSerialize(obj, buf, lineLength):
         for key in keys:
             paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
             s.write(";{0}={1}".format(key, paramstr))
-        s.write(":{0}".format(str_(obj.value)))
+        s.write(":{0}".format(obj.value))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
@@ -1067,7 +1070,7 @@ def readComponents(streamOrString, validate=False, transform=True,
     Generate one Component at a time from a stream.
     """
     if isinstance(streamOrString, basestring):
-        stream = six.StringIO(str_(streamOrString))
+        stream = six.StringIO(streamOrString)
     else:
         stream = streamOrString
 
