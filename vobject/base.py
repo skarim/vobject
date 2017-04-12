@@ -34,7 +34,7 @@ except NameError:
         """
         Return string
         """
-        return bytes(s)
+        return s
 
 if not isinstance(b'', type('')):
     unicode_type = str
