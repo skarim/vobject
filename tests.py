@@ -800,6 +800,18 @@ class TestIcalendar(unittest.TestCase):
             [datetime.datetime(2005, 3, 18, 0, 0), datetime.datetime(2005, 3, 29, 0, 0)]
         )
 
+    def test_recurrence_offset_naive(self):
+        """
+        Ensure recurring vevent missing some time zone definitions is
+        parsing. See isseu #75.
+        """
+        test_file = get_test_file("recurrence-offset-naive.ics")
+        cal = base.readOne(test_file)
+        dates = list(cal.vevent.getrruleset())
+        self.assertEqual(dates[0], datetime.datetime(2013, 1, 17, 0, 0))
+        self.assertEqual(dates[1], datetime.datetime(2013, 1, 24, 0, 0))
+        self.assertEqual(dates[-1], datetime.datetime(2013, 3, 28, 0, 0))
+
 
 class TestChangeTZ(unittest.TestCase):
     """
