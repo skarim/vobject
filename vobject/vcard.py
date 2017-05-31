@@ -177,7 +177,7 @@ class VCard3_0(VCardBehavior):
     isComponent = True
     sortFirst = ('version', 'prodid', 'uid')
     knownChildren = {
-        'N':          (1, 1, None),  # min, max, behaviorRegistry id
+        'N':          (0, 1, None),  # min, max, behaviorRegistry id
         'FN':         (1, 1, None),
         'VERSION':    (1, 1, None),  # required, auto-generated
         'PRODID':     (0, 1, None),
