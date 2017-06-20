@@ -78,7 +78,7 @@ the commonly used iCalendar objects.</p>
 <p>To create an object that already has a behavior defined, run:</p>
 
 <pre><code>&gt;&gt;&gt; import vobject
-&gt;&gt;&gt; &amp;gt; cal = vobject.newFromBehavior('vcalendar')
+&gt;&gt;&gt; cal = vobject.newFromBehavior('vcalendar')
 &gt;&gt;&gt; cal.behavior
 &lt;class 'vobject.icalendar.VCalendar2_0'&gt;
 </code></pre>
@@ -110,7 +110,7 @@ ContentLine, not a Component.  It can't have children, and it has a
 special value attribute.</p>
 
 <p>ContentLines can also have parameters.  They can be accessed with
-regular attribute names with _param appended:</p>
+regular attribute names with <code>_param</code> appended:</p>
 
 <pre><code>&gt;&gt;&gt; cal.vevent.summary.x_random_param = 'Random parameter'
 &gt;&gt;&gt; cal.prettyPrint()
@@ -149,8 +149,8 @@ Second VEVENT
 </code></pre>
 
 <p>The interaction between the del operator and the hiding of the
-underlying list is a little tricky, del cal.vevent and del
-cal.vevent_list both delete all vevent children:</p>
+underlying list is a little tricky, both <code>del cal.vevent</code> and
+<code>del cal.vevent_list</code> delete all vevent children:</p>
 
 <pre><code>&gt;&gt;&gt; first_ev = cal.vevent
 &gt;&gt;&gt; del cal.vevent
@@ -281,8 +281,65 @@ attributes are required.</p>
 u'Harris'
 </code></pre>
 
+<p>You can access multi-value entries like TEL as follows.</p>
+<pre><code>&gt;&gt;&gt; s = """
+... BEGIN:VCARD
+... VERSION:3.0
+... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org
+... FN:Jeffrey Harris
+... N:Harris;Jeffrey;;;
+... TEL;TYPE=WORK,VOICE:(111) 555-1212
+... TEL;TYPE=HOME,VOICE:(404) 555-1212
+... END:VCARD
+... """
+&gt;&gt;&gt; v = vobject.readOne( s )
+&gt;&gt;&gt; for tel in v.contents:
+&gt;&gt;&gt;     print tel
+ &lt;TEL{u'TYPE': [u'WORK', u'VOICE']}(111) 555-1212&gt;
+ &lt;TEL{u'TYPE': [u'HOME', u'VOICE']}(404) 555-1212&gt;
+&gt;&gt;&gt; for tel in v.contents:
+&gt;&gt;&gt;     print tel.value
+ (111) 555-1212
+ (404) 555-1212
+</code></pre>
+
 <h1>
 <a id="release-history" class="anchor" href="#release-history" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release History</h1>
+
+<h3>
+<a id="22-january-2017" class="anchor" href="#22-january-2017" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>22 January 2017</h3>
+
+<p><strong>vobject 0.9.4.1/strong> released (<a href="https://github.com/eventable/vobject/releases/tag/0.9.4.1">view</a>).</p>
+
+<p>To install, use <code>pip install vobject</code>, or download the archive and untar, run python setup.py install. Tests can be run via python setup.py test. <a href="https://pypi.python.org/pypi/python-dateutil/">dateutil</a> and <a href="https://pypi.python.org/pypi/six">six</a> are required. Python 2.7 or higher is required.</p>
+
+<h5>
+<a id="release-notes" class="anchor" href="#release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release Notes</h5>
+
+<ul>
+<li>  Pickling/deepcopy hotfix</li>
+</ul>
+
+<hr>
+
+<h3>
+<a id="20-january-2017" class="anchor" href="#20-january-2017" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>20 January 2017</h3>
+
+<p><strong>vobject 0.9.4</strong> released (<a href="https://github.com/eventable/vobject/releases/tag/0.9.4">view</a>).</p>
+
+<p>To install, use <code>pip install vobject</code>, or download the archive and untar, run python setup.py install. Tests can be run via python setup.py test. <a href="https://pypi.python.org/pypi/python-dateutil/">dateutil</a> and <a href="https://pypi.python.org/pypi/six">six</a> are required. Python 2.7 or higher is required.</p>
+
+<h5>
+<a id="release-notes" class="anchor" href="#release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release Notes</h5>
+
+<ul>
+<li>  Improved PEP8 compliance</li>
+<li>  Improved Python 3 compatibility</li>
+<li>  Improved encoding/decoding</li>
+<li>  Correct handling of pytz timezones</li>
+</ul>
+
+<hr>
 
 <h3>
 <a id="26-august-2016" class="anchor" href="#26-august-2016" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>26 August 2016</h3>
