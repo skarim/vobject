@@ -66,7 +66,8 @@ def main():
 
         with open(out_name, 'wb') as out:
             cal.serialize(out)
-            print("Done")
+
+        print("Done")
 
 
 version = "0.1"

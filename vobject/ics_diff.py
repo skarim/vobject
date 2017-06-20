@@ -194,9 +194,9 @@ def main():
         with open(ics_file1) as f, open(ics_file2) as g:
             cal1 = readOne(f)
             cal2 = readOne(g)
-            deleteExtraneous(cal1, ignore_dtstamp=ignore_dtstamp)
-            deleteExtraneous(cal2, ignore_dtstamp=ignore_dtstamp)
-            prettyDiff(cal1, cal2)
+        deleteExtraneous(cal1, ignore_dtstamp=ignore_dtstamp)
+        deleteExtraneous(cal2, ignore_dtstamp=ignore_dtstamp)
+        prettyDiff(cal1, cal2)
 
 version = "0.1"
 
