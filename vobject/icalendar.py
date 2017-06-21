@@ -444,7 +444,11 @@ class RecurringComponent(Component):
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
                     value = str_(line.value).replace('\\', '')
-                    rule = rrule.rrulestr(value, dtstart=dtstart)
+                    rule = rrule.rrulestr(
+                        value, dtstart=dtstart,
+                        # If dtstart has no time zone, `until`
+                        # shouldn't get one, either:
+                        ignoretz=isinstance(dtstart, datetime.date))
                     until = rule._until
 
                     if until is not None and isinstance(dtstart,
