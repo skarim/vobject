@@ -294,11 +294,11 @@ u'Harris'
 ... """
 &gt;&gt;&gt; v = vobject.readOne( s )
 &gt;&gt;&gt; for tel in v.contents['tel']:
-&gt;&gt;&gt;     print tel
+...     print tel
  &lt;TEL{u'TYPE': [u'WORK', u'VOICE']}(111) 555-1212&gt;
  &lt;TEL{u'TYPE': [u'HOME', u'VOICE']}(404) 555-1212&gt;
 &gt;&gt;&gt; for tel in v.contents:
-&gt;&gt;&gt;     print tel.value
+...     print tel.value
  (111) 555-1212
  (404) 555-1212
 </code></pre>
