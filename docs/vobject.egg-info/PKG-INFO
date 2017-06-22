@@ -1,0 +1,45 @@
+Metadata-Version: 1.1
+Name: vobject
+Version: 0.9.3
+Summary: A full-featured Python package for parsing and creating iCalendar and vCard files
+Home-page: http://eventable.github.io/vobject/
+Author: Sameen Karim
+Author-email: sameen@eventable.com
+License: Apache
+Download-URL: https://github.com/eventable/vobject/tarball/0.9.3
+Description: 
+        Description
+        -----------
+        
+        Parses iCalendar and vCard files into Python data structures, decoding the
+        relevant encodings. Also serializes vobject data structures to iCalendar, vCard,
+        or (experimentally) hCalendar unicode strings.
+        
+        Requirements
+        ------------
+        
+        Requires python 2.7 or later, dateutil 2.4.0 or later.
+        
+        Recent changes
+        --------------
+           - Python 3 compatible
+           - Updated version of dateutil (2.4.0 and above)
+           - More comprehensive unit tests available in tests.py
+           - Performance improvements in iteration
+           - Test files are included in PyPI download package
+        
+        For older changes, see
+           - http://eventable.github.io/vobject/#release-history or
+           - http://vobject.skyhouseconsulting.com/history.html
+Keywords: vobject,icalendar,vcard,ics,vcs,hcalendar
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier:       Environment :: Console
+Classifier:       Intended Audience :: Developers
+Classifier:       License :: OSI Approved :: Apache Software License
+Classifier:       Natural Language :: English
+Classifier:       Operating System :: OS Independent
+Classifier:       Programming Language :: Python
+Classifier:       Programming Language :: Python :: 2.7
+Classifier:       Programming Language :: Python :: 3
+Classifier:       Topic :: Text Processing

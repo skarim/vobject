@@ -10,7 +10,6 @@ except:
 
 from datetime import datetime
 
-
 def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
     """
     Change the timezone of the specified component.
@@ -18,25 +17,24 @@ def change_tz(cal, new_timezone, default, utc_only=False, utc_tz=icalendar.utc):
     Args:
         cal (Component): the component to change
         new_timezone (tzinfo): the timezone to change to
-        default (tzinfo): a timezone to assume if the dtstart or dtend in cal
+        default (tzinfo): a timezone to assume if the dtstart or dtend in cal 
             doesn't have an existing timezone
         utc_only (bool): only convert dates that are in utc
-        utc_tz (tzinfo): the tzinfo to compare to for UTC when processing
+        utc_tz (tzinfo): the tzinfo to compare to for UTC when processing 
             utc_only=True
     """
 
     for vevent in getattr(cal, 'vevent_list', []):
         start = getattr(vevent, 'dtstart', None)
-        end = getattr(vevent, 'dtend', None)
+        end   = getattr(vevent, 'dtend',   None)
         for node in (start, end):
             if node:
                 dt = node.value
                 if (isinstance(dt, datetime) and
                         (not utc_only or dt.tzinfo == utc_tz)):
                     if dt.tzinfo is None:
-                        dt = dt.replace(tzinfo=default)
+                        dt = dt.replace(tzinfo = default)
                     node.value = dt.astimezone(new_timezone)
-
 
 def main():
     options, args = get_options()
@@ -64,14 +62,12 @@ def main():
         out_name = ics_file + '.converted'
         print("... Writing {0!s}".format(out_name))
 
-        with open(out_name, 'wb') as out:
-            cal.serialize(out)
-
+        out = file(out_name, 'wb')
+        cal.serialize(out)
         print("Done")
 
 
 version = "0.1"
-
 
 def get_options():
     # Configuration options
