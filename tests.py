@@ -15,7 +15,6 @@ from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 from vobject import base, iCalendar
 from vobject import icalendar
 
-from vobject.base import str_
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, parseLine, ParseError
 from vobject.base import readComponents, textLineToContentLine
