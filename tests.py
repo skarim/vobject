@@ -15,6 +15,7 @@ from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 from vobject import base, iCalendar
 from vobject import icalendar
 
+from vobject.base import str_
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, parseLine, ParseError
 from vobject.base import readComponents, textLineToContentLine
@@ -94,7 +95,7 @@ class TestCalendarSerializing(unittest.TestCase):
             self.assertEqual(str(vevent), str(vevent2))
             self.assertEqual(
                 vevent.summary.value,
-                'The title こんにちはキティ'
+                u'The title こんにちはキティ'
             )
 
     def test_wrapping(self):

@@ -430,7 +430,10 @@ class ContentLine(VBase):
         return v
 
     def __str__(self):
-        return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
+        try:
+            return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
+        except UnicodeEncodeError as e:
+            return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr().encode('utf-8'))
 
     def __repr__(self):
         return self.__str__()
@@ -1018,14 +1021,14 @@ def defaultSerialize(obj, buf, lineLength):
 
         if obj.group is not None:
             s.write(obj.group + '.')
-        s.write(obj.name.upper())
+        s.write(str_(obj.name.upper()))
         keys = sorted(obj.params.keys())
         for key in keys:
             paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
             s.write(";{0}={1}".format(key, paramstr))
         try:
             s.write(":{0}".format(obj.value))
-        except UnicodeEncodeError as e:
+        except (UnicodeDecodeError, UnicodeEncodeError) as e:
             s.write(":{0}".format(obj.value.encode('utf-8')))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
