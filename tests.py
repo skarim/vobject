@@ -94,7 +94,7 @@ class TestCalendarSerializing(unittest.TestCase):
             self.assertEqual(str(vevent), str(vevent2))
             self.assertEqual(
                 vevent.summary.value,
-                'The title こんにちはキティ'
+                u'The title こんにちはキティ'
             )
 
     def test_wrapping(self):

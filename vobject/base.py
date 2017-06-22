@@ -23,7 +23,7 @@ try:
 
     def str_(s):
         """
-        Return string with correct encoding
+        Return byte string with correct encoding
         """
         if type(s) == unicode:
             return s.encode('utf-8')
@@ -76,11 +76,11 @@ logger.setLevel(logging.ERROR)  # Log errors
 DEBUG = False  # Don't waste time on debug calls
 
 # ----------------------------------- Constants --------------------------------
-CR     = '\r'
-LF     = '\n'
-CRLF   = CR + LF
-SPACE  = ' '
-TAB    = '\t'
+CR = '\r'
+LF = '\n'
+CRLF = CR + LF
+SPACE = ' '
+TAB = '\t'
 SPACEORTAB = SPACE + TAB
 
 # --------------------------------- Main classes -------------------------------
@@ -360,8 +360,7 @@ class ContentLine(VBase):
 
     def __eq__(self, other):
         try:
-            return (self.name == other.name) and (self.params == other.params)\
-                   and (self.value == other.value)
+            return (self.name == other.name) and (self.params == other.params) and (self.value == other.value)
         except Exception:
             return False
 
@@ -428,10 +427,16 @@ class ContentLine(VBase):
         return v
 
     def __str__(self):
-        return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
+        try:
+            return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
+        except UnicodeEncodeError as e:
+            return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr().encode('utf-8'))
 
     def __repr__(self):
         return self.__str__()
+
+    def __unicode__(self):
+        return u"<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
 
     def prettyPrint(self, level=0, tabwidth=3):
         pre = ' ' * level * tabwidth
@@ -473,8 +478,8 @@ class Component(VBase):
         self.autoBehavior()
 
     @classmethod
-    def duplicate(clz, copyit):
-        newcopy = clz()
+    def duplicate(cls, copyit):
+        newcopy = cls()
         newcopy.copy(copyit)
         return newcopy
 
@@ -946,7 +951,7 @@ def foldOneLine(outbuf, input, lineLength=75):
             outbuf.write(bytes(input, 'UTF-8'))
         except Exception:
             # fall back on py2 syntax
-            outbuf.write(str_(input))
+            outbuf.write(input)
 
     else:
         # Look for valid utf8 range and write that out
@@ -1013,12 +1018,15 @@ def defaultSerialize(obj, buf, lineLength):
 
         if obj.group is not None:
             s.write(obj.group + '.')
-        s.write(obj.name.upper())
+        s.write(str_(obj.name.upper()))
         keys = sorted(obj.params.keys())
         for key in keys:
             paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
             s.write(";{0}={1}".format(key, paramstr))
-        s.write(":{0}".format(str_(obj.value)))
+        try:
+            s.write(":{0}".format(obj.value))
+        except (UnicodeDecodeError, UnicodeEncodeError) as e:
+            s.write(":{0}".format(obj.value.encode('utf-8')))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)
         foldOneLine(outbuf, s.getvalue(), lineLength)
@@ -1067,7 +1075,7 @@ def readComponents(streamOrString, validate=False, transform=True,
     Generate one Component at a time from a stream.
     """
     if isinstance(streamOrString, basestring):
-        stream = six.StringIO(str_(streamOrString))
+        stream = six.StringIO(streamOrString)
     else:
         stream = streamOrString
 
