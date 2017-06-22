@@ -34,10 +34,7 @@ except NameError:
         """
         Return string
         """
-        if type(s) == str:
-            return s.encode('utf-8')
-        else:
-            return bytes(s)
+        return s
 
 if not isinstance(b'', type('')):
     unicode_type = str
