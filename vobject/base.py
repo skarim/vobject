@@ -34,7 +34,10 @@ except NameError:
         """
         Return string
         """
-        return s
+        if type(s) == str:
+            return s.encode('utf-8')
+        else:
+            return bytes(s)
 
 if not isinstance(b'', type('')):
     unicode_type = str
@@ -948,7 +951,7 @@ def foldOneLine(outbuf, input, lineLength=75):
             outbuf.write(bytes(input, 'UTF-8'))
         except Exception:
             # fall back on py2 syntax
-            outbuf.write(str_(input))
+            outbuf.write(input)
 
     else:
         # Look for valid utf8 range and write that out
@@ -1011,8 +1014,7 @@ def defaultSerialize(obj, buf, lineLength):
         if obj.behavior and not startedEncoded:
             obj.behavior.encode(obj)
 
-        x = six.StringIO()
-        s = codecs.EncodedFile(x, data_encoding='utf-8', file_encoding='utf-8')
+        s = six.StringIO()
 
         if obj.group is not None:
             s.write(obj.group + '.')

@@ -657,7 +657,7 @@ class TextBehavior(behavior.Behavior):
             if encoding and encoding.upper() == cls.base64string:
                 line.value = base64.b64encode(line.value.encode('utf-8')).decode('utf-8').replace('\n', '')
             else:
-                line.value = backslashEscape(str_(line.value))
+                line.value = backslashEscape(line.value)
             line.encoded = True
 
 
