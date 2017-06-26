@@ -427,6 +427,8 @@ class ContentLine(VBase):
         return v
 
     def __str__(self):
+        if self.isNative:
+            self.transformFromNative()
         try:
             return "<{0}{1}{2}>".format(self.name, self.params, self.valueRepr())
         except UnicodeEncodeError as e:
