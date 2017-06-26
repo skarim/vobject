@@ -398,7 +398,7 @@ class RecurringComponent(Component):
         Get an rruleset created from self.
 
         If addRDate is True, add an RDATE for dtstart if it's not included in
-        an RRULE, and count is decremented if it exists.
+        an RRULE or RDATE, and count is decremented if it exists.
 
         Note that for rules which don't match DTSTART, DTSTART may not appear
         in list(rruleset), although it should.  By default, an RDATE is not
@@ -414,6 +414,8 @@ class RecurringComponent(Component):
                     rruleset = rrule.rruleset()
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
+
+                dtstart = self.dtstart.value
 
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
@@ -492,26 +494,36 @@ class RecurringComponent(Component):
                     # add the rrule or exrule to the rruleset
                     addfunc(rule)
 
-                    if name == 'rrule' and addRDate:
-                        try:
-                            # dateutils does not work with all-day
-                            # (datetime.date) items so we need to convert to a
-                            # datetime.datetime (which is what dateutils
-                            # does internally)
-                            if not isinstance(dtstart, datetime.datetime):
-                                adddtstart = datetime.datetime.fromordinal(dtstart.toordinal())
-                            else:
-                                adddtstart = dtstart
+                if (name == 'rrule' or name == 'rdate') and addRDate:
+                    # rlist = rruleset._rrule if name == 'rrule' else rruleset._rdate
+                    try:
+                        # dateutils does not work with all-day
+                        # (datetime.date) items so we need to convert to a
+                        # datetime.datetime (which is what dateutils
+                        # does internally)
+                        if not isinstance(dtstart, datetime.datetime):
+                            adddtstart = datetime.datetime.fromordinal(dtstart.toordinal())
+                        else:
+                            adddtstart = dtstart
+
+                        if name == 'rrule':
                             if rruleset._rrule[-1][0] != adddtstart:
+                                rruleset.rdate(adddtstart)
+                                added = True
+                                if rruleset._rrule[-1]._count is not None:
+                                    rruleset._rrule[-1]._count -= 1
+                            else:
+                                added = False
+                        elif name == 'rdate':
+                            if rruleset._rdate[0] != adddtstart:
                                 rruleset.rdate(adddtstart)
                                 added = True
                             else:
                                 added = False
-                        except IndexError:
-                            # it's conceivable that an rrule has 0 datetimes
-                            added = False
-                        if added and rruleset._rrule[-1]._count is not None:
-                            rruleset._rrule[-1]._count -= 1
+                    except IndexError:
+                        # it's conceivable that an rrule has 0 datetimes
+                        added = False
+
         return rruleset
 
     def setrruleset(self, rruleset):
