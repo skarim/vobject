@@ -917,7 +917,7 @@ class VCalendar2_0(VCalendarComponentBehavior):
     @classmethod
     def generateImplicitParameters(cls, obj):
         """
-        Create PRODID, VERSION, and VTIMEZONEs if needed.
+        Create PRODID, VERSION, DTSTAMP, and VTIMEZONEs if needed.
 
         VTIMEZONEs will need to exist whenever TZID parameters exist or when
         datetimes with tzinfo exist.
@@ -929,6 +929,9 @@ class VCalendar2_0(VCalendarComponentBehavior):
             obj.add(ContentLine('PRODID', [], PRODID))
         if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
+        if not hasattr(obj, 'dtstamp'):
+            now = datetime.datetime.utcnow()
+            obj.add(ContentLine('DTSTAMP', [], now.strftime('%Y%m%dT%H%M%SZ')))
         tzidsUsed = {}
 
         def findTzids(obj, table):
