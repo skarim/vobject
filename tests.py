@@ -58,6 +58,7 @@ class TestCalendarSerializing(unittest.TestCase):
         """
         test_cal = get_test_file("simple_2_0_test.ics")
         cal = base.newFromBehavior('vcalendar', '2.0')
+        cal.add('dtstamp').value = '20170626T160100Z'
         cal.add('vevent')
         cal.vevent.add('dtstart').value = datetime.datetime(2006, 5, 9)
         cal.vevent.add('description').value = "Test event"
