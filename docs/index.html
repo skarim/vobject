@@ -281,7 +281,23 @@ attributes are required.</p>
 u'Harris'
 </code></pre>
 
-<p>You can access multi-value entries like TEL either by grabbing the relevent entries in the `contents` dictionary or by directly accessing the attribute and appending <code>_list</code> to the property name.</p>
+<p>You should add multi-value properties by creating multiple ContentLines and giving each a value. You can also set the property list explicitly, but this is not advised.</p>
+<pre><code>&gt;&gt;&gt; v = vobject.vCard()
+&gt;&gt;&gt; v.add('fn').value = "Jeffery Harris"
+&gt;&gt;&gt; v.add('email').value = 'jeffrey@osafoundation.org'
+&gt;&gt;&gt; v.add('email').value = 'jeffrey@example.com'
+&gt;&gt;&gt; print v.email_list
+ [&lt;EMAIL{}jeffrey@osafoundation.org&gt;, &lt;EMAIL{}jeffery@example.com&gt;]
+&gt;&gt;&gt; print v.serialize()
+ BEGIN:VCARD
+ VERSION:3.0
+ EMAIL:jeffrey@osafoundation.org
+ EMAIL:jeffery@example.com
+ FN:Jeffery Harris
+ END:VCARD
+</code></pre>
+
+<p>You can access multi-value entries either by grabbing the relevent entry in the `contents` dictionary or by directly accessing the attribute and appending <code>_list</code> to the property name.</p>
 <pre><code>&gt;&gt;&gt; s = """
 ... BEGIN:VCARD
 ... VERSION:3.0
