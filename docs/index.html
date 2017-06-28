@@ -281,7 +281,7 @@ attributes are required.</p>
 u'Harris'
 </code></pre>
 
-<p>You can access multi-value entries like TEL as follows.</p>
+<p>You can access multi-value entries like TEL either by grabbing the relevent entries in the `contents` dictionary or by directly accessing the attribute and appending <code>_list</code> to the property name.</p>
 <pre><code>&gt;&gt;&gt; s = """
 ... BEGIN:VCARD
 ... VERSION:3.0
@@ -301,6 +301,10 @@ u'Harris'
 ...     print tel.value
  (111) 555-1212
  (404) 555-1212
+&gt;&gt;&gt; v.tel_list
+
+[&lt;TEL{'TYPE': ['WORK', 'VOICE']}(111) 555-1212&gt;,
+ &lt;TEL{'TYPE': ['HOME', 'VOICE']}(404) 555-1212&gt;]
 </code></pre>
 
 <h1>
