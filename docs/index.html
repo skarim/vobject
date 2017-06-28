@@ -220,8 +220,7 @@ datetime.datetime(2006, 2, 16, 0, 0, tzinfo=tzutc())
 <h4>
 <a id="creating-vcard-objects" class="anchor" href="#creating-vcard-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating vCard objects</h4>
 
-<p>Making vCards proceeds in much the same way. Note that the 'N' and 'FN'
-attributes are required.</p>
+<p>Making vCards proceeds in much the same way. Note that the 'FN' attribute is required.</p>
 
 <pre><code>&gt;&gt;&gt; j = vobject.vCard()
 &gt;&gt;&gt; j.add('n')
@@ -281,7 +280,29 @@ attributes are required.</p>
 u'Harris'
 </code></pre>
 
-<p>You can access multi-value entries like TEL as follows.</p>
+<h4>
+<a id="multi-value-props" class="anchor" href="#multi-value-props" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multi-Value Properties</h4>
+
+<p>Multi-value properties are properties of a component that can contain multiple values. An easy example email. A vCard can contain both someone's work email address and their home email address.
+In the case of multi-value properties, the getting and setting of values happens slightly differentely than singleton properties.</p>
+
+<p>You should add multi-value properties by creating multiple ContentLines and giving each a value. You can also set the property list explicitly, but this is not advised.</p>
+<pre><code>&gt;&gt;&gt; v = vobject.vCard()
+&gt;&gt;&gt; v.add('fn').value = "Jeffery Harris"
+&gt;&gt;&gt; v.add('email').value = 'jeffrey@osafoundation.org'
+&gt;&gt;&gt; v.add('email').value = 'jeffrey@example.com'
+&gt;&gt;&gt; print v.email_list
+ [&lt;EMAIL{}jeffrey@osafoundation.org&gt;, &lt;EMAIL{}jeffery@example.com&gt;]
+&gt;&gt;&gt; print v.serialize()
+ BEGIN:VCARD
+ VERSION:3.0
+ EMAIL:jeffrey@osafoundation.org
+ EMAIL:jeffery@example.com
+ FN:Jeffery Harris
+ END:VCARD
+</code></pre>
+
+<p>You can access multi-value entries either by grabbing the relevent entry in the `contents` dictionary or by directly accessing the attribute and appending <code>_list</code> to the property name.</p>
 <pre><code>&gt;&gt;&gt; s = """
 ... BEGIN:VCARD
 ... VERSION:3.0
@@ -301,6 +322,9 @@ u'Harris'
 ...     print tel.value
  (111) 555-1212
  (404) 555-1212
+&gt;&gt;&gt; v.tel_list
+ [&lt;TEL{'TYPE': ['WORK', 'VOICE']}(111) 555-1212&gt;,
+  &lt;TEL{'TYPE': ['HOME', 'VOICE']}(404) 555-1212&gt;]
 </code></pre>
 
 <h1>

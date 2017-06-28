@@ -253,6 +253,7 @@ serializing will add any required computable attributes (like 'VERSION')
 ... BEGIN:VCARD
 ... VERSION:3.0
 ... EMAIL;TYPE=INTERNET:jeffrey@osafoundation.org
+... EMAIL;TYPE=INTERNET:jeffery@example.org
 ... ORG:Open Source Applications Foundation
 ... FN:Jeffrey Harris
 ... N:Harris;Jeffrey;;;
@@ -270,4 +271,7 @@ serializing will add any required computable attributes (like 'VERSION')
     N:  Jeffrey  Harris
 >>> v.n.value.family
 u'Harris'
+>>> v.email_list
+[<EMAIL{'TYPE': ['INTERNET']}jeffrey@osafoundation.org>,
+ <EMAIL{'TYPE': ['INTERNET']}jeffery@example.org>]
 ```
