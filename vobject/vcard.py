@@ -4,7 +4,7 @@ import codecs
 
 from . import behavior
 
-from .base import ContentLine, registerBehavior, backslashEscape, str_
+from .base import ContentLine, registerBehavior, backslashEscape
 from .icalendar import stringToTextValues
 
 
@@ -41,7 +41,7 @@ class Name(object):
     def __str__(self):
         eng_order = ('prefix', 'given', 'additional', 'family', 'suffix')
         out = ' '.join(self.toString(getattr(self, val)) for val in eng_order)
-        return str_(out)
+        return out
 
     def __repr__(self):
         return "<Name: {0!s}>".format(self.__str__())
