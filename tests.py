@@ -58,7 +58,6 @@ class TestCalendarSerializing(unittest.TestCase):
         """
         test_cal = get_test_file("simple_2_0_test.ics")
         cal = base.newFromBehavior('vcalendar', '2.0')
-        cal.add('dtstamp').value = '20170626T160100Z'
         cal.add('vevent')
         cal.vevent.add('dtstart').value = datetime.datetime(2006, 5, 9)
         cal.vevent.add('description').value = "Test event"
@@ -67,6 +66,7 @@ class TestCalendarSerializing(unittest.TestCase):
                               tzinfo=dateutil.tz.tzical(
                                   "test_files/timezones.ics").get('US/Pacific'))
         cal.vevent.add('uid').value = "Not very random UID"
+        cal.vevent.add('dtstamp').value = datetime.datetime(2017, 6, 26, 0, tzinfo=tzutc())
 
         # Note we're normalizing line endings, because no one got time for that.
         self.assertEqual(
@@ -706,6 +706,7 @@ class TestIcalendar(unittest.TestCase):
 
         vfb = base.newFromBehavior('VFREEBUSY')
         vfb.add('uid').value = 'test'
+        vfb.add('dtstamp').value = datetime.datetime(2006, 2, 15, 0, tzinfo=utc)
         vfb.add('dtstart').value = datetime.datetime(2006, 2, 16, 1, tzinfo=utc)
         vfb.add('dtend').value   = vfb.dtstart.value + two_hours
         vfb.add('freebusy').value = [(vfb.dtstart.value, two_hours / 2)]
