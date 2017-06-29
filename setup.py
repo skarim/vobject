@@ -15,7 +15,13 @@ Requires python 2.7 or later, dateutil 2.4.0 or later.
 
 Recent changes
 --------------
-   - Pickling/deepcopy hotfix
+   - Make ics_diff.py work with Python 3
+   - Huge changes to text encoding for Python 2/3 compatibility
+   - Autogenerate DTSTAMP if not provided
+   - Fix getrruleset() for Python 3 and in the case that addRDate=True
+   - Update vCard property validation to match specifications
+   - Handle offset-naive and offset-aware datetimes in recurrence rules
+   - Improved documentation for multi-value properties
 
 For older changes, see
    - http://eventable.github.io/vobject/#release-history or
@@ -27,7 +33,7 @@ from setuptools import setup, find_packages
 doclines = (__doc__ or '').splitlines()
 
 setup(name = "vobject",
-      version = "0.9.4.1",
+      version = "0.9.5",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       maintainer = "Sameen Karim",
@@ -35,7 +41,7 @@ setup(name = "vobject",
       license = "Apache",
       zip_safe = True,
       url = "http://eventable.github.io/vobject/",
-      download_url = 'https://github.com/eventable/vobject/tarball/0.9.4.1',
+      download_url = 'https://github.com/eventable/vobject/tarball/0.9.5',
       bugtrack_url = "https://github.com/eventable/vobject/issues",
       entry_points = {
             'console_scripts': [
