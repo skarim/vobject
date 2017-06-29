@@ -339,7 +339,7 @@ class ContentLine(VBase):
                 if 'CHARSET' in self.params:
                     self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode(self.params['CHARSET'][0])
                 else:
-                    self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode()
+                    self.value = codecs.decode(self.value.encode("utf-8"), "quoted-printable").decode('utf-8')
 
     @classmethod
     def duplicate(clz, copyit):
