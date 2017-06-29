@@ -704,7 +704,7 @@ class RecurringBehavior(VCalendarComponentBehavior):
     @staticmethod
     def generateImplicitParameters(obj):
         """
-        Generate a UID if one does not exist.
+        Generate a UID and DTSTAMP if one does not exist.
 
         This is just a dummy implementation, for now.
         """
@@ -715,6 +715,10 @@ class RecurringBehavior(VCalendarComponentBehavior):
             host = socket.gethostname()
             obj.add(ContentLine('UID', [], "{0} - {1}@{2}".format(now, rand,
                                                                   host)))
+
+        if not hasattr(obj, 'dtstamp'):
+            now = datetime.datetime.now(utc)
+            obj.add('dtstamp').value = now
 
 
 class DateTimeBehavior(behavior.Behavior):
@@ -929,7 +933,7 @@ class VCalendar2_0(VCalendarComponentBehavior):
     @classmethod
     def generateImplicitParameters(cls, obj):
         """
-        Create PRODID, VERSION, DTSTAMP, and VTIMEZONEs if needed.
+        Create PRODID, VERSION and VTIMEZONEs if needed.
 
         VTIMEZONEs will need to exist whenever TZID parameters exist or when
         datetimes with tzinfo exist.
@@ -941,9 +945,6 @@ class VCalendar2_0(VCalendarComponentBehavior):
             obj.add(ContentLine('PRODID', [], PRODID))
         if not hasattr(obj, 'version'):
             obj.add(ContentLine('VERSION', [], cls.versionString))
-        if not hasattr(obj, 'dtstamp'):
-            now = datetime.datetime.utcnow()
-            obj.add(ContentLine('DTSTAMP', [], now.strftime('%Y%m%dT%H%M%SZ')))
         tzidsUsed = {}
 
         def findTzids(obj, table):
@@ -1064,7 +1065,7 @@ class VEvent(RecurringBehavior):
         'LOCATION':       (0, 1, None),
         'ORGANIZER':      (0, 1, None),
         'PRIORITY':       (0, 1, None),
-        'DTSTAMP':        (0, 1, None),
+        'DTSTAMP':        (1, 1, None),  # required
         'SEQUENCE':       (0, 1, None),
         'STATUS':         (0, 1, None),
         'SUMMARY':        (0, 1, None),
@@ -1123,7 +1124,7 @@ class VTodo(RecurringBehavior):
         'ORGANIZER':      (0, 1, None),
         'PERCENT':        (0, 1, None),
         'PRIORITY':       (0, 1, None),
-        'DTSTAMP':        (0, 1, None),
+        'DTSTAMP':        (1, 1, None),
         'SEQUENCE':       (0, 1, None),
         'STATUS':         (0, 1, None),
         'SUMMARY':        (0, 1, None),
@@ -1173,7 +1174,7 @@ class VJournal(RecurringBehavior):
         'DESCRIPTION':    (0, 1, None),
         'LAST-MODIFIED':  (0, 1, None),
         'ORGANIZER':      (0, 1, None),
-        'DTSTAMP':        (0, 1, None),
+        'DTSTAMP':        (1, 1, None),
         'SEQUENCE':       (0, 1, None),
         'STATUS':         (0, 1, None),
         'SUMMARY':        (0, 1, None),
@@ -1210,7 +1211,7 @@ class VFreeBusy(VCalendarComponentBehavior):
         'DTEND':          (0, 1, None),
         'DURATION':       (0, 1, None),
         'ORGANIZER':      (0, 1, None),
-        'DTSTAMP':        (0, 1, None),
+        'DTSTAMP':        (1, 1, None),
         'UID':            (0, 1, None),
         'URL':            (0, 1, None),
         'ATTENDEE':       (0, None, None),
