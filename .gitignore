@@ -7,3 +7,4 @@ dist/**/*
 vobject.egg-info/**/*
 venv/**/*
 .idea/*
+*.sublime-*

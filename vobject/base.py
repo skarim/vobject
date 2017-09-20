@@ -1025,7 +1025,7 @@ def defaultSerialize(obj, buf, lineLength):
             s.write(";{0}={1}".format(key, paramstr))
         try:
             s.write(":{0}".format(obj.value))
-        except (UnicodeDecodeError, UnicodeEncodeError) as e:
+        except (UnicodeDecodeError, UnicodeEncodeError):
             s.write(":{0}".format(obj.value.encode('utf-8')))
         if obj.behavior and not startedEncoded:
             obj.behavior.decode(obj)

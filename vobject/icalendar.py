@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 
-import codecs
 import datetime
 import logging
 import random  # for generating a UID
@@ -32,7 +31,7 @@ except ImportError:
 from . import behavior
 from .base import (VObjectError, NativeError, ValidateError, ParseError,
                    Component, ContentLine, logger, registerBehavior,
-                   backslashEscape, foldOneLine, str_)
+                   backslashEscape, foldOneLine)
 
 
 # ------------------------------- Constants ------------------------------------
@@ -974,6 +973,65 @@ class VCalendar2_0(VCalendarComponentBehavior):
             tzid = toUnicode(tzid)
             if tzid != u'UTC' and tzid not in oldtzids:
                 obj.add(TimezoneComponent(tzinfo=getTzid(tzid)))
+
+    @classmethod
+    def serialize(cls, obj, buf, lineLength, validate=True):
+        """
+        Set implicit parameters, do encoding, return unicode string.
+
+        If validate is True, raise VObjectError if the line doesn't validate
+        after implicit parameters are generated.
+
+        Default is to call base.defaultSerialize.
+
+        """
+
+        cls.generateImplicitParameters(obj)
+        if validate:
+            cls.validate(obj, raiseException=True)
+        if obj.isNative:
+            transformed = obj.transformFromNative()
+            undoTransform = True
+        else:
+            transformed = obj
+            undoTransform = False
+        out = None
+        outbuf = buf or six.StringIO()
+        if obj.group is None:
+            groupString = ''
+        else:
+            groupString = obj.group + '.'
+        if obj.useBegin:
+            foldOneLine(outbuf, "{0}BEGIN:{1}".format(groupString, obj.name),
+                        lineLength)
+
+        try:
+            first_props = [s for s in cls.sortFirst if s in obj.contents \
+                                    and not isinstance(obj.contents[s][0], Component)]
+            first_components = [s for s in cls.sortFirst if s in obj.contents \
+                                    and isinstance(obj.contents[s][0], Component)]
+        except Exception:
+            first_props = first_components = []
+            # first_components = []
+
+        prop_keys = sorted(list(k for k in obj.contents.keys() if k not in first_props \
+                                         and not isinstance(obj.contents[k][0], Component)))
+        comp_keys = sorted(list(k for k in obj.contents.keys() if k not in first_components \
+                                        and isinstance(obj.contents[k][0], Component)))
+
+        sorted_keys = first_props + prop_keys + first_components + comp_keys
+        children = [o for k in sorted_keys for o in obj.contents[k]]
+
+        for child in children:
+            # validate is recursive, we only need to validate once
+            child.serialize(outbuf, lineLength, validate=False)
+        if obj.useBegin:
+            foldOneLine(outbuf, "{0}END:{1}".format(groupString, obj.name),
+                        lineLength)
+        out = buf or outbuf.getvalue()
+        if undoTransform:
+            obj.transformToNative()
+        return out
 registerBehavior(VCalendar2_0)
 
 
