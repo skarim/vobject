@@ -1006,9 +1006,9 @@ class VCalendar2_0(VCalendarComponentBehavior):
                         lineLength)
 
         try:
-            first_props = [s for s in self.sortFirst if s in obj.contents \
+            first_props = [s for s in cls.sortFirst if s in obj.contents \
                                     and not isinstance(obj.contents[s][0], Component)]
-            first_components = [s for s in self.sortFirst if s in obj.contents \
+            first_components = [s for s in cls.sortFirst if s in obj.contents \
                                     and isinstance(obj.contents[s][0], Component)]
         except Exception:
             first_props = first_components = []
