@@ -136,7 +136,7 @@ class VCardTextBehavior(behavior.Behavior):
                 line.singletonparams.remove('BASE64')
                 line.encoding_param = cls.base64string
             encoding = getattr(line, 'encoding_param', None)
-            if encoding:
+            if encoding and "base64" in encoding.lower():
                 if isinstance(line.value, bytes):
                     line.value = codecs.decode(line.value, "base64")
                 else:
