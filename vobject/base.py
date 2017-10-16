@@ -69,7 +69,7 @@ def to_basestring(s):
 logger = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
     handler = logging.StreamHandler()
-    formatter = logging.Formatter('{name} {levelname} {message}')
+    formatter = logging.Formatter('%(name)s %(levelname)s %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 logger.setLevel(logging.ERROR)  # Log errors
