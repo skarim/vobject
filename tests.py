@@ -68,6 +68,9 @@ class TestCalendarSerializing(unittest.TestCase):
         cal.vevent.add('uid').value = "Not very random UID"
         cal.vevent.add('dtstamp').value = datetime.datetime(2017, 6, 26, 0, tzinfo=tzutc())
 
+        cal.vevent.add('attendee').value = 'mailto:froelich@example.com'
+        cal.vevent.attendee.params['CN'] = ['Fröhlich']
+
         # Note we're normalizing line endings, because no one got time for that.
         self.assertEqual(
             cal.serialize().replace('\r\n', '\n'),
