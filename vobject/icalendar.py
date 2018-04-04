@@ -449,7 +449,10 @@ class RecurringComponent(Component):
                         value, dtstart=dtstart,
                         # If dtstart has no time zone, `until`
                         # shouldn't get one, either:
-                        ignoretz=isinstance(dtstart, datetime.date))
+                        ignoretz=(
+                            isinstance(dtstart, datetime.date) and
+                            not isinstance(dtstart, datetime.datetime)
+                            ))
                     until = rule._until
 
                     if until is not None and isinstance(dtstart,
