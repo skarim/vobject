@@ -452,7 +452,7 @@ class RecurringComponent(Component):
                     ignoretz = (
                         isinstance(dtstart, datetime.date) and
                         not isinstance(dtstart, datetime.datetime))
-                    # dateutil.rrule >= 2.7.0 now includes the following check:
+                    # dateutil.rrule >= 2.7.1 now includes the following check:
                     #
                     # According to RFC5545 Section 3.3.10:
                     # https://tools.ietf.org/html/rfc5545#section-3.3.10
@@ -467,12 +467,12 @@ class RecurringComponent(Component):
                     #)
                     #
                     # Previously UNTIL was handled below after creating
-                    # the rule. Now dateutil.rrule >= 2.7.0 fails to create the
+                    # the rule. Now dateutil.rrule >= 2.7.1 fails to create the
                     # rule if the UNTIL part does not pass the above test. This
                     # causes TestIcalendar.test_recurrence to fail because the
                     # rule never gets created. It is unclear what the best
                     # approach is to handle UNTIL and TestIcalendar.test_recurrence
-                    # in light of dateutil.rrule >= 2.7.0 internally forcing
+                    # in light of dateutil.rrule >= 2.7.1 internally forcing
                     # compliance with RFC5545 Section 3.3.10.
                     rule = rrule.rrulestr(
                         value, dtstart=dtstart,
