@@ -449,7 +449,15 @@ class RecurringComponent(Component):
                     # shouldn't get one, either:
                     ignoretz = (not isinstance(dtstart, datetime.datetime) or
                                 dtstart.tzinfo is None)
-                    until = rrule.rrulestr(value, ignoretz=ignoretz)._until
+                    try:
+                        until = rrule.rrulestr(value, ignoretz=ignoretz)._until
+                    except ValueError:
+                        # WORKAROUND: dateutil<=2.7.2 doesn't set the time zone
+                        # of dtstart
+                        if ignoretz:
+                            raise
+                        utc_now = datetime.datetime.now(datetime.timezone.utc)
+                        until = rrule.rrulestr(value, dtstart=utc_now)._until
 
                     if until is not None and isinstance(dtstart,
                                                         datetime.datetime) and \
