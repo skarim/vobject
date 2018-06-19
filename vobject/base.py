@@ -774,7 +774,7 @@ patterns['params_grouped'] = r"""
 # get a full content line, break it up into group, name, parameters, and value
 patterns['line'] = r"""
 ^ ((?P<group> {name!s})\.)?(?P<name> {name!s}) # name group
-  (?P<params> (?: {param!s} )* )               # params group (may be empty)
+  (?P<params> ;?(?: {param!s} )* )               # params group (may be empty)
 : (?P<value> .* )$                             # value group
 """.format(**patterns)
 
