@@ -15,13 +15,15 @@ Requires python 2.7 or later, dateutil 2.4.0 or later.
 
 Recent changes
 --------------
-   - Make ics_diff.py work with Python 3
-   - Huge changes to text encoding for Python 2/3 compatibility
-   - Autogenerate DTSTAMP if not provided
-   - Fix getrruleset() for Python 3 and in the case that addRDate=True
-   - Update vCard property validation to match specifications
-   - Handle offset-naive and offset-aware datetimes in recurrence rules
-   - Improved documentation for multi-value properties
+    - Correctly order calendar properties before calendar components
+    - Correctly serialize timestamp values (i.e. `REV`)
+    - Pass correct formatting string to logger
+    - RRULE: Fix floating UNTIL with dateutil > 2.6.1
+    - Encode params if necessary in serialization
+    - Ignore escaped semi-colons in UNTIL value
+    - RRULE: Fix VTODO without DTSTART
+    - Fixed regexp for VCF Version 2.1
+    - repr changed for datetime.timedelta in python 3.7
 
 For older changes, see
    - http://eventable.github.io/vobject/#release-history or
