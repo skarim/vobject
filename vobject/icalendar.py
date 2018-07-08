@@ -414,7 +414,21 @@ class RecurringComponent(Component):
                 if addfunc is None:
                     addfunc = getattr(rruleset, name)
 
-                dtstart = self.dtstart.value
+                try:
+                    dtstart = self.dtstart.value
+                except (AttributeError, KeyError):
+                    # Special for VTODO - try DUE property instead
+                    try:
+                        if self.name == "VTODO":
+                            dtstart = self.due.value
+                        else:
+                            # if there's no dtstart, just return None
+                            logging.error('failed to get dtstart with VTODO')
+                            return None
+                    except (AttributeError, KeyError):
+                        # if there's no due, just return None
+                        logging.error('failed to find DUE at all.')
+                        return None
 
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
@@ -426,22 +440,6 @@ class RecurringComponent(Component):
                         # ignore RDATEs with PERIOD values for now
                         pass
                 elif name in RULENAMES:
-                    try:
-                        dtstart = self.dtstart.value
-                    except (AttributeError, KeyError):
-                        # Special for VTODO - try DUE property instead
-                        try:
-                            if self.name == "VTODO":
-                                dtstart = self.due.value
-                            else:
-                                # if there's no dtstart, just return None
-                                logging.error('failed to get dtstart with VTODO')
-                                return None
-                        except (AttributeError, KeyError):
-                            # if there's no due, just return None
-                            logging.error('failed to find DUE at all.')
-                            return None
-
                     # a Ruby iCalendar library escapes semi-colons in rrules,
                     # so also remove any backslashes
                     value = line.value.replace('\\', '')
