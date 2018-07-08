@@ -1022,7 +1022,10 @@ def defaultSerialize(obj, buf, lineLength):
         keys = sorted(obj.params.keys())
         for key in keys:
             paramstr = ','.join(dquoteEscape(p) for p in obj.params[key])
-            s.write(";{0}={1}".format(key, paramstr))
+            try:
+                s.write(";{0}={1}".format(key, paramstr))
+            except (UnicodeDecodeError, UnicodeEncodeError):
+                s.write(";{0}={1}".format(key, paramstr.encode('utf-8')))
         try:
             s.write(":{0}".format(obj.value))
         except (UnicodeDecodeError, UnicodeEncodeError):
