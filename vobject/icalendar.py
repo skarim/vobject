@@ -465,7 +465,7 @@ class RecurringComponent(Component):
                         # dateutil converts the UNTIL date to a datetime,
                         # check to see if the UNTIL parameter value was a date
                         vals = dict(pair.split('=') for pair in
-                                    line.value.upper().split(';'))
+                                    value.upper().split(';'))
                         if len(vals.get('UNTIL', '')) == 8:
                             until = datetime.datetime.combine(until.date(),
                                                               dtstart.time())
