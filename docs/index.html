@@ -337,6 +337,30 @@ When dealing with multi-value properties, the getting and setting of values happ
 <a id="release-history" class="anchor" href="#release-history" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release History</h1>
 
 <h3>
+<a id="7-july-2018" class="anchor" href="#7-july-2018" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>7 July 2018</h3>
+
+<p><strong>vobject 0.9.6</strong> released (<a href="https://github.com/eventable/vobject/releases/tag/0.9.6">view</a>).</p>
+
+<p>To install, use <code>pip install vobject</code>, or download the archive and untar, run python setup.py install. Tests can be run via python setup.py test. <a href="https://pypi.org/project/python-dateutil/">dateutil</a> and <a href="https://pypi.org/project/six">six</a> are required. Python 2.7 or higher is required.</p>
+
+<h5>
+<a id="release-notes" class="anchor" href="#release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release Notes</h5>
+
+<ul>
+<li>  Correctly order calendar properties before calendar components</li>
+<li>  Correctly serialize timestamp values (i.e. `REV`)</li>
+<li>  Pass correct formatting string to logger</li>
+<li>  RRULE: Fix floating UNTIL with dateutil > 2.6.1</li>
+<li>  Encode params if necessary in serialization</li>
+<li>  Ignore escaped semi-colons in UNTIL value</li>
+<li>  RRULE: Fix VTODO without DTSTART</li>
+<li>  Fixed regexp for VCF Version 2.1</li>
+<li>  repr() changed for datetime.timedelta in python 3.7</li>
+</ul>
+
+<hr>
+
+<h3>
 <a id="29-june-2017" class="anchor" href="#29-june-2017" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>29 June 2017</h3>
 
 <p><strong>vobject 0.9.5</strong> released (<a href="https://github.com/eventable/vobject/releases/tag/0.9.5">view</a>).</p>
