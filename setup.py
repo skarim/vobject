@@ -15,15 +15,8 @@ Requires python 2.7 or later, dateutil 2.4.0 or later.
 
 Recent changes
 --------------
-    - Correctly order calendar properties before calendar components
-    - Correctly serialize timestamp values (i.e. `REV`)
-    - Pass correct formatting string to logger
-    - RRULE: Fix floating UNTIL with dateutil > 2.6.1
-    - Encode params if necessary in serialization
-    - Ignore escaped semi-colons in UNTIL value
-    - RRULE: Fix VTODO without DTSTART
-    - Fixed regexp for VCF Version 2.1
-    - repr changed for datetime.timedelta in python 3.7
+    - Revert too-strict serialization of timestamp values - broke too many other
+       implementations
 
 For older changes, see
    - http://eventable.github.io/vobject/#release-history or
@@ -35,7 +28,7 @@ from setuptools import setup, find_packages
 doclines = (__doc__ or '').splitlines()
 
 setup(name = "vobject",
-      version = "0.9.6",
+      version = "0.9.6.1",
       author = "Jeffrey Harris",
       author_email = "jeffrey@osafoundation.org",
       maintainer = "Sameen Karim",
@@ -43,7 +36,7 @@ setup(name = "vobject",
       license = "Apache",
       zip_safe = True,
       url = "http://eventable.github.io/vobject/",
-      download_url = 'https://github.com/eventable/vobject/tarball/0.9.6',
+      download_url = 'https://github.com/eventable/vobject/tarball/0.9.6.1',
       bugtrack_url = "https://github.com/eventable/vobject/issues",
       entry_points = {
             'console_scripts': [
