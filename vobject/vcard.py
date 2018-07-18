@@ -5,7 +5,7 @@ import codecs
 from . import behavior
 
 from .base import ContentLine, registerBehavior, backslashEscape, str_
-from .icalendar import stringToTextValues, DateOrDateTimeBehavior
+from .icalendar import stringToTextValues
 
 
 # Python 3 no longer has a basestring type, so....
@@ -186,8 +186,7 @@ class VCard3_0(VCardBehavior):
         'ADR':        (0, None, None),
         'ORG':        (0, None, None),
         'PHOTO':      (0, None, None),
-        'CATEGORIES': (0, None, None),
-        'REV':        (0, 1, None),
+        'CATEGORIES': (0, None, None)
     }
 
     @classmethod
@@ -213,12 +212,6 @@ class Label(VCardTextBehavior):
     name = "Label"
     description = 'Formatted address'
 registerBehavior(Label)
-
-
-class REV(DateOrDateTimeBehavior):
-    name = "REV"
-    description = 'Current revision of this vCard'
-registerBehavior(REV)
 
 wacky_apple_photo_serialize = True
 REALLY_LARGE = 1E50

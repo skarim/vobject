@@ -223,7 +223,7 @@ class TestBehaviors(unittest.TestCase):
              'DTSTART', 'DUE', 'DURATION', 'EXDATE', 'EXRULE', 'FN', 'FREEBUSY',
              'LABEL', 'LAST-MODIFIED', 'LOCATION', 'METHOD', 'N', 'ORG',
              'PHOTO', 'PRODID', 'RDATE', 'RECURRENCE-ID', 'RELATED-TO',
-             'REQUEST-STATUS', 'RESOURCES', 'REV', 'RRULE', 'STANDARD', 'STATUS',
+             'REQUEST-STATUS', 'RESOURCES', 'RRULE', 'STANDARD', 'STATUS',
              'SUMMARY', 'TRANSP', 'TRIGGER', 'UID', 'VALARM', 'VAVAILABILITY',
              'VCALENDAR', 'VCARD', 'VEVENT', 'VFREEBUSY', 'VJOURNAL',
              'VTIMEZONE', 'VTODO']
