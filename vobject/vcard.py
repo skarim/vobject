@@ -268,6 +268,8 @@ def serializeFields(obj, order=None):
     If order is None, obj should be a list, backslash escape each field and
     return a ';' separated string.
     """
+    if isinstance(obj, str):
+        return obj + ';'
     fields = []
     if order is None:
         fields = [backslashEscape(val) for val in obj]
