@@ -1920,6 +1920,8 @@ def stringToDurations(s, strict=False):
                 sec = 0
             elif char == "eof":
                 state = "end"
+                if not current:
+                    second = '0'
             else:
                 state = "error"
                 error("got unexpected character reading in duration: " + s)
