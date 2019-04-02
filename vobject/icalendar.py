@@ -1913,11 +1913,11 @@ def stringToDurations(s, strict=False):
                                                sec))
                 current = ""
                 sign = None
-                week = None
-                day = None
-                hour = None
-                minute = None
-                sec = None
+                week = 0
+                day = 0
+                hour = 0
+                minute = 0
+                sec = 0
             elif char == "eof":
                 state = "end"
             else:
