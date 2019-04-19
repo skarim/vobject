@@ -207,10 +207,12 @@ def toListOrString(string):
     else:
         return stringList
 
-def splitFields(string):
+def splitFields(string, toListOrStringListSeperator=","):
     """Return a list of strings or lists from a Name or Address."""
-    return [toListOrString(i) for i in
-            stringToTextValues(string, listSeparator=';', charList=';')]
+    return [
+        toListOrString(i, listSeparator=toListOrStringListSeperator) for i in
+            stringToTextValues(string, listSeparator=';', charList=';')
+        ]
 
 def toList(stringOrList):
     if isinstance(stringOrList, basestring):
@@ -240,11 +242,13 @@ class NameBehavior(VCardBehavior):
     hasNative = True
 
     @staticmethod
-    def transformToNative(obj):
+    def transformToNative(obj, toListOrStringListSeperator=","):
         """Turn obj.value into a Name."""
         if obj.isNative: return obj
         obj.isNative = True
-        obj.value = Name(**dict(zip(NAME_ORDER, splitFields(obj.value))))
+        obj.value = Name(**dict(zip(NAME_ORDER, splitFields(
+            obj.value, toListOrStringListSeperator=toListOrStringListSeperator
+        ))))
         return obj
 
     @staticmethod
@@ -263,11 +267,14 @@ class AddressBehavior(VCardBehavior):
     hasNative = True
 
     @staticmethod
-    def transformToNative(obj):
+    def transformToNative(obj, toListOrStringListSeperator=","):
         """Turn obj.value into an Address."""
         if obj.isNative: return obj
         obj.isNative = True
-        obj.value = Address(**dict(zip(ADDRESS_ORDER, splitFields(obj.value))))
+        obj.value = Address(**dict(zip(ADDRESS_ORDER, splitFields(
+            obj.value,
+            toListOrStringListSeperator=toListOrStringListSeperator
+        ))))
         return obj
 
     @staticmethod
@@ -283,11 +290,13 @@ class OrgBehavior(VCardBehavior):
     hasNative = True
 
     @staticmethod
-    def transformToNative(obj):
+    def transformToNative(obj, toListOrStringListSeperator=","):
         """Turn obj.value into a list."""
         if obj.isNative: return obj
         obj.isNative = True
-        obj.value = splitFields(obj.value)
+        obj.value = splitFields(
+            obj.value, toListOrStringListSeperator=toListOrStringListSeperator
+        )
         return obj
 
     @staticmethod

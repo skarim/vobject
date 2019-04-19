@@ -107,7 +107,7 @@ class VBase(object):
                 obj.parentBehavior=behavior
                 obj.autoBehavior(True)
 
-    def transformToNative(self):
+    def transformToNative(self, toListOrStringListSeperator=","):
         """Transform this object into a custom VBase subclass.
         
         transformToNative should always return a representation of this object.
@@ -119,7 +119,9 @@ class VBase(object):
             return self
         else:
             try:
-                return self.behavior.transformToNative(self)
+                return self.behavior.transformToNative(self,
+                    toListOrStringListSeperator=toListOrStringListSeperator
+                )
             except Exception, e:      
                 # wrap errors in transformation in a ParseError
                 lineNumber = getattr(self, 'lineNumber', None)
@@ -593,12 +595,14 @@ class Component(VBase):
         v=getBehavior(self.name, versionLine.value)
         if v: self.setBehavior(v)
 
-    def transformChildrenToNative(self):
+    def transformChildrenToNative(self, toListOrStringListSeperator=None):
         """Recursively replace children with their native representation."""
         #sort to get dependency order right, like vtimezone before vevent
         for childArray in (self.contents[k] for k in self.sortChildKeys()):
             for i in xrange(len(childArray)):
-                childArray[i]=childArray[i].transformToNative()
+                childArray[i]=childArray[i].transformToNative(
+                    toListOrStringListSeperator=toListOrStringListSeperator
+                )
                 childArray[i].transformChildrenToNative()
 
     def transformChildrenFromNative(self, clearBehavior=True):
@@ -998,7 +1002,8 @@ class Stack:
 
 def readComponents(streamOrString, validate=False, transform=True,
                    findBegin=True, ignoreUnreadable=False,
-                   allowQP=False):
+                   allowQP=False, toListOrStringListSeperator=","
+    ):
     """Generate one Component at a time from a stream.
 
     >>> import StringIO
@@ -1056,7 +1061,9 @@ def readComponents(streamOrString, validate=False, transform=True,
                             if behavior:
                                 component.setBehavior(behavior)
                         if validate: component.validate(raiseException=True)
-                        if transform: component.transformChildrenToNative()
+                        if transform: component.transformChildrenToNative(
+                            toListOrStringListSeperator=toListOrStringListSeperator
+                        )
                         yield component #EXIT POINT
                     else: stack.modifyTop(stack.pop())
                 else:
@@ -1076,10 +1083,14 @@ def readComponents(streamOrString, validate=False, transform=True,
 
 
 def readOne(stream, validate=False, transform=True, findBegin=True,
-            ignoreUnreadable=False, allowQP=False):
+            ignoreUnreadable=False, allowQP=False,
+            toListOrStringListSeperator=","
+    ):
     """Return the first component from stream."""
     return readComponents(stream, validate, transform, findBegin,
-                          ignoreUnreadable, allowQP).next()
+                          ignoreUnreadable, allowQP,
+                          toListOrStringListSeperator=toListOrStringListSeperator
+            ).next()
 
 #--------------------------- version registry ----------------------------------
 __behaviorRegistry={}
