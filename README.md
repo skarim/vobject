@@ -275,3 +275,9 @@ u'Harris'
 [<EMAIL{'TYPE': ['INTERNET']}jeffrey@osafoundation.org>,
  <EMAIL{'TYPE': ['INTERNET']}jeffery@example.org>]
 ```
+
+Just like with iCalendar example above readComponents will yield a generator from a stream or string containing multiple vCards objects.
+```
+>>> vobject.readComponents(vCardStream).next().email.value
+'jeffrey@osafoundation.org'
+```
