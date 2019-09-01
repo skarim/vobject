@@ -1161,13 +1161,23 @@ class VEvent(RecurringBehavior):
     @classmethod
     def validate(cls, obj, raiseException, *args):
         if 'dtend' in obj.contents and 'duration' in obj.contents:
-            if raiseException:
-                m = "VEVENT components cannot contain both DTEND and DURATION\
-                     components"
-                raise ValidateError(m)
-            return False
-        else:
-            return super(VEvent, cls).validate(obj, raiseException, *args)
+            # Hack: Thunderbird's lightning calendar sometimes generates
+            # VEvents with dtend and a zero duration. Clean up these errors.
+            ignore = True
+            for duration in obj.contents.get('duration', ()):
+                duration.transformToNative()
+                if duration.value != datetime.timedelta(0):
+                    ignore = False
+            if ignore:
+                # Delete redundant zero duration
+                del obj.contents['duration']
+            else:
+                if raiseException:
+                    m = "VEVENT components cannot contain both DTEND and DURATION\
+                         components"
+                    raise ValidateError(m)
+                return False
+        return super(VEvent, cls).validate(obj, raiseException, *args)
 
 registerBehavior(VEvent)
 
