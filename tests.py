@@ -828,6 +828,24 @@ class TestIcalendar(unittest.TestCase):
         self.assertEqual(dates[1], datetime.datetime(2013, 1, 24, 0, 0))
         self.assertEqual(dates[-1], datetime.datetime(2013, 3, 28, 0, 0))
 
+    def test_recurrence_mixed_with_and_without_tz(self):
+        """
+        Ensure recurring vevent with DTSTART and EXDATE not both have or
+        not have timezone information is parsing.
+        """
+        test_file = get_test_file("recurrence-mixed-with-and-without-tz.ics")
+        vcalendar = base.readOne(test_file, validate=True)
+        expected = None
+        for vobj in vcalendar.getChildren():
+            if vobj.name == 'VTIMEZONE':
+                expected = iter([
+                    [datetime.datetime(1991,  5, 20,  0, 0, 0),
+                     datetime.datetime(1993,  5, 20,  0, 0, 0)],
+                    [datetime.datetime(2017, 10, 25, 14, 0, 0, tzinfo=vobj.gettzinfo()),
+                     datetime.datetime(2017, 11,  8, 14, 0, 0, tzinfo=vobj.gettzinfo())]]);
+            elif vobj.name == 'VEVENT':
+                dates = list(vobj.getrruleset(addRDate=True))
+                self.assertEqual(dates, next(expected))
 
 class TestChangeTZ(unittest.TestCase):
     """
