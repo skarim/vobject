@@ -444,6 +444,14 @@ class TestGeneralFileParsing(unittest.TestCase):
              ['NEXT', 'Nope'], ['BAR']]
         )
 
+    def test_thunderbird_duration_pt0s_workaround(self):
+        """
+        Test parsing thundebird generated ics streams having both a duration of
+        0 seconds and a dtend attribute.
+        """
+        cal = get_test_file("thunderbird_duration_pt0s_workaround.ics")
+        c = base.readOne(cal, validate=True)
+
 
 class TestVcards(unittest.TestCase):
     """
