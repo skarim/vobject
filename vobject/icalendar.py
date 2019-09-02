@@ -430,12 +430,23 @@ class RecurringComponent(Component):
                         logging.error('failed to find DUE at all.')
                         return None
 
+                if isinstance(dtstart, datetime.datetime):
+                    dtstart_tzinfo = dtstart.tzinfo
+                else:
+                    dtstart_tzinfo = None
                 if name in DATENAMES:
                     if type(line.value[0]) == datetime.datetime:
-                        list(map(addfunc, line.value))
+                        for dt in line.value:
+                            if dtstart_tzinfo is None:
+                                addfunc(dt.replace(tzinfo=None))
+                            else:
+                                addfunc(dt)
                     elif type(line.value[0]) == datetime.date:
                         for dt in line.value:
-                            addfunc(datetime.datetime(dt.year, dt.month, dt.day))
+                            if isinstance(dtstart, datetime.datetime):
+                                addfunc(dtstart.replace(dt.year, dt.month, dt.day))
+                            else:
+                                addfunc(datetime.datetime(dt.year, dt.month, dt.day, tzinfo=dtstart_tzinfo))
                     else:
                         # ignore RDATEs with PERIOD values for now
                         pass
