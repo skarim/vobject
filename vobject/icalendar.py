@@ -1693,7 +1693,8 @@ def deltaToOffset(delta):
     absDelta = abs(delta)
     hours = int(absDelta.seconds / 3600)
     hoursString = numToDigits(hours, 2)
-    minutesString = '00'
+    minutes = int(absDelta.seconds / 60) % 60
+    minutesString = numToDigits(minutes, 2)
     if absDelta == delta:
         signString = "+"
     else:
