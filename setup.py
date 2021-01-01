@@ -11,7 +11,7 @@ or (experimentally) hCalendar unicode strings.
 Requirements
 ------------
 
-Requires python 2.7 or later, dateutil 2.4.0 or later.
+Requires python 2.7 or later, dateutil 2.4.0 or later and six.
 
 Recent changes
 --------------
@@ -45,7 +45,7 @@ setup(name = "vobject",
             ]
       },
       include_package_data = True,
-      install_requires = ['python-dateutil >= 2.4.0'],
+      install_requires = ['python-dateutil >= 2.4.0', 'six'],
       platforms = ["any"],
       packages = find_packages(),
       description = "A full-featured Python package for parsing and creating "
