@@ -298,7 +298,7 @@ class TimezoneComponent(Component):
                 if num is not None:
                     dayString = ";BYDAY=" + str(num) + WEEKDAYS[rule['weekday']]
                 else:
-                    dayString = ""
+                    dayString = ";BYMONTHDAY=1"
                 if rule['end'] is not None:
                     if rule['hour'] is None:
                         # all year offset, with no rule
