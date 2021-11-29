@@ -80,7 +80,7 @@ def getTzid(tzid, smart=True):
                 tz = timezone(tzid)
                 registerTzid(toUnicode(tzid), tz)
             except UnknownTimeZoneError as e:
-                logging.error(e)
+                logging.error("Unknown Timezone: %r", e.args[0])
         except ImportError as e:
             logging.error(e)
     return tz
