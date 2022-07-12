@@ -13,7 +13,7 @@ from dateutil.tz import tzutc
 from dateutil.rrule import rrule, rruleset, WEEKLY, MONTHLY
 
 from vobject import base, iCalendar
-from vobject import icalendar
+from vobject import icalendar, vcard
 
 from vobject.base import __behaviorRegistry as behavior_registry
 from vobject.base import ContentLine, parseLine, ParseError
@@ -44,7 +44,6 @@ def get_test_file(path):
     text = f.read()
     f.close()
     return text
-
 
 class TestCalendarSerializing(unittest.TestCase):
     """
@@ -940,6 +939,19 @@ class TestChangeTZ(unittest.TestCase):
                                              expected_new_dates):
             self.assertEqual(vevent.dtstart.value, expected_datepair[0])
             self.assertEqual(vevent.dtend.value, expected_datepair[1])
+
+
+class TestJcard(unittest.TestCase):
+    def test_parse(self):
+        jcardsString = get_test_file("jcard.json")
+        card = vcard.fromJCards(jcardsString)
+
+        self.assertEqual(card.org.value, ["Viagenie"])
+
+        for _ in range(3):
+            new_card = base.readOne(card.serialize())
+            self.assertEqual(new_card.org.value, card.org.value)
+            card = new_card
 
 
 if __name__ == '__main__':
