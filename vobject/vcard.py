@@ -1,10 +1,11 @@
 """Definitions and behavior for vCard 3.0"""
 
 import codecs
+import json
 
 from . import behavior
 
-from .base import ContentLine, registerBehavior, backslashEscape, str_
+from .base import ContentLine, registerBehavior, backslashEscape, str_, newFromBehavior, ParseError
 from .icalendar import stringToTextValues
 
 
@@ -368,3 +369,38 @@ class OrgBehavior(VCardBehavior):
         obj.value = serializeFields(obj.value)
         return obj
 registerBehavior(OrgBehavior, 'ORG')
+
+
+def fromJCards(jcards):
+    if isinstance(jcards, str):
+        jcards = json.loads(jcards)
+
+    if jcards[0] != "vcard" or len(jcards) < 2:
+        raise ParseError("Not a valid jcard object")
+    vcards = []
+    # skip first one since it is "vcard" string (as defined in RFC 7095)
+    for jcard in jcards[1:]:
+        # first property MUST be version (as defined in RFC 7095)
+        version = jcard[0][3]
+        vcard = newFromBehavior('vcard', version)
+        # loop through properties except version and add them
+        for prop in jcard[1:]:
+            name, params, val_type, *value = prop
+            obj = vcard.add(name)
+            # set value corresponding to property
+            if name == "adr":
+                obj.value = Address(**dict(zip(ADDRESS_ORDER, value[0])))
+            elif name == "org" or len(value) > 1:
+                obj.value = value
+            elif name == "n":
+                obj.value = Name(**dict(zip(NAME_ORDER, value[0])))
+            else:
+                obj.value = value[0]
+            # add value param
+            obj.value_param = val_type
+            # add other params from json
+            for k, v in params.items():
+                setattr(obj, k.lower()+"_param", v)
+        vcards.append(vcard)
+
+    return vcards if len(vcards) > 1 else vcard
