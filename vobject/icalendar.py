@@ -330,6 +330,8 @@ class TimezoneComponent(Component):
         """
         Given a tzinfo class, use known APIs to determine TZID, or use tzname.
         """
+        if str(tzinfo) == 'UTC':
+            return None
         if tzinfo is None or (not allowUTC and tzinfo_eq(tzinfo, utc)):
             # If tzinfo is UTC, we don't need a TZID
             return None
