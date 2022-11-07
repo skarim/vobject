@@ -4,15 +4,9 @@ import codecs
 
 from . import behavior
 
-from .base import ContentLine, registerBehavior, backslashEscape, str_
+from .base import ContentLine, registerBehavior, backslashEscape, basestring, str_
 from .icalendar import stringToTextValues
 
-
-# Python 3 no longer has a basestring type, so....
-try:
-    basestring = basestring
-except NameError:
-    basestring = (str, bytes)
 
 # ------------------------ vCard structs ---------------------------------------
 
