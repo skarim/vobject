@@ -1,4 +1,8 @@
-import _winreg
+import sys
+if sys.version_info[0] >= 3:
+    import winreg as _winreg
+else:
+    import _winreg
 import struct
 import datetime
 
