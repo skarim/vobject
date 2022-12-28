@@ -91,7 +91,11 @@ def diff(left, right):
                     matchResult = processComponentPair(comp, rightComp)
                     if matchResult is not None:
                         output.append(matchResult)
-
+                        
+        while rightIndex < rightListSize:
+            output.append((None, rightList[rightIndex]))
+            rightIndex += 1
+            
         return output
 
     def newComponent(name, body):
