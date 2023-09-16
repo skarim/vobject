@@ -1,5 +1,6 @@
 from . import base
 
+properties_allow_localization = ['NAME','SUMMARY','DESCRIPTION','LOCATION']
 
 #------------------------ Abstract class for behavior --------------------------
 class Behavior(object):
@@ -81,22 +82,52 @@ class Behavior(object):
             return cls.lineValidate(obj, raiseException, complainUnrecognized)
         elif isinstance(obj, base.Component):
             count = {}
+            language_count = {} #example: {'SUMMARY': {'en': 1, 'ja': 1} , 'DESCRIPTION': {None: 1}}
             for child in obj.getChildren():
                 if not child.validate(raiseException, complainUnrecognized):
                     return False
                 name = child.name.upper()
                 count[name] = count.get(name, 0) + 1
+
+                if isinstance(child, base.ContentLine) and name in properties_allow_localization:
+                    # for some properties, we count separately with respect to language
+                    lang = child.params.get('LANGUAGE', [])
+                    if len(lang) == 0:
+                        lang = None
+                    elif len(lang) == 1:
+                        lang = lang[0].lower()
+                    elif len(lang) > 1:
+                        if raiseException:
+                            m = "Multiple language parameters specified for property {1}"
+                            raise base.ValidateError(m.format(name))
+                        return False
+                    if name in language_count:
+                        language_count[name][lang] = language_count[name].get(lang, 0) + 1
+                    else:
+                        language_count[name] = {lang: 1}
+
             for key, val in cls.knownChildren.items():
-                if count.get(key, 0) < val[0]:
+                minimum_count = val[0]
+                if count.get(key, 0) < minimum_count:
                     if raiseException:
                         m = "{0} components must contain at least {1} {2}"
-                        raise base.ValidateError(m .format(cls.name, val[0], key))
+                        raise base.ValidateError(m .format(cls.name, minimum_count, key))
                     return False
-                if val[1] and count.get(key, 0) > val[1]:
-                    if raiseException:
+                maximum_count = val[1]
+                if maximum_count and count.get(key, 0) > maximum_count:
+                    if key in properties_allow_localization:
+                        # check if the maximum is exceeded for any language
+                        for lang, count_for_lang in language_count.get(key, {}).items():
+                            if count_for_lang > maximum_count:
+                                if raiseException:
+                                    m = "{0} components cannot contain more than {1} {2} with the same language"
+                                    raise base.ValidateError(m.format(cls.name, maximum_count, key))
+                                return False
+                    elif raiseException:
                         m = "{0} components cannot contain more than {1} {2}"
-                        raise base.ValidateError(m.format(cls.name, val[1], key))
-                    return False
+                        raise base.ValidateError(m.format(cls.name, maximum_count, key))
+                    else:
+                        return False
             return True
         else:
             err = "{0} is not a Component or Contentline".format(obj)
