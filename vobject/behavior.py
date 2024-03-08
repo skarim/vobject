@@ -141,7 +141,7 @@ class Behavior(object):
         pass
 
     @classmethod
-    def serialize(cls, obj, buf, lineLength, validate=True):
+    def serialize(cls, obj, buf, lineLength, validate=True, *args, **kwargs):
         """
         Set implicit parameters, do encoding, return unicode string.
 

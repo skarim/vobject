@@ -239,7 +239,7 @@ class VBase(object):
         """
         pass
 
-    def serialize(self, buf=None, lineLength=75, validate=True, behavior=None):
+    def serialize(self, buf=None, lineLength=75, validate=True, behavior=None, *args, **kwargs):
         """
         Serialize to buf if it exists, otherwise return a string.
 
@@ -251,7 +251,7 @@ class VBase(object):
         if behavior:
             if DEBUG:
                 logger.debug("serializing {0!s} with behavior {1!s}".format(self.name, behavior))
-            return behavior.serialize(self, buf, lineLength, validate)
+            return behavior.serialize(self, buf, lineLength, validate, *args, **kwargs)
         else:
             if DEBUG:
                 logger.debug("serializing {0!s} without behavior".format(self.name))
